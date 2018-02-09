@@ -14,7 +14,7 @@ from setuptools import setup, find_packages
 setup(name='sileg-api',
           version='0.1.0.dev0',
           description='proyecto de las designaciones de docentes/no-docentes de la facultad',
-          url='https://github.com/pablodanielrey/sileg',
+          url='https://github.com/pablodanielrey/sileg-api',
           author='Desarrollo DiTeSi, FCE',
           author_email='ditesi@econo.unlp.edu.ar',
           classifiers=[
