@@ -4,6 +4,8 @@ import sys
 import os
 from dateutil import parser
 
+from werkzeug.contrib.fixers import ProxyFix
+
 from flask import Flask, abort, make_response, jsonify, url_for, request, json
 from sileg.model.SilegModel import SilegModel
 from flask_jsontools import jsonapi
@@ -14,6 +16,7 @@ from rest_utils import register_encoder
 
 # set the project root directory as the static folder, you can set others.
 app = Flask(__name__, static_url_path='/src/sileg/web')
+app.wsgi_app = ProxyFix(app.wsgi_app)
 register_encoder(app)
 
 API_BASE = os.environ['API_BASE']
