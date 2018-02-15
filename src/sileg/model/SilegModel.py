@@ -103,13 +103,13 @@ class SilegModel:
                         'sileg': surs
                     })
 
+            if not fecha:
+                return rusers
+
             """ tengo en cuenta los que se pudieron haber agregado al sileg despues """
             token = cls._get_token()
             q = None
-            if not fecha:
-                q = session.query(Usuario).all()
-            else:
-                q = session.query(Usuario).filter(or_(Usuario.creado >= fecha, Usuario.actualizado >= fecha)).all()
+            q = session.query(Usuario).filter(or_(Usuario.creado >= fecha, Usuario.actualizado >= fecha)).all()
             for u in q:
                 if u.id not in idsProcesados.keys():
                     query = '{}/{}/{}'.format(cls.usuarios_url, 'usuarios', u.id)
@@ -123,7 +123,6 @@ class SilegModel:
                             'usuario': usr,
                             'sileg': u
                         })
-
             return rusers
 
         finally:
