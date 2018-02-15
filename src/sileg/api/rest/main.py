@@ -18,8 +18,8 @@ register_encoder(app)
 
 API_BASE = os.environ['API_BASE']
 
-@app.route(API_BASE + '/usuarios/', methods=['GET', 'POST'], defaults={'uid':None})
-@app.route(API_BASE + '/usuarios/<uid>', methods=['GET', 'POST'])
+@app.route(API_BASE + '/usuarios/', methods=['GET', 'POST', 'OPTIONS'], defaults={'uid':None})
+@app.route(API_BASE + '/usuarios/<uid>', methods=['GET', 'POST', 'OPTIONS'])
 @jsonapi
 def usuarios(uid=None):
     search = request.args.get('q',None)
