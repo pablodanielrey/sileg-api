@@ -97,11 +97,10 @@ class SilegModel:
                 uid = u['id']
                 idsProcesados[uid] = u
                 surs = session.query(Usuario).filter(Usuario.id == uid).one_or_none()
-                if surs:
-                    rusers.append({
-                        'usuario': u,
-                        'sileg': surs
-                    })
+                rusers.append({
+                    'usuario': u,
+                    'sileg': surs
+                })
 
             if not fecha:
                 return rusers
