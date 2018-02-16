@@ -4,6 +4,8 @@ import sys
 import os
 from dateutil import parser
 
+from werkzeug.contrib.fixers import ProxyFix
+
 from flask import Flask, abort, make_response, jsonify, url_for, request, json
 from sileg.model.SilegModel import SilegModel
 from flask_jsontools import jsonapi
@@ -14,12 +16,13 @@ from rest_utils import register_encoder
 
 # set the project root directory as the static folder, you can set others.
 app = Flask(__name__, static_url_path='/src/sileg/web')
+app.wsgi_app = ProxyFix(app.wsgi_app)
 register_encoder(app)
 
 API_BASE = os.environ['API_BASE']
 
-@app.route(API_BASE + '/usuarios/', methods=['GET', 'POST'], defaults={'uid':None})
-@app.route(API_BASE + '/usuarios/<uid>', methods=['GET', 'POST'])
+@app.route(API_BASE + '/usuarios/', methods=['GET', 'POST', 'OPTIONS'], defaults={'uid':None})
+@app.route(API_BASE + '/usuarios/<uid>', methods=['GET', 'POST', 'OPTIONS'])
 @jsonapi
 def usuarios(uid=None):
     search = request.args.get('q',None)
