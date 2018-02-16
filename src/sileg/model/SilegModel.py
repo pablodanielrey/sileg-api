@@ -44,9 +44,7 @@ class SilegModel:
     @classmethod
     def generarClave(cls, uid):
         query = cls.usuarios_url + '/generar_clave/' + uid
-        r = cls.api(query)
-        logging.info(r.json())
-        return {'data': r.json()}
+        return cls.api(query)
 
     @classmethod
     def usuario(cls, uid, retornarClave=False):
