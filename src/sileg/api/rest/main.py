@@ -33,6 +33,12 @@ def usuarios(uid=None):
         fecha = parser.parse(fecha_str) if fecha_str else None
         return SilegModel.usuarios(search=search, retornarClave=c, offset=offset, limit=limit, fecha=fecha)
 
+
+@app.route(API_BASE + '/generar_clave/<uid>', methods=['GET'])
+@jsonapi
+def generar_clave(uid):
+    return SilegModel.generarClave(uid)
+
 @app.route(API_BASE + '/designaciones/', methods=['GET', 'POST'])
 @jsonapi
 def designaciones():
