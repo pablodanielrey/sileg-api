@@ -71,7 +71,7 @@ def crearDesignacion():
         d = SilegModel.crearDesignacionCumpliendoFunciones(s, pedido)
         s.commit()
         logging.debug(json.dumps(d))
-        return d
+        return d.id
 
     except Exception as e:
         s.rollback()
