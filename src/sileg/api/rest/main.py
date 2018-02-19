@@ -69,8 +69,15 @@ def crearDesignacion():
     s = Session()
     try:
         d = SilegModel.crearDesignacionCumpliendoFunciones(s, pedido)
-        s.rollback()
+        s.commit()
+        logging.debug(json.dumps(d))
         return d
+
+    except Exception as e:
+        s.rollback()
+        logging.exception(e)
+        raise e
+
     finally:
         s.close()
 

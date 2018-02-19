@@ -207,9 +207,11 @@ class SilegModel:
         ''' genero la designacion con los datos pasados '''
         cf = CumpleFunciones()
 
-        u = Usuario()
-        u.id = pedido['usuario_id']
-        session.add(u)
+        u = session.query(Usuario).filter(Usuario.id == pedido['usuario_id']).one_or_none()
+        if not u:
+            u = Usuario()
+            u.id = pedido['usuario_id']
+            session.add(u)
 
         d = Designacion()
         d.id = str(uuid.uuid4())
