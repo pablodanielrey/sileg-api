@@ -60,6 +60,21 @@ class SilegModel:
         return r
 
     @classmethod
+    def api_delete(cls, api, token=None):
+        if not token:
+            token = cls._get_token()
+
+        ''' se deben cheqeuar intentos de login, y disparar : SeguridadError en el caso de que se haya alcanzado el máximo de intentos '''
+        headers = {
+            'Authorization': 'Bearer {}'.format(token)
+        }
+        logging.debug(api)
+        r = requests.delete(api, verify=cls.verify, headers=headers)
+        logging.debug(r)
+        return r
+
+
+    @classmethod
     def generarClave(cls, uid):
         query = cls.usuarios_url + '/generar_clave/' + uid
         r = cls.api(query)
@@ -70,6 +85,15 @@ class SilegModel:
     def verificarDisponibilidadCorreo(cls, cuenta):
         query = cls.usuarios_url + '/correo/' + cuenta
         r = cls.api(query)
+        if not r.ok:
+            raise Exception(r.text)
+        logging.info(r.json())
+        return r.json()
+
+    @classmethod
+    def eliminarCorreo(cls, uid, cid):
+        query = cls.usuarios_url + '/usuarios/{}/correos/{}'.format(uid, cid)
+        r = cls.api_delete(query)
         if not r.ok:
             raise Exception(r.text)
         logging.info(r.json())
@@ -215,6 +239,8 @@ class SilegModel:
 
         d = Designacion()
         d.id = str(uuid.uuid4())
+        d.tipo = 'original'
+        d.desde = datetime.datetime.now()
         d.usuario_id = u.id
         d.cargo_id = cf.id
         d.lugar_id = pedido['lugar_id']
@@ -228,19 +254,23 @@ class SilegModel:
                     offset=None, limit=None,
                     persona=None,
                     lugar=None,
-                    historico=False):
+                    historico=False, expand=False):
         session = Session()
 
         q = Designacion.find(session)
-        q = q.filter(Designacion.designacion_id == None, Designacion.tipo == 'original')
+        q = q.filter(Designacion.designacion_id == None, or_(Designacion.tipo == 'original', Designacion.tipo == None))
 
         if not historico:
             q = q.filter(or_(Designacion.historico == None, Designacion.historico == False))
 
-        q = cls._agregar_filtros_comunes(q, offset, limit, persona, lugar)
-        #q = q.options(joinedload('usuario'), joinedload('cargo'))
-        #q = q.options(joinedload('lugar').joinedload('padre'))
         q = q.order_by(Designacion.desde.desc())
+        q = cls._agregar_filtros_comunes(q, offset=offset, limit=limit, persona=persona, lugar=lugar)
+        if expand:
+            if not persona:
+                q = q.options(joinsedload('usuario'))
+            if not lugar:
+                q = q.options(joinedload('lugar').joinedload('padre'))
+            q = q.options(joinedload('cargo'))
         return q.all()
 
     @classmethod

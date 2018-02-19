@@ -37,6 +37,19 @@ def usuarios(uid=None):
         fecha = parser.parse(fecha_str) if fecha_str else None
         return SilegModel.usuarios(search=search, retornarClave=c, offset=offset, limit=limit, fecha=fecha)
 
+@app.route(API_BASE + '/usuarios/<uid>/correos/<cid>', methods=['DELETE'])
+@app.route(API_BASE + '/correos/<cid>', methods=['DELETE'])
+@jsonapi
+def eliminar_correo(uid=None, cid=None):
+    return SilegModel.eliminarCorreo(uid, cid)
+
+@app.route(API_BASE + '/usuarios/<uid>/designaciones', methods=['GET'])
+@jsonapi
+def obtener_designaciones_por_usuario(uid=None):
+    designaciones = SilegModel.designaciones(persona=uid, historico=True, expand=True)
+    logging.debug(designaciones)
+    return designaciones
+
 
 @app.route(API_BASE + '/generar_clave/<uid>', methods=['GET'])
 @jsonapi
