@@ -42,6 +42,11 @@ def usuarios(uid=None):
 def generar_clave(uid):
     return SilegModel.generarClave(uid)
 
+@app.route(API_BASE + '/correo/<cuenta>', methods=['GET'])
+@jsonapi
+def verificarDisponibilidadCorreo(cuenta=None):
+    return SilegModel.verificarDisponibilidadCorreo(cuenta)
+
 @app.route(API_BASE + '/designaciones/', methods=['GET', 'POST'])
 @jsonapi
 def designaciones():

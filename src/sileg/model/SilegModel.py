@@ -37,6 +37,8 @@ class SilegModel:
         headers = {
             'Authorization': 'Bearer {}'.format(token)
         }
+        logging.debug(api)
+        logging.debug(params)
         r = requests.get(api, verify=cls.verify, headers=headers, params=params)
         logging.debug(r)
         return r
@@ -45,6 +47,15 @@ class SilegModel:
     def generarClave(cls, uid):
         query = cls.usuarios_url + '/generar_clave/' + uid
         r = cls.api(query)
+        logging.info(r.json())
+        return r.json()
+
+    @classmethod
+    def verificarDisponibilidadCorreo(cls, cuenta):
+        query = cls.usuarios_url + '/correo/' + cuenta
+        r = cls.api(query)
+        if not r.ok:
+            raise Exception(r.text)
         logging.info(r.json())
         return r.json()
 
