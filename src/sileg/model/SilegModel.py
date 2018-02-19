@@ -1,5 +1,5 @@
 from sqlalchemy import or_
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, with_polymorphic
 import datetime
 import requests
 import os
@@ -249,22 +249,37 @@ class SilegModel:
         finally:
             session.close()
 
-    @classmethod
-    def lugares(cls):
-        session = Session()
-        try:
-            return Lugar.find(session).all()
-        finally:
-            session.close()
 
     @classmethod
-    def lugares(cls):
-        session = Session()
-        try:
-            return Lugar.find(session).all()
-        finally:
-            session.close()
+    def obtener_catedras_por_nombre(cls, session, search=None):
+        q = None
+        if not search:
+            q = session.query(Catedra)
+        else:
+            q2 = session.query(Materia.id).filter(Materia.nombre.op('~*')(search))
+            q = session.query(Catedra).filter(Catedra.materia_id.in_(q2))
+        return q.options(joinedload('materia')).all()
 
+
+    @classmethod
+    def lugares(cls, session, search=None):
+        lugares = with_polymorphic(Lugar,[
+            Direccion,
+            Escuela,
+            LugarDictado,
+            Secretaria,
+            Instituto,
+            Prosecretaria,
+            Maestria
+        ])
+        catedras = with_polymorphic(Lugar, [Catedra])
+
+        q = None
+        if not search:
+            q = session.query(lugares)
+        else:
+            q = session.query(lugares).filter(or_(lugares.nombre.op('~*')(search)))
+        return q.all()
 
     @classmethod
     def departamentos(cls):

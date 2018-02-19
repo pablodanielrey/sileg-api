@@ -93,7 +93,15 @@ def cargos():
 @app.route(API_BASE + '/lugares/', methods=['GET'])
 @jsonapi
 def lugares():
-    return SilegModel.lugares()
+    s = Session()
+    try:
+        search = request.args.get('q')
+        lugares = SilegModel.lugares(session=s, search=search)
+        catedras = SilegModel.obtener_catedras_por_nombre(session=s, search=search)
+        lugares.extend(catedras)
+        return lugares
+    finally:
+        s.close()
 
 @app.route(API_BASE + '/departamentos/', methods=['GET', 'POST'])
 @jsonapi
