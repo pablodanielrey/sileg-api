@@ -4,6 +4,7 @@ import datetime
 import requests
 import os
 import logging
+import uuid
 
 import oidc
 from oidc.oidc import ClientCredentialsGrant
@@ -40,6 +41,21 @@ class SilegModel:
         logging.debug(api)
         logging.debug(params)
         r = requests.get(api, verify=cls.verify, headers=headers, params=params)
+        logging.debug(r)
+        return r
+
+    @classmethod
+    def api_post(cls, api, data=None, token=None):
+        if not token:
+            token = cls._get_token()
+
+        ''' se deben cheqeuar intentos de login, y disparar : SeguridadError en el caso de que se haya alcanzado el máximo de intentos '''
+        headers = {
+            'Authorization': 'Bearer {}'.format(token)
+        }
+        logging.debug(api)
+        logging.debug(data)
+        r = requests.post(api, verify=cls.verify, headers=headers, json=data)
         logging.debug(r)
         return r
 
@@ -176,6 +192,34 @@ class SilegModel:
 
         finally:
             session.close()
+
+
+    @classmethod
+    def crearDesignacionCumpliendoFunciones(cls, session, pedido):
+
+        ''' genero el correo '''
+        query = cls.usuarios_url + '/usuarios/{}/correo'.format(pedido['usuario_id'])
+        r = cls.api_post(query, data={'correo':pedido['correo']})
+        if not r.ok:
+            raise Exception(r.text)
+        logging.info(r.json())
+
+        ''' genero la designacion con los datos pasados '''
+        cf = CumpleFunciones()
+
+        u = Usuario()
+        u.id = pedido['usuario_id']
+        session.add(u)
+
+        d = Designacion()
+        d.id = str(uuid.uuid4())
+        d.usuario_id = u.id
+        d.cargo_id = cf.id
+        d.lugar_id = pedido['lugar_id']
+        session.add(d)
+
+        return d
+
 
     @classmethod
     def designaciones(cls,

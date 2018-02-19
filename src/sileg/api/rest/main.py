@@ -7,12 +7,13 @@ from dateutil import parser
 from werkzeug.contrib.fixers import ProxyFix
 
 from flask import Flask, abort, make_response, jsonify, url_for, request, json
-from sileg.model.SilegModel import SilegModel
 from flask_jsontools import jsonapi
 from dateutil import parser
 
 from rest_utils import register_encoder
 
+from sileg.model.SilegModel import SilegModel
+from sileg.model import Session
 
 # set the project root directory as the static folder, you can set others.
 app = Flask(__name__, static_url_path='/src/sileg/web')
@@ -58,6 +59,21 @@ def designaciones():
     designaciones = SilegModel.designaciones(offset=offset, limit=limit, lugar=lugar, persona=persona, historico=historico)
     designaciones.append('cantidad:{}'.format(len(designaciones)))
     return designaciones
+
+@app.route(API_BASE + '/designacion', methods=['POST'])
+@jsonapi
+def crearDesignacion():
+    ''' crea una nueva designacion, solo permite crear cumplimiento de funciones '''
+    pedido = request.get_json();
+    logging.debug(pedido)
+    s = Session()
+    try:
+        d = SilegModel.crearDesignacionCumpliendoFunciones(s, pedido)
+        s.rollback()
+        return d
+    finally:
+        s.close()
+
 
 @app.route(API_BASE + '/prorrogas/<designacion>', methods=['GET', 'POST'])
 @jsonapi
