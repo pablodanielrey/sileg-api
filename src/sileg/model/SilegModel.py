@@ -257,7 +257,7 @@ class SilegModel:
             q = session.query(Catedra)
         else:
             q2 = session.query(Materia.id).filter(Materia.nombre.op('~*')(search))
-            q = session.query(Catedra).filter(Catedra.materia_id.in_(q2))
+            q = session.query(Catedra).filter(or_(Catedra.materia_id.in_(q2), Catedra.nombre.op('~*')(search)))
         return q.options(joinedload('materia')).all()
 
 
@@ -270,15 +270,16 @@ class SilegModel:
             Secretaria,
             Instituto,
             Prosecretaria,
-            Maestria
+            Maestria,
+            Catedra
         ])
-        catedras = with_polymorphic(Lugar, [Catedra])
 
         q = None
         if not search:
             q = session.query(lugares)
         else:
-            q = session.query(lugares).filter(or_(lugares.nombre.op('~*')(search)))
+            ''' TODO: no se como sacar la subclase Catedra de la consulta. analizar otras posibilidades. ahora esta filtrado '''
+            q = session.query(lugares).filter(lugares.Catedra.id == None, lugares.nombre.op('~*')(search))
         return q.all()
 
     @classmethod
