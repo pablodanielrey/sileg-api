@@ -91,6 +91,21 @@ class SilegModel:
         return r.json()
 
     @classmethod
+    def agregarCorreo(cls, session, uid, correo):
+        ''' verifico que tenga designacion '''
+        if session.query(Designacion).filter(Designacion.usuario_id == uid).count() <= 0:
+            raise Exception('no tiene designacion')
+
+        logging.debug('tiene designacion asi que se llama a la api de usuarios')
+
+        query = cls.usuarios_url + '/usuarios/{}/correo'.format(uid)
+        r = cls.api_post(query, data={'correo':correo})
+        if not r.ok:
+            raise Exception(r.text)
+        logging.info(r.json())
+        return r.json()
+
+    @classmethod
     def eliminarCorreo(cls, uid, cid):
         query = cls.usuarios_url + '/usuarios/{}/correos/{}'.format(uid, cid)
         r = cls.api_delete(query)

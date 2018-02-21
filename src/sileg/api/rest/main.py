@@ -43,6 +43,21 @@ def usuarios(uid=None):
 def eliminar_correo(uid=None, cid=None):
     return SilegModel.eliminarCorreo(uid, cid)
 
+@app.route(API_BASE + '/usuarios/<uid>/correos', methods=['PUT','POST','OPTIONS'])
+@jsonapi
+def agregar_correo(uid=None):
+    datos = request.get_json()
+    logging.debug(datos)
+    s = Session()
+    try:
+        r = SilegModel.agregarCorreo(s, uid, datos['correo'])
+        return r
+
+    except Exception as e:
+        logging.exception(e)
+    finally:
+        s.close()
+
 @app.route(API_BASE + '/usuarios/<uid>/designaciones', methods=['GET'])
 @jsonapi
 def obtener_designaciones_por_usuario(uid=None):
@@ -61,7 +76,7 @@ def generar_clave(uid):
 def verificarDisponibilidadCorreo(cuenta=None):
     return SilegModel.verificarDisponibilidadCorreo(cuenta)
 
-@app.route(API_BASE + '/designaciones/', methods=['GET', 'POST'])
+@app.route(API_BASE + '/designaciones/', methods=['GET'])
 @jsonapi
 def designaciones():
     offset = request.args.get('offset',None,int)
