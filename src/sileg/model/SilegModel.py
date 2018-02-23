@@ -60,6 +60,21 @@ class SilegModel:
         return r
 
     @classmethod
+    def api_put(cls, api, data=None, token=None):
+        if not token:
+            token = cls._get_token()
+
+        ''' se deben cheqeuar intentos de login, y disparar : SeguridadError en el caso de que se haya alcanzado el máximo de intentos '''
+        headers = {
+            'Authorization': 'Bearer {}'.format(token)
+        }
+        logging.debug(api)
+        logging.debug(data)
+        r = requests.put(api, verify=cls.verify, headers=headers, json=data)
+        logging.debug(r)
+        return r
+
+    @classmethod
     def api_delete(cls, api, token=None):
         if not token:
             token = cls._get_token()
@@ -116,7 +131,7 @@ class SilegModel:
 
     @classmethod
     def crearUsuario(cls, usuario):
-        query = cls.usuarios_url + '/usuarios/{}'.format(uid)
+        query = cls.usuarios_url + '/usuarios'
         r = cls.api_put(query, data=usuario)
         if not r.ok:
             raise Exception(r.text)

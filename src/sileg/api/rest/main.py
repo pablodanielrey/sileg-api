@@ -37,10 +37,15 @@ def usuarios(uid=None):
         fecha = parser.parse(fecha_str) if fecha_str else None
         return SilegModel.usuarios(search=search, retornarClave=c, offset=offset, limit=limit, fecha=fecha)
 
-@app.route(API_BASE + '/usuarios', methods=['PUT','POST'])
+@app.route(API_BASE + '/usuarios', methods=['PUT','POST','OPTIONS'])
 @jsonapi
 def crear_usuario():
+    if request.method == 'OPTIONS':
+        return {'ok':True}
     usuario = request.get_json()
+    if not usuario:
+        raise Exception('usuario == None')
+    logging.debug(usuario)
     return SilegModel.crearUsuario(usuario)
 
 
