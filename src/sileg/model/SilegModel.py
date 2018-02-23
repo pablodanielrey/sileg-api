@@ -115,6 +115,24 @@ class SilegModel:
         return r.json()
 
     @classmethod
+    def crearUsuario(cls, usuario):
+        query = cls.usuarios_url + '/usuarios/{}'.format(uid)
+        r = cls.api_put(query, data=usuario)
+        if not r.ok:
+            raise Exception(r.text)
+        logging.info(r.json())
+        return r.json()
+
+    @classmethod
+    def actualizarUsuario(cls, uid, usuario):
+        query = cls.usuarios_url + '/usuarios/{}'.format(uid)
+        r = cls.api_post(query, data=usuario)
+        if not r.ok:
+            raise Exception(r.text)
+        logging.info(r.json())
+        return r.json()
+
+    @classmethod
     def usuario(cls, uid, retornarClave=False):
         query = cls.usuarios_url + '/usuarios/' + uid
         query = query + '?c=True' if retornarClave else query

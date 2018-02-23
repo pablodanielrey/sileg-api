@@ -22,8 +22,8 @@ register_encoder(app)
 
 API_BASE = os.environ['API_BASE']
 
-@app.route(API_BASE + '/usuarios/', methods=['GET', 'POST', 'OPTIONS'], defaults={'uid':None})
-@app.route(API_BASE + '/usuarios/<uid>', methods=['GET', 'POST', 'OPTIONS'])
+@app.route(API_BASE + '/usuarios/', methods=['GET', 'OPTIONS'], defaults={'uid':None})
+@app.route(API_BASE + '/usuarios/<uid>', methods=['GET', 'OPTIONS'])
 @jsonapi
 def usuarios(uid=None):
     search = request.args.get('q',None)
@@ -36,6 +36,20 @@ def usuarios(uid=None):
         fecha_str = request.args.get('f', None)
         fecha = parser.parse(fecha_str) if fecha_str else None
         return SilegModel.usuarios(search=search, retornarClave=c, offset=offset, limit=limit, fecha=fecha)
+
+@app.route(API_BASE + '/usuarios', methods=['PUT','POST'])
+@jsonapi
+def crear_usuario():
+    usuario = request.get_json()
+    return SilegModel.crearUsuario(usuario)
+
+
+@app.route(API_BASE + '/usuarios/<uid>', methods=['POST'])
+@jsonapi
+def actualizar_usuario(uid):
+    usuario = request.get_json()
+    return SilegModel.actualizarUsuario(uid, usuario)
+
 
 @app.route(API_BASE + '/usuarios/<uid>/correos/<cid>', methods=['DELETE'])
 @app.route(API_BASE + '/correos/<cid>', methods=['DELETE'])
