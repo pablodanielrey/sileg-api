@@ -263,8 +263,14 @@ class SilegModel:
         cls._chequearParam('correo', pedido)
 
         ''' chequeo que la clave del usuario tenga mas de 8 caracteres '''
-        datos = cls.usuario(session, pedido['usuario_id'])
-        datos['usuario'].usuario
+        datos = cls.usuario(session, pedido['usuario_id'], retornarClave=True)
+        assert 'claves' in datos['usuario']
+        assert datos['usuario']['claves'] is not None
+        for c in datos['usuarios']['claves']:
+            if len(c['clave']) >= 8:
+                break
+        else:
+            raise Exception('La clave no cumple los requisitos mínimos')
 
 
         ''' genero el correo '''
