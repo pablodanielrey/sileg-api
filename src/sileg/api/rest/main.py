@@ -41,7 +41,6 @@ def usuarios(uid=None):
             fecha_str = request.args.get('f', None)
             fecha = parser.parse(fecha_str) if fecha_str else None
             r = SilegModel.usuarios(session=s, search=search, retornarClave=c, offset=offset, limit=limit, fecha=fecha)
-        s.commit()
         return r
     except Exception as e:
         logging.exception(e)
