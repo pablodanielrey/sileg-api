@@ -145,7 +145,7 @@ def designaciones():
     historico = request.args.get('h',False,bool)
     s = Session()
     try:
-        designaciones = SilegModel.designaciones(offset=offset, limit=limit, lugar=lugar, persona=persona, historico=historico)
+        designaciones = SilegModel.designaciones(s,offset=offset, limit=limit, lugar=lugar, persona=persona, historico=historico)
         designaciones.append('cantidad:{}'.format(len(designaciones)))
         return designaciones
     except Exception as e:
