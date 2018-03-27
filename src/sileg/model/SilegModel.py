@@ -1,5 +1,5 @@
 from sqlalchemy import or_
-from sqlalchemy.orm import joinedload, with_polymorphic
+from sqlalchemy.orm import joinedload, with_polymorphic, selectin_polymorphic
 import datetime
 import requests
 import os
@@ -356,6 +356,16 @@ class SilegModel:
             ''' TODO: no se como sacar la subclase Catedra de la consulta. analizar otras posibilidades. ahora esta filtrado '''
             q = session.query(lugares).filter(lugares.Catedra.id == None, lugares.nombre.op('~*')(search))
         return q.all()
+
+    @classmethod
+    def lugar(cls, session, lid):
+
+        query = session.query(Lugar).options(
+            selectin_polymorphic(Lugar, [Direccion,Escuela,LugarDictado,Secretaria,Instituto,Prosecretaria,Maestria,Catedra]),
+            joinedload(Catedra.materia)
+        )
+        return query.filter(Lugar.id == lid).one_or_none()
+
 
     @classmethod
     def departamentos(cls, session):

@@ -145,7 +145,7 @@ def designaciones():
     historico = request.args.get('h',False,bool)
     s = Session()
     try:
-        designaciones = SilegModel.designaciones(session=s, offset=offset, limit=limit, lugar=lugar, persona=persona, historico=historico)
+        designaciones = SilegModel.designaciones(offset=offset, limit=limit, lugar=lugar, persona=persona, historico=historico)
         designaciones.append('cantidad:{}'.format(len(designaciones)))
         return designaciones
     except Exception as e:
@@ -213,18 +213,22 @@ def cargos():
         s.close()
 
 
-@app.route(API_BASE + '/lugares/', methods=['GET','OPTIONS'])
+@app.route(API_BASE + '/lugares/', methods=['GET','OPTIONS'], defaults={'lid':None})
+@app.route(API_BASE + '/lugares/<lid>', methods=['GET','OPTIONS'])
 @jsonapi
-def lugares():
+def lugares(lid=None):
     if request.method == 'OPTIONS':
         return 204
     s = Session()
     try:
-        search = request.args.get('q')
-        lugares = SilegModel.lugares(session=s, search=search)
-        catedras = SilegModel.obtener_catedras_por_nombre(session=s, search=search)
-        lugares.extend(catedras)
-        return lugares
+        if lid:
+            return SilegModel.lugar(s, lid)
+        else:
+            search = request.args.get('q')
+            lugares = SilegModel.lugares(session=s, search=search)
+            catedras = SilegModel.obtener_catedras_por_nombre(session=s, search=search)
+            lugares.extend(catedras)
+            return lugares
     except Exception as e:
         logging.exception(e)
         raise e
