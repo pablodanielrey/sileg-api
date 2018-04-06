@@ -26,6 +26,8 @@ API_BASE = os.environ['API_BASE']
 @app.route(API_BASE + '/usuarios/<uid>', methods=['GET', 'OPTIONS'])
 @jsonapi
 def usuarios(uid=None):
+    if request.method == 'OPTIONS':
+        return 204
     search = request.args.get('q',None)
     offset = request.args.get('offset',None,int)
     limit = request.args.get('limit',None,int)
@@ -37,11 +39,11 @@ def usuarios(uid=None):
         fecha = parser.parse(fecha_str) if fecha_str else None
         return SilegModel.usuarios(search=search, retornarClave=c, offset=offset, limit=limit, fecha=fecha)
 
-@app.route(API_BASE + '/usuarios', methods=['PUT','POST','OPTIONS'])
+@app.route(API_BASE + '/usuarios', methods=['PUT','POST'])
 @jsonapi
 def crear_usuario():
     if request.method == 'OPTIONS':
-        return {'ok':True}
+        return 204
     usuario = request.get_json()
     if not usuario:
         raise Exception('usuario == None')
