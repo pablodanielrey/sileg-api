@@ -32,12 +32,21 @@ def usuarios(uid=None):
     offset = request.args.get('offset',None,int)
     limit = request.args.get('limit',None,int)
     c = request.args.get('c',False,bool)
-    if uid:
-        return SilegModel.usuario(uid, retornarClave=c)
-    else:
-        fecha_str = request.args.get('f', None)
-        fecha = parser.parse(fecha_str) if fecha_str else None
-        return SilegModel.usuarios(search=search, retornarClave=c, offset=offset, limit=limit, fecha=fecha)
+    s = Session()
+    try:
+        r = None
+        if uid:
+            r = SilegModel.usuario(s, uid, retornarClave=c)
+        else:
+            fecha_str = request.args.get('f', None)
+            fecha = parser.parse(fecha_str) if fecha_str else None
+            r = SilegModel.usuarios(session=s, search=search, retornarClave=c, offset=offset, limit=limit, fecha=fecha)
+        return r
+    except Exception as e:
+        logging.exception(e)
+        raise e
+    finally:
+        s.close()
 
 @app.route(API_BASE + '/usuarios', methods=['PUT','POST'])
 @jsonapi
@@ -51,22 +60,31 @@ def crear_usuario():
     return SilegModel.crearUsuario(usuario)
 
 
-@app.route(API_BASE + '/usuarios/<uid>', methods=['POST'])
+@app.route(API_BASE + '/usuarios/<uid>', methods=['POST','OPTIONS'])
 @jsonapi
 def actualizar_usuario(uid):
+    if request.method == 'OPTIONS':
+        return 204
     usuario = request.get_json()
+    assert uid is not None
+    assert usuario is not None
     return SilegModel.actualizarUsuario(uid, usuario)
 
 
-@app.route(API_BASE + '/usuarios/<uid>/correos/<cid>', methods=['DELETE'])
-@app.route(API_BASE + '/correos/<cid>', methods=['DELETE'])
+@app.route(API_BASE + '/usuarios/<uid>/correos/<cid>', methods=['DELETE','OPTIONS'])
+@app.route(API_BASE + '/correos/<cid>', methods=['DELETE','OPTIONS'])
 @jsonapi
 def eliminar_correo(uid=None, cid=None):
+    if request.method == 'OPTIONS':
+        return 204
+    assert cid is not None
     return SilegModel.eliminarCorreo(uid, cid)
 
 @app.route(API_BASE + '/usuarios/<uid>/correos', methods=['PUT','POST','OPTIONS'])
 @jsonapi
 def agregar_correo(uid=None):
+    if request.method == 'OPTIONS':
+        return 204
     datos = request.get_json()
     logging.debug(datos)
     s = Session()
@@ -76,42 +94,71 @@ def agregar_correo(uid=None):
 
     except Exception as e:
         logging.exception(e)
+        raise e
     finally:
         s.close()
 
-@app.route(API_BASE + '/usuarios/<uid>/designaciones', methods=['GET'])
+@app.route(API_BASE + '/usuarios/<uid>/designaciones', methods=['GET','OPTIONS'])
 @jsonapi
 def obtener_designaciones_por_usuario(uid=None):
-    designaciones = SilegModel.designaciones(persona=uid, historico=True, expand=True)
-    logging.debug(designaciones)
-    return designaciones
+    if request.method == 'OPTIONS':
+        return 204
+    assert uid is not None
+    s = Session()
+    try:
+        designaciones = SilegModel.designaciones(session=s, persona=uid, historico=True, expand=True)
+        logging.debug(designaciones)
+        return designaciones
+    except Exception as e:
+        logging.exception(e)
+        raise e
+    finally:
+        s.close()
 
 
-@app.route(API_BASE + '/generar_clave/<uid>', methods=['GET'])
+@app.route(API_BASE + '/generar_clave/<uid>', methods=['GET','OPTIONS'])
 @jsonapi
 def generar_clave(uid):
+    if request.method == 'OPTIONS':
+        return 204
+    assert uid is not None
     return SilegModel.generarClave(uid)
 
-@app.route(API_BASE + '/correo/<cuenta>', methods=['GET'])
+@app.route(API_BASE + '/correo/<cuenta>', methods=['GET','OPTIONS'])
 @jsonapi
 def verificarDisponibilidadCorreo(cuenta=None):
+    if request.method == 'OPTIONS':
+        return 204
+    assert cuenta is not None
+    assert '@' in cuenta
     return SilegModel.verificarDisponibilidadCorreo(cuenta)
 
-@app.route(API_BASE + '/designaciones/', methods=['GET'])
+@app.route(API_BASE + '/designaciones/', methods=['GET','OPTIONS'])
 @jsonapi
 def designaciones():
+    if request.method == 'OPTIONS':
+        return 204
     offset = request.args.get('offset',None,int)
     limit = request.args.get('limit',None,int)
     lugar = request.args.get('l',None)
     persona = request.args.get('p',None)
     historico = request.args.get('h',False,bool)
-    designaciones = SilegModel.designaciones(offset=offset, limit=limit, lugar=lugar, persona=persona, historico=historico)
-    designaciones.append('cantidad:{}'.format(len(designaciones)))
-    return designaciones
+    s = Session()
+    try:
+        designaciones = SilegModel.designaciones(s,offset=offset, limit=limit, lugar=lugar, persona=persona, historico=historico)
+        designaciones.append('cantidad:{}'.format(len(designaciones)))
+        return designaciones
+    except Exception as e:
+        logging.exception(e)
+        raise e
+    finally:
+        s.close()
 
-@app.route(API_BASE + '/designacion', methods=['POST'])
+@app.route(API_BASE + '/designacion', methods=['POST','OPTIONS'])
 @jsonapi
 def crearDesignacion():
+    if request.method == 'OPTIONS':
+        return 204
     ''' crea una nueva designacion, solo permite crear cumplimiento de funciones '''
     pedido = request.get_json();
     logging.debug(pedido)
@@ -131,54 +178,110 @@ def crearDesignacion():
         s.close()
 
 
-@app.route(API_BASE + '/prorrogas/<designacion>', methods=['GET', 'POST'])
+@app.route(API_BASE + '/prorrogas/<designacion>', methods=['GET','OPTIONS'])
 @jsonapi
 def prorrogas(designacion):
+    if request.method == 'OPTIONS':
+        return 204
     offset = request.args.get('offset',None,int)
     limit = request.args.get('limit',None,int)
     lugar = request.args.get('l',None)
     persona = request.args.get('p',None)
     historico = request.args.get('h',False,bool)
-    return SilegModel.prorrogas(offset=offset, limit=limit, designacion=designacion, lugar=lugar, persona=persona, historico=historico)
-
-@app.route(API_BASE + '/cargos/', methods=['GET', 'POST'])
-@jsonapi
-def cargos():
-    return SilegModel.cargos()
-
-@app.route(API_BASE + '/lugares/', methods=['GET'])
-@jsonapi
-def lugares():
     s = Session()
     try:
-        search = request.args.get('q')
-        lugares = SilegModel.lugares(session=s, search=search)
-        catedras = SilegModel.obtener_catedras_por_nombre(session=s, search=search)
-        lugares.extend(catedras)
-        return lugares
+        return SilegModel.prorrogas(session=s, offset=offset, limit=limit, designacion=designacion, lugar=lugar, persona=persona, historico=historico)
+    except Exception as e:
+        logging.exception(e)
+        raise e
+
     finally:
         s.close()
 
-@app.route(API_BASE + '/departamentos/', methods=['GET', 'POST'])
+@app.route(API_BASE + '/cargos/', methods=['GET','OPTIONS'])
+@jsonapi
+def cargos():
+    if request.method == 'OPTIONS':
+        return 204
+    s = Session()
+    try:
+        return SilegModel.cargos(s)
+    except Exception as e:
+        logging.exception(e)
+        raise e
+    finally:
+        s.close()
+
+
+@app.route(API_BASE + '/lugares/', methods=['GET','OPTIONS'], defaults={'lid':None})
+@app.route(API_BASE + '/lugares/<lid>', methods=['GET','OPTIONS'])
+@jsonapi
+def lugares(lid=None):
+    if request.method == 'OPTIONS':
+        return 204
+    s = Session()
+    try:
+        if lid:
+            return SilegModel.lugar(s, lid)
+        else:
+            search = request.args.get('q')
+            lugares = SilegModel.lugares(session=s, search=search)
+            catedras = SilegModel.obtener_catedras_por_nombre(session=s, search=search)
+            lugares.extend(catedras)
+            return lugares
+    except Exception as e:
+        logging.exception(e)
+        raise e
+    finally:
+        s.close()
+
+@app.route(API_BASE + '/departamentos/', methods=['GET', 'OPTIONS'])
 @jsonapi
 def departamentos():
-    return SilegModel.departamentos()
+    if request.method == 'OPTIONS':
+        return 204
+    s = Session()
+    try:
+        return SilegModel.departamentos(s)
+    except Exception as e:
+        logging.exception(e)
+        raise e
+    finally:
+        s.close()
 
-@app.route(API_BASE + '/materias/', methods=['GET', 'POST'], defaults={'materia':None})
-@app.route(API_BASE + '/materias/<materia>', methods=['GET', 'POST'])
+@app.route(API_BASE + '/materias/', methods=['GET', 'OPTIONS'], defaults={'materia':None})
+@app.route(API_BASE + '/materias/<materia>', methods=['GET', 'OPTIONS'])
 @jsonapi
 def materias(materia=None):
+    if request.method == 'OPTIONS':
+        return 204
     catedra = request.args.get('c',None)
     departamento = request.args.get('d',None)
-    return SilegModel.materias(materia=materia, catedra=catedra, departamento=departamento)
+    s = Session()
+    try:
+        return SilegModel.materias(session=s, materia=materia, catedra=catedra, departamento=departamento)
+    except Exception as e:
+        logging.exception(e)
+        raise e
+    finally:
+        s.close()
 
-@app.route(API_BASE + '/catedras/', methods=['GET', 'POST'], defaults={'catedra':None})
-@app.route(API_BASE + '/catedras/<catedra>', methods=['GET', 'POST'])
+@app.route(API_BASE + '/catedras/', methods=['GET', 'OPTIONS'], defaults={'catedra':None})
+@app.route(API_BASE + '/catedras/<catedra>', methods=['GET', 'OPTIONS'])
 @jsonapi
 def catedras(catedra=None):
+    if request.method == 'OPTIONS':
+        return 204
     materia = request.args.get('m',None)
     departamento = request.args.get('d',None)
-    return SilegModel.catedras(catedra=catedra, materia=materia, departamento=departamento)
+    s = Session()
+    try:
+        return SilegModel.catedras(session=s, catedra=catedra, materia=materia, departamento=departamento)
+    except Exception as e:
+        logging.exception(e)
+        raise e
+    finally:
+        s.close()
 
 @app.after_request
 def cors_after_request(response):

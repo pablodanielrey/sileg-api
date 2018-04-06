@@ -1,5 +1,5 @@
 from sqlalchemy import or_
-from sqlalchemy.orm import joinedload, with_polymorphic
+from sqlalchemy.orm import joinedload, with_polymorphic, selectin_polymorphic
 import datetime
 import requests
 import os
@@ -97,6 +97,59 @@ class SilegModel:
         return r.json()
 
     @classmethod
+    def _agregarCorreo(cls, session, uid, correo):
+        ''' chequeo que la clave del usuario tenga mas de 8 caracteres '''
+        datos = cls.usuario(session, uid, retornarClave=True)
+        assert 'claves' in datos['usuario']
+        assert datos['usuario']['claves'] is not None
+        for c in datos['usuario']['claves']:
+            if len(c['clave']) >= 8:
+                break
+        else:
+            raise Exception('La clave no cumple los requisitos mínimos')
+
+        logging.debug('tiene designacion asi que se llama a la api de usuarios')
+        query = cls.usuarios_url + '/usuarios/{}/correo'.format(uid)
+        r = cls.api_post(query, data={'correo':correo})
+        if not r.ok:
+            raise Exception(r.text)
+        logging.info(r.json())
+        return r.json()
+
+    @staticmethod
+    def _chequearParam(param, d):
+        assert param in d
+        assert d[param] is not None
+
+    @classmethod
+    def crearDesignacionCumpliendoFunciones(cls, session, pedido):
+        cls._chequearParam('usuario_id', pedido)
+        cls._chequearParam('correo', pedido)
+        cls._chequearParam('lugar_id', pedido)
+
+        uid = pedido['usuario_id']
+        correo = pedido['correo']
+        cls._agregarCorreo(session, uid, correo)
+
+        ''' genero la designacion con los datos pasados '''
+        cf = CumpleFunciones()
+        u = session.query(Usuario).filter(Usuario.id == uid).one_or_none()
+        if not u:
+            u = Usuario()
+            u.id = uid
+            session.add(u)
+
+        d = Designacion()
+        d.id = str(uuid.uuid4())
+        d.tipo = 'original'
+        d.desde = datetime.datetime.now()
+        d.usuario_id = u.id
+        d.cargo_id = cf.id
+        d.lugar_id = pedido['lugar_id']
+        session.add(d)
+        return d
+
+    @classmethod
     def verificarDisponibilidadCorreo(cls, cuenta):
         query = cls.usuarios_url + '/correo/' + cuenta
         r = cls.api(query)
@@ -110,15 +163,7 @@ class SilegModel:
         ''' verifico que tenga designacion '''
         if session.query(Designacion).filter(Designacion.usuario_id == uid).count() <= 0:
             raise Exception('no tiene designacion')
-
-        logging.debug('tiene designacion asi que se llama a la api de usuarios')
-
-        query = cls.usuarios_url + '/usuarios/{}/correo'.format(uid)
-        r = cls.api_post(query, data={'correo':correo})
-        if not r.ok:
-            raise Exception(r.text)
-        logging.info(r.json())
-        return r.json()
+        return cls._agregarCorreo(session, uid, correo)
 
     @classmethod
     def eliminarCorreo(cls, uid, cid):
@@ -148,7 +193,7 @@ class SilegModel:
         return r.json()
 
     @classmethod
-    def usuario(cls, uid, retornarClave=False):
+    def usuario(cls, session, uid, retornarClave=False):
         query = cls.usuarios_url + '/usuarios/' + uid
         query = query + '?c=True' if retornarClave else query
         r = cls.api(query)
@@ -156,25 +201,20 @@ class SilegModel:
             return []
 
         usr = r.json()
-        session = Session()
-        try:
-            susr = session.query(Usuario).filter(Usuario.id == uid).one_or_none()
-            if susr:
-                return {
-                    'usuario': usr,
-                    'sileg': susr
-                }
-            else:
-                return {
-                    'usuario': usr
-                }
-
-        finally:
-            session.close()
+        susr = session.query(Usuario).filter(Usuario.id == uid).one_or_none()
+        if susr:
+            return {
+                'usuario': usr,
+                'sileg': susr
+            }
+        else:
+            return {
+                'usuario': usr
+            }
 
 
     @classmethod
-    def usuarios(cls, search=None, retornarClave=False, fecha=None, offset=None, limit=None):
+    def usuarios(cls, session, search=None, retornarClave=False, fecha=None, offset=None, limit=None):
         logging.debug(fecha)
         query = cls.usuarios_url + '/usuarios/'
         params = {}
@@ -196,42 +236,37 @@ class SilegModel:
 
         usrs = r.json()
         idsProcesados = {}
-        session = Session()
-        try:
-            rusers = []
-            for u in usrs:
-                uid = u['id']
-                idsProcesados[uid] = u
-                surs = session.query(Usuario).filter(Usuario.id == uid).one_or_none()
-                rusers.append({
-                    'usuario': u,
-                    'sileg': surs
-                })
+        rusers = []
+        for u in usrs:
+            uid = u['id']
+            idsProcesados[uid] = u
+            surs = session.query(Usuario).filter(Usuario.id == uid).one_or_none()
+            rusers.append({
+                'usuario': u,
+                'sileg': surs
+            })
 
-            if not fecha:
-                return rusers
-
-            """ tengo en cuenta los que se pudieron haber agregado al sileg despues """
-            token = cls._get_token()
-            q = None
-            q = session.query(Usuario).filter(or_(Usuario.creado >= fecha, Usuario.actualizado >= fecha)).all()
-            for u in q:
-                if u.id not in idsProcesados.keys():
-                    query = '{}/{}/{}'.format(cls.usuarios_url, 'usuarios', u.id)
-                    r = cls.api(query, params={'c':True}, token=token)
-                    if not r.ok:
-                        continue
-                    usr = r.json()
-                    if usr:
-                        rusers.append({
-                            'agregado': True,
-                            'usuario': usr,
-                            'sileg': u
-                        })
+        if not fecha:
             return rusers
 
-        finally:
-            session.close()
+        """ tengo en cuenta los que se pudieron haber agregado al sileg despues """
+        token = cls._get_token()
+        q = None
+        q = session.query(Usuario).filter(or_(Usuario.creado >= fecha, Usuario.actualizado >= fecha)).all()
+        for u in q:
+            if u.id not in idsProcesados.keys():
+                query = '{}/{}/{}'.format(cls.usuarios_url, 'usuarios', u.id)
+                r = cls.api(query, params={'c':True}, token=token)
+                if not r.ok:
+                    continue
+                usr = r.json()
+                if usr:
+                    rusers.append({
+                        'agregado': True,
+                        'usuario': usr,
+                        'sileg': u
+                    })
+        return rusers
 
     @classmethod
     def _agregar_filtros_comunes(cls, q, persona=None, lugar=None, offset=None, limit=None):
@@ -242,68 +277,32 @@ class SilegModel:
         return q
 
     @classmethod
-    def prorrogas(cls, designacion,
+    def prorrogas(cls, session, designacion,
                     persona=None,
                     lugar=None,
                     historico=False,
                     offset=None, limit=None):
 
-        session = Session()
-        try:
-            q = Designacion.find(session)
-            q = q.filter(Designacion.designacion_id == designacion, Designacion.tipo == 'prorroga')
+        q = Designacion.find(session)
+        q = q.filter(Designacion.designacion_id == designacion, Designacion.tipo == 'prorroga')
 
-            if not historico:
-                ahora = datetime.datetime.now().date()
-                q = q.filter(or_(Designacion.hasta == None, Designacion.hasta >= ahora))
+        if not historico:
+            ahora = datetime.datetime.now().date()
+            q = q.filter(or_(Designacion.hasta == None, Designacion.hasta >= ahora))
 
-            q = cls._agregar_filtros_comunes(q, persona, lugar, offset, limit)
-            q = q.options(joinedload('usuario'), joinedload('lugar'), joinedload('cargo'))
-            q = q.order_by(Designacion.desde.desc())
-            return q.all()
-
-        finally:
-            session.close()
-
-
-    @classmethod
-    def crearDesignacionCumpliendoFunciones(cls, session, pedido):
-
-        ''' genero el correo '''
-        query = cls.usuarios_url + '/usuarios/{}/correo'.format(pedido['usuario_id'])
-        r = cls.api_post(query, data={'correo':pedido['correo']})
-        if not r.ok:
-            raise Exception(r.text)
-        logging.info(r.json())
-
-        ''' genero la designacion con los datos pasados '''
-        cf = CumpleFunciones()
-
-        u = session.query(Usuario).filter(Usuario.id == pedido['usuario_id']).one_or_none()
-        if not u:
-            u = Usuario()
-            u.id = pedido['usuario_id']
-            session.add(u)
-
-        d = Designacion()
-        d.id = str(uuid.uuid4())
-        d.tipo = 'original'
-        d.desde = datetime.datetime.now()
-        d.usuario_id = u.id
-        d.cargo_id = cf.id
-        d.lugar_id = pedido['lugar_id']
-        session.add(d)
-
-        return d
+        q = cls._agregar_filtros_comunes(q, persona, lugar, offset, limit)
+        q = q.options(joinedload('usuario'), joinedload('lugar'), joinedload('cargo'))
+        q = q.order_by(Designacion.desde.desc())
+        return q.all()
 
 
     @classmethod
     def designaciones(cls,
+                    session,
                     offset=None, limit=None,
                     persona=None,
                     lugar=None,
                     historico=False, expand=False):
-        session = Session()
 
         q = Designacion.find(session)
         q = q.filter(Designacion.designacion_id == None, or_(Designacion.tipo == 'original', Designacion.tipo == None))
@@ -322,12 +321,8 @@ class SilegModel:
         return q.all()
 
     @classmethod
-    def cargos(cls):
-        session = Session()
-        try:
-            return session.query(Cargo).all()
-        finally:
-            session.close()
+    def cargos(cls, session):
+        return session.query(Cargo).all()
 
 
     @classmethod
@@ -363,34 +358,31 @@ class SilegModel:
         return q.all()
 
     @classmethod
-    def departamentos(cls):
-        session = Session()
-        try:
-            return Departamento.find(session).all()
-        finally:
-            session.close()
+    def lugar(cls, session, lid):
+
+        query = session.query(Lugar).options(
+            selectin_polymorphic(Lugar, [Direccion,Escuela,LugarDictado,Secretaria,Instituto,Prosecretaria,Maestria,Catedra]),
+            joinedload(Catedra.materia)
+        )
+        return query.filter(Lugar.id == lid).one_or_none()
 
 
     @classmethod
-    def materias(cls, materia=None, catedra=None, departamento=None):
-        session = Session()
-        try:
-            q = Materia.find(session)
-            q = q.filter(Materia.id == materia) if materia else q
-            q = q.join(Catedra).filter(Catedra.id == catedra) if catedra else q
-            q = q.join(Catedra).filter(Catedra.padre_id == departamento) if departamento else q
-            return q.all()
-        finally:
-            session.close()
+    def departamentos(cls, session):
+        return Departamento.find(session).all()
 
     @classmethod
-    def catedras(cls, catedra=None, materia=None, departamento=None):
-        session = Session()
-        try:
-            q = Catedra.find(session)
-            q = q.filter(Catedra.id == catedra) if catedra else q
-            q = q.filter(Catedra.materia_id == materia) if materia else q
-            q = q.filter(Catedra.padre_id == departamento) if departamento else q
-            return q.options(joinedload('materia'), joinedload('padre')).all()
-        finally:
-            session.close()
+    def materias(cls, session, materia=None, catedra=None, departamento=None):
+        q = Materia.find(session)
+        q = q.filter(Materia.id == materia) if materia else q
+        q = q.join(Catedra).filter(Catedra.id == catedra) if catedra else q
+        q = q.join(Catedra).filter(Catedra.padre_id == departamento) if departamento else q
+        return q.all()
+
+    @classmethod
+    def catedras(cls, session, catedra=None, materia=None, departamento=None):
+        q = Catedra.find(session)
+        q = q.filter(Catedra.id == catedra) if catedra else q
+        q = q.filter(Catedra.materia_id == materia) if materia else q
+        q = q.filter(Catedra.padre_id == departamento) if departamento else q
+        return q.options(joinedload('materia'), joinedload('padre')).all()
