@@ -212,6 +212,27 @@ def cargos():
     finally:
         s.close()
 
+@app.route(API_BASE + '/lugares', methods=['PUT','OPTIONS'])
+@jsonapi
+def crearLugar():
+    if request.method == 'OPTIONS':
+        return 204
+    ''' crea una nueva designacion, solo permite crear cumplimiento de funciones '''
+    lugar = request.get_json();
+    s = Session()
+    try:
+        l = SilegModel.crearLugar(s, lugar)
+        s.commit()
+        logging.debug(json.dumps(l))
+        return l
+
+    except Exception as e:
+        s.rollback()
+        logging.exception(e)
+        raise e
+
+    finally:
+        s.close()
 
 @app.route(API_BASE + '/lugares/', methods=['GET','OPTIONS'], defaults={'lid':None})
 @app.route(API_BASE + '/lugares/<lid>', methods=['GET','OPTIONS'])

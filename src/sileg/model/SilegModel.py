@@ -1,4 +1,4 @@
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 from sqlalchemy.orm import joinedload, with_polymorphic, selectin_polymorphic
 import datetime
 import requests
@@ -386,3 +386,33 @@ class SilegModel:
         q = q.filter(Catedra.materia_id == materia) if materia else q
         q = q.filter(Catedra.padre_id == departamento) if departamento else q
         return q.options(joinedload('materia'), joinedload('padre')).all()
+
+    @classmethod
+    def crearLugar(cls, session, lugar):
+        cls._chequearParam('nombre', lugar)
+        cls._chequearParam('tipo', lugar)
+
+        # verifico que no exista el lugar
+        lugares = with_polymorphic(Lugar,[
+            Direccion,
+            Escuela,
+            LugarDictado,
+            Secretaria,
+            Instituto,
+            Prosecretaria,
+            Maestria,
+            Catedra
+        ])
+        nombre = lugar["nombre"].strip()
+        r = session.query(lugares).filter(func.lower(lugares.nombre) == func.lower(nombre)).first()
+        if r is not None:
+            raise Exception("Error, el nombre ya existe")
+        l = Lugar(nombre)
+        l.id = str(uuid.uuid4())
+        l.descripcion = lugar["descripcion"]
+        l.tipo = lugar["tipo"]
+        l.numero = lugar["numero"]
+        l.telefono = lugar["telefono"]
+        l.correo = lugar["email"]
+        session.add(l)
+        return l

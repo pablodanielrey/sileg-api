@@ -7,6 +7,10 @@ class Lugar(Base):
 
     nombre = Column(String)
     tipo = Column(String)
+    descripcion = Column(String)
+    numero = Column(String)
+    telefono = Column(String)
+    correo = Column(String)
 
     padre_id = Column(String, ForeignKey('lugar.id'))
     hijos = relationship("Lugar",  foreign_keys=[padre_id], backref=backref('padre', remote_side="Lugar.id"))
@@ -129,4 +133,9 @@ class Seminario(Lugar):
 class Universidad(Lugar):
     __mapper_args__ = {
         'polymorphic_identity':'universidad'
+    }
+
+class Oficina(Lugar):
+    __mapper_args__ = {
+        'polymorphic_identity':'oficina'
     }
