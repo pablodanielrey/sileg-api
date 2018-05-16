@@ -236,7 +236,7 @@ def crearLugar():
 
 @app.route(API_BASE + '/lugares/<lid>', methods=['POST','OPTIONS'])
 @jsonapi
-def modificarLugar(lid=None):
+def modificar_lugar(lid=None):
     if request.method == 'OPTIONS':
         return 204
     lugar = request.get_json()
@@ -244,6 +244,33 @@ def modificarLugar(lid=None):
     try:
         SilegModel.modificarLugar(session, lugar)
         session.commit()
+    finally:
+        session.close()
+
+@app.route(API_BASE + '/lugares/<lid>', methods=['DELETE'])
+@jsonapi
+def eliminar_lugar(lid):
+    assert lid is not None
+    session = Session()
+    try:
+        fecha = SilegModel.eliminarLugar(session, lid)
+        session.commit()
+        return fecha
+    finally:
+        session.close()
+
+@app.route(API_BASE + '/lugares/<lid>/restaurar', methods=['GET', 'OPTIONS'])
+@jsonapi
+def restaurar_lugar(lid):
+    assert lid is not None
+    if request.method == 'OPTIONS':
+        return 204
+    session = Session()
+    try:
+        id = SilegModel.restaurarLugar(session, lid)
+        session.commit()
+        return id
+
     finally:
         session.close()
 

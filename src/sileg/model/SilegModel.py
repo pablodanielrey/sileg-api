@@ -404,9 +404,6 @@ class SilegModel:
             Catedra
         ])
         nombre = lugar["nombre"].strip()
-        r = session.query(lugares).filter(func.lower(lugares.nombre) == func.lower(nombre)).first()
-        if r is not None:
-            raise Exception("Error, el nombre ya existe")
         l = Lugar(nombre)
         l.id = str(uuid.uuid4())
         l.descripcion = lugar["descripcion"]
@@ -439,14 +436,45 @@ class SilegModel:
         if l is None:
             raise Exception("Error, no existe el lugar")
 
-        nombre = lugar["nombre"].strip()
-        r = session.query(lugares).filter(and_(lugares.id != lugar["id"], func.lower(lugares.nombre) == func.lower(nombre))).first()
-        if r is not None:
-            raise Exception("Error, el nombre ya existe")
-
-        l.nombre = nombre
+        l.nombre = lugar["nombre"].strip()
         l.descripcion = lugar["descripcion"]
         l.tipo = lugar["tipo"]
         l.numero = lugar["numero"]
         l.telefono = lugar["telefono"]
         l.correo = lugar["correo"]
+
+    @classmethod
+    def eliminarLugar(cls, session, lid):
+        lugares = with_polymorphic(Lugar,[
+            Direccion,
+            Escuela,
+            LugarDictado,
+            Secretaria,
+            Instituto,
+            Prosecretaria,
+            Maestria,
+            Catedra
+        ])
+
+        l = session.query(lugares).filter(lugares.id == lid).one()
+        l.eliminado = datetime.datetime.now()
+        return l.eliminado
+
+
+
+    @classmethod
+    def restaurarLugar(cls, session, lid):
+        lugares = with_polymorphic(Lugar,[
+            Direccion,
+            Escuela,
+            LugarDictado,
+            Secretaria,
+            Instituto,
+            Prosecretaria,
+            Maestria,
+            Catedra
+        ])
+
+        l = session.query(lugares).filter(lugares.id == lid).one()
+        l.eliminado = None
+        return l.id

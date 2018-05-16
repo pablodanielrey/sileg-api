@@ -1,7 +1,6 @@
-from sqlalchemy import Column, String, ForeignKey
+from sqlalchemy import Column, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, backref
 from model_utils import Base, generateId
-
 class Lugar(Base):
     __tablename__ = 'lugar'
 
@@ -11,6 +10,7 @@ class Lugar(Base):
     numero = Column(String)
     telefono = Column(String)
     correo = Column(String)
+    eliminado = Column('eliminado', DateTime)
 
     padre_id = Column(String, ForeignKey('lugar.id'))
     hijos = relationship("Lugar",  foreign_keys=[padre_id], backref=backref('padre', remote_side="Lugar.id"))
