@@ -234,6 +234,19 @@ def crearLugar():
     finally:
         s.close()
 
+@app.route(API_BASE + '/lugares/<lid>', methods=['POST','OPTIONS'])
+@jsonapi
+def modificarLugar(lid=None):
+    if request.method == 'OPTIONS':
+        return 204
+    lugar = request.get_json()
+    session = Session()
+    try:
+        SilegModel.modificarLugar(session, lugar)
+        session.commit()
+    finally:
+        session.close()
+
 @app.route(API_BASE + '/lugares/', methods=['GET','OPTIONS'], defaults={'lid':None})
 @app.route(API_BASE + '/lugares/<lid>', methods=['GET','OPTIONS'])
 @jsonapi

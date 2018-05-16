@@ -1,4 +1,4 @@
-from sqlalchemy import or_, func
+from sqlalchemy import or_,and_, func
 from sqlalchemy.orm import joinedload, with_polymorphic, selectin_polymorphic
 import datetime
 import requests
@@ -416,3 +416,37 @@ class SilegModel:
         l.correo = lugar["email"]
         session.add(l)
         return l
+
+    @classmethod
+    def modificarLugar(cls, session, lugar):
+        cls._chequearParam('nombre', lugar)
+        cls._chequearParam('tipo', lugar)
+        cls._chequearParam('id', lugar)
+
+        # verifico que no exista el lugar
+        lugares = with_polymorphic(Lugar,[
+            Direccion,
+            Escuela,
+            LugarDictado,
+            Secretaria,
+            Instituto,
+            Prosecretaria,
+            Maestria,
+            Catedra
+        ])
+
+        l = session.query(lugares).filter(lugares.id == lugar["id"]).one_or_none()
+        if l is None:
+            raise Exception("Error, no existe el lugar")
+
+        nombre = lugar["nombre"].strip()
+        r = session.query(lugares).filter(and_(lugares.id != lugar["id"], func.lower(lugares.nombre) == func.lower(nombre))).first()
+        if r is not None:
+            raise Exception("Error, el nombre ya existe")
+
+        l.nombre = nombre
+        l.descripcion = lugar["descripcion"]
+        l.tipo = lugar["tipo"]
+        l.numero = lugar["numero"]
+        l.telefono = lugar["telefono"]
+        l.correo = lugar["correo"]
