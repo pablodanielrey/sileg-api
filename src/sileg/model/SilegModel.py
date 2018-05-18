@@ -478,3 +478,19 @@ class SilegModel:
         l = session.query(lugares).filter(lugares.id == lid).one()
         l.eliminado = None
         return l.id
+
+    @classmethod
+    def obtenerDesignacionesLugar(cls, session, lid):
+        # obtengo el lugares
+        lugar = cls.lugar(session, lid)
+        # obtengo las designaciones del lugar
+        designaciones = []
+        desig = cls.designaciones(session=session, lugar=lid)
+        for d in desig:
+            query = cls.usuarios_url + '/usuarios/' + d.usuario_id
+            r = cls.api(query)
+            usr = r.json() if r.ok else None
+            designaciones.append({'designacion':d, 'usuario': usr})
+
+
+        return { 'lugar':lugar, 'designaciones': designaciones }

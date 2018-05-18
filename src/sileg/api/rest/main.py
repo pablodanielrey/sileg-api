@@ -274,6 +274,19 @@ def restaurar_lugar(lid):
     finally:
         session.close()
 
+@app.route(API_BASE + '/lugares/<lid>/designaciones', methods=['GET', 'OPTIONS'])
+@jsonapi
+def obtener_desginaciones_lugar(lid):
+    assert lid is not None
+    if request.method == 'OPTIONS':
+        return 204
+    session = Session()
+    try:
+        return SilegModel.obtenerDesignacionesLugar(session, lid)
+    finally:
+        session.close()
+
+
 @app.route(API_BASE + '/lugares/', methods=['GET','OPTIONS'], defaults={'lid':None})
 @app.route(API_BASE + '/lugares/<lid>', methods=['GET','OPTIONS'])
 @jsonapi
