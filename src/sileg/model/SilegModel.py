@@ -505,3 +505,12 @@ class SilegModel:
     def eliminarDesignacion(cls, session, id):
         l = session.query(Designacion).filter(Designacion.id == id).one()
         l.historico = True
+
+    @classmethod
+    def actualizarDesignacion(cls, session, id, designacion):
+        d = session.query(Designacion).filter(Designacion.id == id).one_or_none()
+        if d is None:
+            raise Exception("Error, no existe la designación")
+
+        d.desde = designacion["desde"]
+        d.cargo_id = designacion["cargo_id"]

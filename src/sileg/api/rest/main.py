@@ -177,6 +177,25 @@ def crearDesignacion():
     finally:
         s.close()
 
+@app.route(API_BASE + '/designacion/<did>', methods=['PUT','OPTIONS'])
+@jsonapi
+def modificar_designacion(did):
+    if request.method == 'OPTIONS':
+        return 204
+    designacion = request.get_json()
+    assert did is not None
+    assert designacion is not None
+    fecha_str = designacion["desde"]
+    designacion["desde"] = parser.parse(fecha_str) if fecha_str else None
+
+
+    session = Session()
+    try:
+        SilegModel.actualizarDesignacion(session, did, designacion)
+        session.commit()
+    finally:
+        session.close()
+
 @app.route(API_BASE + '/designacion/<did>', methods=['DELETE'])
 @jsonapi
 def eliminar_designacion(did):
