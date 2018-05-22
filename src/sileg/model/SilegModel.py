@@ -499,3 +499,9 @@ class SilegModel:
 
 
         return { 'lugar':lugar, 'designaciones': designaciones }
+
+
+    @classmethod
+    def eliminarDesignacion(cls, session, id):
+        l = session.query(Designacion).filter(Designacion.id == id).one()
+        l.historico = True

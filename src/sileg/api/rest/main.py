@@ -177,6 +177,18 @@ def crearDesignacion():
     finally:
         s.close()
 
+@app.route(API_BASE + '/designacion/<did>', methods=['DELETE'])
+@jsonapi
+def eliminar_designacion(did):
+    assert did is not None
+    logging.info("Eliminar designacion")
+    session = Session()
+    try:
+        SilegModel.eliminarDesignacion(session, did)
+        session.commit()
+        return True
+    finally:
+        session.close()
 
 @app.route(API_BASE + '/prorrogas/<designacion>', methods=['GET','OPTIONS'])
 @jsonapi
