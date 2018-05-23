@@ -164,6 +164,29 @@ def crearDesignacion():
     logging.debug(pedido)
     s = Session()
     try:
+        d = SilegModel.crearDesignacionCumpliendoFuncionesConCorreo(s, pedido)
+        s.commit()
+        logging.debug(json.dumps(d))
+        return d.id
+
+    except Exception as e:
+        s.rollback()
+        logging.exception(e)
+        raise e
+
+    finally:
+        s.close()
+
+@app.route(API_BASE + '/designacion-sin-correo', methods=['PUT','OPTIONS'])
+@jsonapi
+def crearDesignacionSinCorreo():
+    if request.method == 'OPTIONS':
+        return 204
+    ''' crea una nueva designacion, solo permite crear cumplimiento de funciones '''
+    pedido = request.get_json();
+    logging.debug(pedido)
+    s = Session()
+    try:
         d = SilegModel.crearDesignacionCumpliendoFunciones(s, pedido)
         s.commit()
         logging.debug(json.dumps(d))

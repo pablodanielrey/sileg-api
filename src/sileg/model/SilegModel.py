@@ -122,14 +122,19 @@ class SilegModel:
         assert d[param] is not None
 
     @classmethod
-    def crearDesignacionCumpliendoFunciones(cls, session, pedido):
-        cls._chequearParam('usuario_id', pedido)
+    def crearDesignacionCumpliendoFuncionesConCorreo(cls, session, pedido):
         cls._chequearParam('correo', pedido)
-        cls._chequearParam('lugar_id', pedido)
-
         uid = pedido['usuario_id']
         correo = pedido['correo']
         cls._agregarCorreo(session, uid, correo)
+        return cls.crearDesignacionCumpliendoFunciones(session, pedido)
+
+    @classmethod
+    def crearDesignacionCumpliendoFunciones(cls, session, pedido):
+        cls._chequearParam('usuario_id', pedido)
+        cls._chequearParam('lugar_id', pedido)
+
+        uid = pedido['usuario_id']
 
         ''' genero la designacion con los datos pasados '''
         cf = CumpleFunciones()
