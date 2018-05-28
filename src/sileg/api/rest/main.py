@@ -164,6 +164,29 @@ def crearDesignacion():
     logging.debug(pedido)
     s = Session()
     try:
+        d = SilegModel.crearDesignacionCumpliendoFuncionesConCorreo(s, pedido)
+        s.commit()
+        logging.debug(json.dumps(d))
+        return d.id
+
+    except Exception as e:
+        s.rollback()
+        logging.exception(e)
+        raise e
+
+    finally:
+        s.close()
+
+@app.route(API_BASE + '/designacion-sin-correo', methods=['PUT','OPTIONS'])
+@jsonapi
+def crearDesignacionSinCorreo():
+    if request.method == 'OPTIONS':
+        return 204
+    ''' crea una nueva designacion, solo permite crear cumplimiento de funciones '''
+    pedido = request.get_json();
+    logging.debug(pedido)
+    s = Session()
+    try:
         d = SilegModel.crearDesignacionCumpliendoFunciones(s, pedido)
         s.commit()
         logging.debug(json.dumps(d))
@@ -177,6 +200,37 @@ def crearDesignacion():
     finally:
         s.close()
 
+@app.route(API_BASE + '/designacion/<did>', methods=['PUT','OPTIONS'])
+@jsonapi
+def modificar_designacion(did):
+    if request.method == 'OPTIONS':
+        return 204
+    designacion = request.get_json()
+    assert did is not None
+    assert designacion is not None
+    fecha_str = designacion["desde"]
+    designacion["desde"] = parser.parse(fecha_str) if fecha_str else None
+
+
+    session = Session()
+    try:
+        SilegModel.actualizarDesignacion(session, did, designacion)
+        session.commit()
+    finally:
+        session.close()
+
+@app.route(API_BASE + '/designacion/<did>', methods=['DELETE'])
+@jsonapi
+def eliminar_designacion(did):
+    assert did is not None
+    logging.info("Eliminar designacion")
+    session = Session()
+    try:
+        SilegModel.eliminarDesignacion(session, did)
+        session.commit()
+        return True
+    finally:
+        session.close()
 
 @app.route(API_BASE + '/prorrogas/<designacion>', methods=['GET','OPTIONS'])
 @jsonapi
@@ -211,6 +265,80 @@ def cargos():
         raise e
     finally:
         s.close()
+
+@app.route(API_BASE + '/lugares', methods=['PUT','OPTIONS'])
+@jsonapi
+def crearLugar():
+    if request.method == 'OPTIONS':
+        return 204
+    ''' crea una nueva designacion, solo permite crear cumplimiento de funciones '''
+    lugar = request.get_json();
+    s = Session()
+    try:
+        l = SilegModel.crearLugar(s, lugar)
+        s.commit()
+        logging.debug(json.dumps(l))
+        return l
+
+    except Exception as e:
+        s.rollback()
+        logging.exception(e)
+        raise e
+
+    finally:
+        s.close()
+
+@app.route(API_BASE + '/lugares/<lid>', methods=['POST','OPTIONS'])
+@jsonapi
+def modificar_lugar(lid=None):
+    if request.method == 'OPTIONS':
+        return 204
+    lugar = request.get_json()
+    session = Session()
+    try:
+        SilegModel.modificarLugar(session, lugar)
+        session.commit()
+    finally:
+        session.close()
+
+@app.route(API_BASE + '/lugares/<lid>', methods=['DELETE'])
+@jsonapi
+def eliminar_lugar(lid):
+    assert lid is not None
+    session = Session()
+    try:
+        fecha = SilegModel.eliminarLugar(session, lid)
+        session.commit()
+        return fecha
+    finally:
+        session.close()
+
+@app.route(API_BASE + '/lugares/<lid>/restaurar', methods=['GET', 'OPTIONS'])
+@jsonapi
+def restaurar_lugar(lid):
+    assert lid is not None
+    if request.method == 'OPTIONS':
+        return 204
+    session = Session()
+    try:
+        id = SilegModel.restaurarLugar(session, lid)
+        session.commit()
+        return id
+
+    finally:
+        session.close()
+
+@app.route(API_BASE + '/lugares/<lid>/designaciones', methods=['GET', 'OPTIONS'])
+@jsonapi
+def obtener_desginaciones_lugar(lid):
+    assert lid is not None
+    if request.method == 'OPTIONS':
+        return 204
+    session = Session()
+    try:
+        return SilegModel.obtenerDesignacionesLugar(session, lid)
+    finally:
+        session.close()
 
 
 @app.route(API_BASE + '/lugares/', methods=['GET','OPTIONS'], defaults={'lid':None})

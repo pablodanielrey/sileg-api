@@ -1,4 +1,4 @@
-from sqlalchemy import or_
+from sqlalchemy import or_,and_, func
 from sqlalchemy.orm import joinedload, with_polymorphic, selectin_polymorphic
 import datetime
 import requests
@@ -122,14 +122,19 @@ class SilegModel:
         assert d[param] is not None
 
     @classmethod
-    def crearDesignacionCumpliendoFunciones(cls, session, pedido):
-        cls._chequearParam('usuario_id', pedido)
+    def crearDesignacionCumpliendoFuncionesConCorreo(cls, session, pedido):
         cls._chequearParam('correo', pedido)
-        cls._chequearParam('lugar_id', pedido)
-
         uid = pedido['usuario_id']
         correo = pedido['correo']
         cls._agregarCorreo(session, uid, correo)
+        return cls.crearDesignacionCumpliendoFunciones(session, pedido)
+
+    @classmethod
+    def crearDesignacionCumpliendoFunciones(cls, session, pedido):
+        cls._chequearParam('usuario_id', pedido)
+        cls._chequearParam('lugar_id', pedido)
+
+        uid = pedido['usuario_id']
 
         ''' genero la designacion con los datos pasados '''
         cf = CumpleFunciones()
@@ -322,7 +327,12 @@ class SilegModel:
 
     @classmethod
     def cargos(cls, session):
-        return session.query(Cargo).all()
+        cargos = with_polymorphic(Cargo,[
+            Docente,
+            CumpleFunciones,
+            NoDocente
+        ])
+        return session.query(cargos).all()
 
 
     @classmethod
@@ -386,3 +396,126 @@ class SilegModel:
         q = q.filter(Catedra.materia_id == materia) if materia else q
         q = q.filter(Catedra.padre_id == departamento) if departamento else q
         return q.options(joinedload('materia'), joinedload('padre')).all()
+
+    @classmethod
+    def crearLugar(cls, session, lugar):
+        cls._chequearParam('nombre', lugar)
+        cls._chequearParam('tipo', lugar)
+
+        # verifico que no exista el lugar
+        lugares = with_polymorphic(Lugar,[
+            Direccion,
+            Escuela,
+            LugarDictado,
+            Secretaria,
+            Instituto,
+            Prosecretaria,
+            Maestria,
+            Catedra
+        ])
+        nombre = lugar["nombre"].strip()
+        l = Lugar(nombre)
+        l.id = str(uuid.uuid4())
+        l.descripcion = lugar["descripcion"]
+        l.tipo = lugar["tipo"]
+        l.numero = lugar["numero"]
+        l.telefono = lugar["telefono"]
+        l.correo = lugar["email"]
+        session.add(l)
+        return l
+
+    @classmethod
+    def modificarLugar(cls, session, lugar):
+        cls._chequearParam('nombre', lugar)
+        cls._chequearParam('tipo', lugar)
+        cls._chequearParam('id', lugar)
+
+        # verifico que no exista el lugar
+        lugares = with_polymorphic(Lugar,[
+            Direccion,
+            Escuela,
+            LugarDictado,
+            Secretaria,
+            Instituto,
+            Prosecretaria,
+            Maestria,
+            Catedra
+        ])
+
+        l = session.query(lugares).filter(lugares.id == lugar["id"]).one_or_none()
+        if l is None:
+            raise Exception("Error, no existe el lugar")
+
+        l.nombre = lugar["nombre"].strip()
+        l.descripcion = lugar["descripcion"]
+        l.tipo = lugar["tipo"]
+        l.numero = lugar["numero"]
+        l.telefono = lugar["telefono"]
+        l.correo = lugar["correo"]
+
+    @classmethod
+    def eliminarLugar(cls, session, lid):
+        lugares = with_polymorphic(Lugar,[
+            Direccion,
+            Escuela,
+            LugarDictado,
+            Secretaria,
+            Instituto,
+            Prosecretaria,
+            Maestria,
+            Catedra
+        ])
+
+        l = session.query(lugares).filter(lugares.id == lid).one()
+        l.eliminado = datetime.datetime.now()
+        return l.eliminado
+
+
+
+    @classmethod
+    def restaurarLugar(cls, session, lid):
+        lugares = with_polymorphic(Lugar,[
+            Direccion,
+            Escuela,
+            LugarDictado,
+            Secretaria,
+            Instituto,
+            Prosecretaria,
+            Maestria,
+            Catedra
+        ])
+
+        l = session.query(lugares).filter(lugares.id == lid).one()
+        l.eliminado = None
+        return l.id
+
+    @classmethod
+    def obtenerDesignacionesLugar(cls, session, lid):
+        # obtengo el lugares
+        lugar = cls.lugar(session, lid)
+        # obtengo las designaciones del lugar
+        designaciones = []
+        desig = cls.designaciones(session=session, lugar=lid)
+        for d in desig:
+            query = cls.usuarios_url + '/usuarios/' + d.usuario_id
+            r = cls.api(query)
+            usr = r.json() if r.ok else None
+            designaciones.append({'designacion':d, 'usuario': usr})
+
+
+        return { 'lugar':lugar, 'designaciones': designaciones }
+
+
+    @classmethod
+    def eliminarDesignacion(cls, session, id):
+        l = session.query(Designacion).filter(Designacion.id == id).one()
+        l.historico = True
+
+    @classmethod
+    def actualizarDesignacion(cls, session, id, designacion):
+        d = session.query(Designacion).filter(Designacion.id == id).one_or_none()
+        if d is None:
+            raise Exception("Error, no existe la designación")
+
+        d.desde = designacion["desde"]
+        d.cargo_id = designacion["cargo_id"]
