@@ -38,12 +38,12 @@ setup(name='sileg-api',
                             'httplib2',
                             'pyjwt',
                             'microservices_common',
-                            'gunicorn'],
+                            'warden-api',
+                            'gunicorn',
+                            'ptvsd'],
           entry_points={
             'console_scripts': [
-                'wamp=sileg.api.wamp.main:main',
-                'rest=sileg.api.rest.main:main',
-                'flask=sileg.web.main:main'
+                'rest=sileg.api.rest.main:main'
             ]
           }
 

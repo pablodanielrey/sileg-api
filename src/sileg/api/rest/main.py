@@ -10,6 +10,16 @@ from flask import Flask, abort, make_response, jsonify, url_for, request, json
 from flask_jsontools import jsonapi
 from dateutil import parser
 
+import oidc
+from oidc.oidc import TokenIntrospection
+client_id = os.environ['OIDC_CLIENT_ID']
+client_secret = os.environ['OIDC_CLIENT_SECRET']
+rs = TokenIntrospection(client_id, client_secret)
+
+from warden.sdk.warden import Warden
+warden_url = os.environ['WARDEN_API_URL']
+warden = Warden(warden_url, client_id, client_secret)
+
 from rest_utils import register_encoder
 
 from sileg.model.SilegModel import SilegModel
@@ -22,16 +32,27 @@ register_encoder(app)
 
 API_BASE = os.environ['API_BASE']
 
-@app.route(API_BASE + '/usuarios/', methods=['GET', 'OPTIONS'], defaults={'uid':None})
-@app.route(API_BASE + '/usuarios/<uid>', methods=['GET', 'OPTIONS'])
+@app.route(API_BASE + '/usuarios/', methods=['GET'], defaults={'uid':None})
+@app.route(API_BASE + '/usuarios/<uid>', methods=['GET'])
+@rs.require_valid_token
 @jsonapi
-def usuarios(uid=None):
-    if request.method == 'OPTIONS':
-        return 204
+def usuarios(uid=None, token=None):
+    c = False
+
+    prof = warden.has_all_profiles(token, ['gelis-super-admin'])
+    if prof['profile']:
+        c = request.args.get('c',False,bool)
+    else:
+        prof = warden.has_all_profiles(token, ['gelis-admin'])
+        if not prof['profile']:
+            return ('no tiene los permisos suficientes', 403)
+
+
     search = request.args.get('q',None)
     offset = request.args.get('offset',None,int)
     limit = request.args.get('limit',None,int)
-    c = request.args.get('c',False,bool)
+
+
     s = Session()
     try:
         r = None
@@ -41,18 +62,25 @@ def usuarios(uid=None):
             fecha_str = request.args.get('f', None)
             fecha = parser.parse(fecha_str) if fecha_str else None
             r = SilegModel.usuarios(session=s, search=search, retornarClave=c, offset=offset, limit=limit, fecha=fecha)
+        
         return r
+
     except Exception as e:
         logging.exception(e)
         raise e
+
     finally:
         s.close()
 
-@app.route(API_BASE + '/usuarios', methods=['PUT','POST','OPTIONS'])
+@app.route(API_BASE + '/usuarios', methods=['PUT','POST'])
+@rs.require_valid_token
 @jsonapi
-def crear_usuario():
-    if request.method == 'OPTIONS':
-        return 204
+def crear_usuario(token=None):
+
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
+    if not prof['profile']:
+        return ('no tiene los permisos suficientes', 403)
+
     usuario = request.get_json()
     if not usuario:
         raise Exception('usuario == None')
@@ -60,31 +88,43 @@ def crear_usuario():
     return SilegModel.crearUsuario(usuario)
 
 
-@app.route(API_BASE + '/usuarios/<uid>', methods=['POST','OPTIONS'])
+@app.route(API_BASE + '/usuarios/<uid>', methods=['POST'])
+@rs.require_valid_token
 @jsonapi
-def actualizar_usuario(uid):
-    if request.method == 'OPTIONS':
-        return 204
+def actualizar_usuario(uid, token=None):
+
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
+    if not prof['profile']:
+        return ('no tiene los permisos suficientes', 403)
+
     usuario = request.get_json()
     assert uid is not None
     assert usuario is not None
     return SilegModel.actualizarUsuario(uid, usuario)
 
 
-@app.route(API_BASE + '/usuarios/<uid>/correos/<cid>', methods=['DELETE','OPTIONS'])
-@app.route(API_BASE + '/correos/<cid>', methods=['DELETE','OPTIONS'])
+@app.route(API_BASE + '/usuarios/<uid>/correos/<cid>', methods=['DELETE'])
+@app.route(API_BASE + '/correos/<cid>', methods=['DELETE'])
+@rs.require_valid_token
 @jsonapi
-def eliminar_correo(uid=None, cid=None):
-    if request.method == 'OPTIONS':
-        return 204
+def eliminar_correo(uid=None, cid=None, token=None):
+
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
+    if not prof['profile']:
+        return ('no tiene los permisos suficientes', 403)
+
     assert cid is not None
     return SilegModel.eliminarCorreo(uid, cid)
 
-@app.route(API_BASE + '/usuarios/<uid>/correos', methods=['PUT','POST','OPTIONS'])
+@app.route(API_BASE + '/usuarios/<uid>/correos', methods=['PUT','POST'])
+@rs.require_valid_token
 @jsonapi
-def agregar_correo(uid=None):
-    if request.method == 'OPTIONS':
-        return 204
+def agregar_correo(uid=None, token=None):
+
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
+    if not prof['profile']:
+        return ('no tiene los permisos suficientes', 403)
+
     datos = request.get_json()
     logging.debug(datos)
     s = Session()
@@ -98,11 +138,10 @@ def agregar_correo(uid=None):
     finally:
         s.close()
 
-@app.route(API_BASE + '/usuarios/<uid>/designaciones', methods=['GET','OPTIONS'])
+@app.route(API_BASE + '/usuarios/<uid>/designaciones', methods=['GET'])
+@rs.require_valid_token
 @jsonapi
-def obtener_designaciones_por_usuario(uid=None):
-    if request.method == 'OPTIONS':
-        return 204
+def obtener_designaciones_por_usuario(uid=None, token=None):
     assert uid is not None
     s = Session()
     try:
@@ -116,28 +155,32 @@ def obtener_designaciones_por_usuario(uid=None):
         s.close()
 
 
-@app.route(API_BASE + '/generar_clave/<uid>', methods=['GET','OPTIONS'])
+@app.route(API_BASE + '/generar_clave/<uid>', methods=['GET'])
+@rs.require_valid_token
 @jsonapi
-def generar_clave(uid):
-    if request.method == 'OPTIONS':
-        return 204
+def generar_clave(uid, token=None):
+
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
+    if not prof['profile']:
+        return ('no tiene los permisos suficientes', 403)
+
     assert uid is not None
     return SilegModel.generarClave(uid)
 
-@app.route(API_BASE + '/correo/<cuenta>', methods=['GET','OPTIONS'])
+@app.route(API_BASE + '/correo/<cuenta>', methods=['GET'])
+@rs.require_valid_token
 @jsonapi
-def verificarDisponibilidadCorreo(cuenta=None):
+def verificarDisponibilidadCorreo(cuenta=None, token=None):
     if request.method == 'OPTIONS':
         return 204
     assert cuenta is not None
     assert '@' in cuenta
     return SilegModel.verificarDisponibilidadCorreo(cuenta)
 
-@app.route(API_BASE + '/designaciones/', methods=['GET','OPTIONS'])
+@app.route(API_BASE + '/designaciones/', methods=['GET'])
+@rs.require_valid_token
 @jsonapi
-def designaciones():
-    if request.method == 'OPTIONS':
-        return 204
+def designaciones(token):
     offset = request.args.get('offset',None,int)
     limit = request.args.get('limit',None,int)
     lugar = request.args.get('l',None)
@@ -154,13 +197,17 @@ def designaciones():
     finally:
         s.close()
 
-@app.route(API_BASE + '/designacion', methods=['POST','OPTIONS'])
+@app.route(API_BASE + '/designacion', methods=['POST'])
+@rs.require_valid_token
 @jsonapi
-def crearDesignacion():
-    if request.method == 'OPTIONS':
-        return 204
+def crearDesignacion(token=None):
     ''' crea una nueva designacion, solo permite crear cumplimiento de funciones '''
-    pedido = request.get_json();
+
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
+    if not prof['profile']:
+        return ('no tiene los permisos suficientes', 403)
+
+    pedido = request.get_json()
     logging.debug(pedido)
     s = Session()
     try:
@@ -177,13 +224,17 @@ def crearDesignacion():
     finally:
         s.close()
 
-@app.route(API_BASE + '/designacion-sin-correo', methods=['PUT','OPTIONS'])
+@app.route(API_BASE + '/designacion-sin-correo', methods=['PUT'])
+@rs.require_valid_token
 @jsonapi
-def crearDesignacionSinCorreo():
-    if request.method == 'OPTIONS':
-        return 204
+def crearDesignacionSinCorreo(token):
     ''' crea una nueva designacion, solo permite crear cumplimiento de funciones '''
-    pedido = request.get_json();
+
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
+    if not prof['profile']:
+        return ('no tiene los permisos suficientes', 403)
+
+    pedido = request.get_json()
     logging.debug(pedido)
     s = Session()
     try:
@@ -200,11 +251,15 @@ def crearDesignacionSinCorreo():
     finally:
         s.close()
 
-@app.route(API_BASE + '/designacion/<did>', methods=['PUT','OPTIONS'])
+@app.route(API_BASE + '/designacion/<did>', methods=['PUT'])
+@rs.require_valid_token
 @jsonapi
-def modificar_designacion(did):
-    if request.method == 'OPTIONS':
-        return 204
+def modificar_designacion(did, token):
+
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
+    if not prof['profile']:
+        return ('no tiene los permisos suficientes', 403)
+
     designacion = request.get_json()
     assert did is not None
     assert designacion is not None
@@ -220,8 +275,14 @@ def modificar_designacion(did):
         session.close()
 
 @app.route(API_BASE + '/designacion/<did>', methods=['DELETE'])
+@rs.require_valid_token
 @jsonapi
-def eliminar_designacion(did):
+def eliminar_designacion(did, token):
+
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
+    if not prof['profile']:
+        return ('no tiene los permisos suficientes', 403)
+
     assert did is not None
     logging.info("Eliminar designacion")
     session = Session()
@@ -232,11 +293,10 @@ def eliminar_designacion(did):
     finally:
         session.close()
 
-@app.route(API_BASE + '/prorrogas/<designacion>', methods=['GET','OPTIONS'])
+@app.route(API_BASE + '/prorrogas/<designacion>', methods=['GET'])
+@rs.require_valid_token
 @jsonapi
-def prorrogas(designacion):
-    if request.method == 'OPTIONS':
-        return 204
+def prorrogas(designacion, token=None):
     offset = request.args.get('offset',None,int)
     limit = request.args.get('limit',None,int)
     lugar = request.args.get('l',None)
@@ -252,11 +312,10 @@ def prorrogas(designacion):
     finally:
         s.close()
 
-@app.route(API_BASE + '/cargos/', methods=['GET','OPTIONS'])
+@app.route(API_BASE + '/cargos', methods=['GET'])
+@rs.require_valid_token
 @jsonapi
-def cargos():
-    if request.method == 'OPTIONS':
-        return 204
+def cargos(token=None):
     s = Session()
     try:
         return SilegModel.cargos(s)
@@ -266,13 +325,16 @@ def cargos():
     finally:
         s.close()
 
-@app.route(API_BASE + '/lugares', methods=['PUT','OPTIONS'])
+@app.route(API_BASE + '/lugares', methods=['PUT'])
+@rs.require_valid_token
 @jsonapi
-def crearLugar():
-    if request.method == 'OPTIONS':
-        return 204
-    ''' crea una nueva designacion, solo permite crear cumplimiento de funciones '''
-    lugar = request.get_json();
+def crearLugar(token=None):
+
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
+    if not prof['profile']:
+        return ('no tiene los permisos suficientes', 403)
+
+    lugar = request.get_json()
     s = Session()
     try:
         l = SilegModel.crearLugar(s, lugar)
@@ -288,11 +350,15 @@ def crearLugar():
     finally:
         s.close()
 
-@app.route(API_BASE + '/lugares/<lid>', methods=['POST','OPTIONS'])
+@app.route(API_BASE + '/lugares/<lid>', methods=['POST'])
+@rs.require_valid_token
 @jsonapi
-def modificar_lugar(lid=None):
-    if request.method == 'OPTIONS':
-        return 204
+def modificar_lugar(lid=None, token=None):
+
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
+    if not prof['profile']:
+        return ('no tiene los permisos suficientes', 403)
+
     lugar = request.get_json()
     session = Session()
     try:
@@ -302,8 +368,14 @@ def modificar_lugar(lid=None):
         session.close()
 
 @app.route(API_BASE + '/lugares/<lid>', methods=['DELETE'])
+@rs.require_valid_token
 @jsonapi
-def eliminar_lugar(lid):
+def eliminar_lugar(lid, token):
+
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
+    if not prof['profile']:
+        return ('no tiene los permisos suficientes', 403)
+
     assert lid is not None
     session = Session()
     try:
@@ -313,12 +385,16 @@ def eliminar_lugar(lid):
     finally:
         session.close()
 
-@app.route(API_BASE + '/lugares/<lid>/restaurar', methods=['GET', 'OPTIONS'])
+@app.route(API_BASE + '/lugares/<lid>/restaurar', methods=['GET'])
+@rs.require_valid_token
 @jsonapi
-def restaurar_lugar(lid):
+def restaurar_lugar(lid, token=None):
+
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
+    if not prof['profile']:
+        return ('no tiene los permisos suficientes', 403)
+
     assert lid is not None
-    if request.method == 'OPTIONS':
-        return 204
     session = Session()
     try:
         id = SilegModel.restaurarLugar(session, lid)
@@ -328,12 +404,11 @@ def restaurar_lugar(lid):
     finally:
         session.close()
 
-@app.route(API_BASE + '/lugares/<lid>/designaciones', methods=['GET', 'OPTIONS'])
+@app.route(API_BASE + '/lugares/<lid>/designaciones', methods=['GET'])
+@rs.require_valid_token
 @jsonapi
-def obtener_desginaciones_lugar(lid):
+def obtener_desginaciones_lugar(lid, token=None):
     assert lid is not None
-    if request.method == 'OPTIONS':
-        return 204
     session = Session()
     try:
         return SilegModel.obtenerDesignacionesLugar(session, lid)
@@ -341,12 +416,11 @@ def obtener_desginaciones_lugar(lid):
         session.close()
 
 
-@app.route(API_BASE + '/lugares/', methods=['GET','OPTIONS'], defaults={'lid':None})
-@app.route(API_BASE + '/lugares/<lid>', methods=['GET','OPTIONS'])
+@app.route(API_BASE + '/lugares/', methods=['GET'], defaults={'lid':None})
+@app.route(API_BASE + '/lugares/<lid>', methods=['GET'])
+@rs.require_valid_token
 @jsonapi
-def lugares(lid=None):
-    if request.method == 'OPTIONS':
-        return 204
+def lugares(lid=None, token=None):
     s = Session()
     try:
         if lid:
@@ -363,11 +437,10 @@ def lugares(lid=None):
     finally:
         s.close()
 
-@app.route(API_BASE + '/departamentos/', methods=['GET', 'OPTIONS'])
+@app.route(API_BASE + '/departamentos/', methods=['GET'])
+@rs.require_valid_token
 @jsonapi
-def departamentos():
-    if request.method == 'OPTIONS':
-        return 204
+def departamentos(token=None):
     s = Session()
     try:
         return SilegModel.departamentos(s)
@@ -377,12 +450,11 @@ def departamentos():
     finally:
         s.close()
 
-@app.route(API_BASE + '/materias/', methods=['GET', 'OPTIONS'], defaults={'materia':None})
-@app.route(API_BASE + '/materias/<materia>', methods=['GET', 'OPTIONS'])
+@app.route(API_BASE + '/materias/', methods=['GET'], defaults={'materia':None})
+@app.route(API_BASE + '/materias/<materia>', methods=['GET'])
+@rs.require_valid_token
 @jsonapi
-def materias(materia=None):
-    if request.method == 'OPTIONS':
-        return 204
+def materias(materia=None, token=None):
     catedra = request.args.get('c',None)
     departamento = request.args.get('d',None)
     s = Session()
@@ -394,12 +466,11 @@ def materias(materia=None):
     finally:
         s.close()
 
-@app.route(API_BASE + '/catedras/', methods=['GET', 'OPTIONS'], defaults={'catedra':None})
-@app.route(API_BASE + '/catedras/<catedra>', methods=['GET', 'OPTIONS'])
+@app.route(API_BASE + '/catedras/', methods=['GET'], defaults={'catedra':None})
+@app.route(API_BASE + '/catedras/<catedra>', methods=['GET'])
+@rs.require_valid_token
 @jsonapi
-def catedras(catedra=None):
-    if request.method == 'OPTIONS':
-        return 204
+def catedras(catedra=None, token=None):
     materia = request.args.get('m',None)
     departamento = request.args.get('d',None)
     s = Session()
@@ -410,6 +481,13 @@ def catedras(catedra=None):
         raise e
     finally:
         s.close()
+
+
+@app.route(API_BASE + '*', methods=['OPTIONS'])
+def options():
+    if request.method == 'OPTIONS':
+        return 204
+    return 204
 
 @app.after_request
 def cors_after_request(response):
