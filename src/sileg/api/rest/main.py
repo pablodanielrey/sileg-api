@@ -23,7 +23,7 @@ warden = Warden(warden_url, client_id, client_secret)
 from rest_utils import register_encoder
 
 from sileg.model.SilegModel import SilegModel
-from sileg.model import Session
+from sileg.model import obtener_session
 
 # set the project root directory as the static folder, you can set others.
 app = Flask(__name__, static_url_path='/src/sileg/web')
@@ -47,30 +47,20 @@ def usuarios(uid=None, token=None):
         if not prof['profile']:
             return ('no tiene los permisos suficientes', 403)
 
-
     search = request.args.get('q',None)
     offset = request.args.get('offset',None,int)
     limit = request.args.get('limit',None,int)
 
-
-    s = Session()
-    try:
+    with obtener_session() as session:
         r = None
         if uid:
-            r = SilegModel.usuario(s, uid, retornarClave=c)
+            r = SilegModel.usuario(session, uid, retornarClave=c)
         else:
             fecha_str = request.args.get('f', None)
             fecha = parser.parse(fecha_str) if fecha_str else None
-            r = SilegModel.usuarios(session=s, search=search, retornarClave=c, offset=offset, limit=limit, fecha=fecha)
+            r = SilegModel.usuarios(session=session, search=search, retornarClave=c, offset=offset, limit=limit, fecha=fecha)
         
         return r
-
-    except Exception as e:
-        logging.exception(e)
-        raise e
-
-    finally:
-        s.close()
 
 @app.route(API_BASE + '/usuarios', methods=['PUT','POST'])
 @rs.require_valid_token
@@ -127,33 +117,19 @@ def agregar_correo(uid=None, token=None):
 
     datos = request.get_json()
     logging.debug(datos)
-    s = Session()
-    try:
-        r = SilegModel.agregarCorreo(s, uid, datos['correo'])
+    with obtener_session() as session:
+        r = SilegModel.agregarCorreo(session, uid, datos['correo'])
         return r
-
-    except Exception as e:
-        logging.exception(e)
-        raise e
-    finally:
-        s.close()
 
 @app.route(API_BASE + '/usuarios/<uid>/designaciones', methods=['GET'])
 @rs.require_valid_token
 @jsonapi
 def obtener_designaciones_por_usuario(uid=None, token=None):
     assert uid is not None
-    s = Session()
-    try:
-        designaciones = SilegModel.designaciones(session=s, persona=uid, historico=True, expand=True)
+    with obtener_session() as session:
+        designaciones = SilegModel.designaciones(session=session, persona=uid, historico=True, expand=True)
         logging.debug(designaciones)
         return designaciones
-    except Exception as e:
-        logging.exception(e)
-        raise e
-    finally:
-        s.close()
-
 
 @app.route(API_BASE + '/generar_clave/<uid>', methods=['GET'])
 @rs.require_valid_token
@@ -186,16 +162,10 @@ def designaciones(token):
     lugar = request.args.get('l',None)
     persona = request.args.get('p',None)
     historico = request.args.get('h',False,bool)
-    s = Session()
-    try:
-        designaciones = SilegModel.designaciones(s,offset=offset, limit=limit, lugar=lugar, persona=persona, historico=historico)
+    with obtener_session() as session:
+        designaciones = SilegModel.designaciones(session,offset=offset, limit=limit, lugar=lugar, persona=persona, historico=historico)
         designaciones.append('cantidad:{}'.format(len(designaciones)))
         return designaciones
-    except Exception as e:
-        logging.exception(e)
-        raise e
-    finally:
-        s.close()
 
 @app.route(API_BASE + '/designacion', methods=['POST'])
 @rs.require_valid_token
@@ -209,20 +179,11 @@ def crearDesignacion(token=None):
 
     pedido = request.get_json()
     logging.debug(pedido)
-    s = Session()
-    try:
-        d = SilegModel.crearDesignacionCumpliendoFuncionesConCorreo(s, pedido)
-        s.commit()
+    with obtener_session() as session:
+        d = SilegModel.crearDesignacionCumpliendoFuncionesConCorreo(session, pedido)
+        session.commit()
         logging.debug(json.dumps(d))
         return d.id
-
-    except Exception as e:
-        s.rollback()
-        logging.exception(e)
-        raise e
-
-    finally:
-        s.close()
 
 @app.route(API_BASE + '/designacion-sin-correo', methods=['PUT'])
 @rs.require_valid_token
@@ -236,26 +197,16 @@ def crearDesignacionSinCorreo(token):
 
     pedido = request.get_json()
     logging.debug(pedido)
-    s = Session()
-    try:
-        d = SilegModel.crearDesignacionCumpliendoFunciones(s, pedido)
-        s.commit()
+    with obtener_session() as session:
+        d = SilegModel.crearDesignacionCumpliendoFunciones(session, pedido)
+        session.commit()
         logging.debug(json.dumps(d))
         return d.id
-
-    except Exception as e:
-        s.rollback()
-        logging.exception(e)
-        raise e
-
-    finally:
-        s.close()
 
 @app.route(API_BASE + '/designacion/<did>', methods=['PUT'])
 @rs.require_valid_token
 @jsonapi
 def modificar_designacion(did, token):
-
     prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
     if not prof['profile']:
         return ('no tiene los permisos suficientes', 403)
@@ -266,32 +217,24 @@ def modificar_designacion(did, token):
     fecha_str = designacion["desde"]
     designacion["desde"] = parser.parse(fecha_str) if fecha_str else None
 
-
-    session = Session()
-    try:
+    with obtener_session() as session:
         SilegModel.actualizarDesignacion(session, did, designacion)
         session.commit()
-    finally:
-        session.close()
 
 @app.route(API_BASE + '/designacion/<did>', methods=['DELETE'])
 @rs.require_valid_token
 @jsonapi
 def eliminar_designacion(did, token):
-
     prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
     if not prof['profile']:
         return ('no tiene los permisos suficientes', 403)
 
     assert did is not None
     logging.info("Eliminar designacion")
-    session = Session()
-    try:
+    with obtener_session() as session:
         SilegModel.eliminarDesignacion(session, did)
         session.commit()
         return True
-    finally:
-        session.close()
 
 @app.route(API_BASE + '/prorrogas/<designacion>', methods=['GET'])
 @rs.require_valid_token
@@ -302,153 +245,98 @@ def prorrogas(designacion, token=None):
     lugar = request.args.get('l',None)
     persona = request.args.get('p',None)
     historico = request.args.get('h',False,bool)
-    s = Session()
-    try:
-        return SilegModel.prorrogas(session=s, offset=offset, limit=limit, designacion=designacion, lugar=lugar, persona=persona, historico=historico)
-    except Exception as e:
-        logging.exception(e)
-        raise e
-
-    finally:
-        s.close()
+    with obtener_session() as session:
+        return SilegModel.prorrogas(session=session, offset=offset, limit=limit, designacion=designacion, lugar=lugar, persona=persona, historico=historico)
 
 @app.route(API_BASE + '/cargos', methods=['GET'])
 @rs.require_valid_token
 @jsonapi
 def cargos(token=None):
-    s = Session()
-    try:
-        return SilegModel.cargos(s)
-    except Exception as e:
-        logging.exception(e)
-        raise e
-    finally:
-        s.close()
+    with obtener_session() as session:
+        return SilegModel.cargos(session)
 
 @app.route(API_BASE + '/lugares', methods=['PUT'])
 @rs.require_valid_token
 @jsonapi
 def crearLugar(token=None):
-
     prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
     if not prof['profile']:
         return ('no tiene los permisos suficientes', 403)
 
     lugar = request.get_json()
-    s = Session()
-    try:
-        l = SilegModel.crearLugar(s, lugar)
-        s.commit()
+    with obtener_session() as session:
+        l = SilegModel.crearLugar(session, lugar)
+        session.commit()
         logging.debug(json.dumps(l))
         return l
-
-    except Exception as e:
-        s.rollback()
-        logging.exception(e)
-        raise e
-
-    finally:
-        s.close()
 
 @app.route(API_BASE + '/lugares/<lid>', methods=['POST'])
 @rs.require_valid_token
 @jsonapi
 def modificar_lugar(lid=None, token=None):
-
     prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
     if not prof['profile']:
         return ('no tiene los permisos suficientes', 403)
-
     lugar = request.get_json()
-    session = Session()
-    try:
+    with obtener_session() as session:
         SilegModel.modificarLugar(session, lugar)
         session.commit()
-    finally:
-        session.close()
 
 @app.route(API_BASE + '/lugares/<lid>', methods=['DELETE'])
 @rs.require_valid_token
 @jsonapi
 def eliminar_lugar(lid, token):
-
     prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
     if not prof['profile']:
         return ('no tiene los permisos suficientes', 403)
-
     assert lid is not None
-    session = Session()
-    try:
+    with obtener_session() as session:
         fecha = SilegModel.eliminarLugar(session, lid)
         session.commit()
         return fecha
-    finally:
-        session.close()
 
 @app.route(API_BASE + '/lugares/<lid>/restaurar', methods=['GET'])
 @rs.require_valid_token
 @jsonapi
 def restaurar_lugar(lid, token=None):
-
     prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
     if not prof['profile']:
         return ('no tiene los permisos suficientes', 403)
-
     assert lid is not None
-    session = Session()
-    try:
+    with obtener_session() as session:
         id = SilegModel.restaurarLugar(session, lid)
         session.commit()
         return id
-
-    finally:
-        session.close()
 
 @app.route(API_BASE + '/lugares/<lid>/designaciones', methods=['GET'])
 @rs.require_valid_token
 @jsonapi
 def obtener_desginaciones_lugar(lid, token=None):
     assert lid is not None
-    session = Session()
-    try:
+    with obtener_session() as session:
         return SilegModel.obtenerDesignacionesLugar(session, lid)
-    finally:
-        session.close()
-
 
 @app.route(API_BASE + '/lugares/', methods=['GET'], defaults={'lid':None})
 @app.route(API_BASE + '/lugares/<lid>', methods=['GET'])
 @rs.require_valid_token
 @jsonapi
 def lugares(lid=None, token=None):
-    s = Session()
-    try:
+    with obtener_session() as session:
         if lid:
-            return SilegModel.lugar(s, lid)
+            return SilegModel.lugar(session, lid)
         else:
             search = request.args.get('q')
-            lugares = SilegModel.lugares(session=s, search=search)
-            catedras = SilegModel.obtener_catedras_por_nombre(session=s, search=search)
+            lugares = SilegModel.lugares(session=session, search=search)
+            catedras = SilegModel.obtener_catedras_por_nombre(session=session, search=search)
             lugares.extend(catedras)
             return lugares
-    except Exception as e:
-        logging.exception(e)
-        raise e
-    finally:
-        s.close()
 
 @app.route(API_BASE + '/departamentos/', methods=['GET'])
 @rs.require_valid_token
 @jsonapi
 def departamentos(token=None):
-    s = Session()
-    try:
-        return SilegModel.departamentos(s)
-    except Exception as e:
-        logging.exception(e)
-        raise e
-    finally:
-        s.close()
+    with obtener_session() as session:
+        return SilegModel.departamentos(session)
 
 @app.route(API_BASE + '/materias/', methods=['GET'], defaults={'materia':None})
 @app.route(API_BASE + '/materias/<materia>', methods=['GET'])
@@ -457,14 +345,8 @@ def departamentos(token=None):
 def materias(materia=None, token=None):
     catedra = request.args.get('c',None)
     departamento = request.args.get('d',None)
-    s = Session()
-    try:
-        return SilegModel.materias(session=s, materia=materia, catedra=catedra, departamento=departamento)
-    except Exception as e:
-        logging.exception(e)
-        raise e
-    finally:
-        s.close()
+    with obtener_session() as session:
+        return SilegModel.materias(session=session, materia=materia, catedra=catedra, departamento=departamento)
 
 @app.route(API_BASE + '/catedras/', methods=['GET'], defaults={'catedra':None})
 @app.route(API_BASE + '/catedras/<catedra>', methods=['GET'])
@@ -473,14 +355,8 @@ def materias(materia=None, token=None):
 def catedras(catedra=None, token=None):
     materia = request.args.get('m',None)
     departamento = request.args.get('d',None)
-    s = Session()
-    try:
-        return SilegModel.catedras(session=s, catedra=catedra, materia=materia, departamento=departamento)
-    except Exception as e:
-        logging.exception(e)
-        raise e
-    finally:
-        s.close()
+    with obtener_session() as session:
+        return SilegModel.catedras(session=session, catedra=catedra, materia=materia, departamento=departamento)
 
 
 @app.route(API_BASE + '*', methods=['OPTIONS'])

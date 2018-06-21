@@ -10,7 +10,6 @@ import oidc
 from oidc.oidc import ClientCredentialsGrant
 
 from .entities import *
-from . import Session
 
 
 class SilegModel:
@@ -319,7 +318,7 @@ class SilegModel:
         q = cls._agregar_filtros_comunes(q, offset=offset, limit=limit, persona=persona, lugar=lugar)
         if expand:
             if not persona:
-                q = q.options(joinsedload('usuario'))
+                q = q.options(joinedload('usuario'))
             if not lugar:
                 q = q.options(joinedload('lugar').joinedload('padre'))
             q = q.options(joinedload('cargo'))
