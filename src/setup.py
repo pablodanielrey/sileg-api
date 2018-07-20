@@ -12,7 +12,7 @@
 from setuptools import setup, find_packages
 
 setup(name='sileg-api',
-          version='0.1.0.dev0',
+          version='0.1.0.a1',
           description='proyecto de las designaciones de docentes/no-docentes de la facultad',
           url='https://github.com/pablodanielrey/sileg-api',
           author='Desarrollo DiTeSi, FCE',
@@ -23,7 +23,7 @@ setup(name='sileg-api',
             #   5 - Production/Stable
             'Development Status :: 3 - Alpha',
             'Programming Language :: Python :: 3',
-            'Programming Language :: Python :: 3.5'
+            'Programming Language :: Python :: 3.6'
           ],
           packages=find_packages(exclude=['contrib', 'docs', 'test*']),
           install_requires=['psycopg2',
@@ -38,12 +38,12 @@ setup(name='sileg-api',
                             'httplib2',
                             'pyjwt',
                             'microservices_common',
-                            'gunicorn'],
+                            'warden-api',
+                            'gunicorn',
+                            'ptvsd'],
           entry_points={
             'console_scripts': [
-                'wamp=sileg.api.wamp.main:main',
-                'rest=sileg.api.rest.main:main',
-                'flask=sileg.web.main:main'
+                'rest=sileg.api.rest.main:main'
             ]
           }
 
