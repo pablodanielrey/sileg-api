@@ -10,15 +10,17 @@ from flask import Flask, abort, make_response, jsonify, url_for, request, json
 from flask_jsontools import jsonapi
 from dateutil import parser
 
+VERIFY_SSL = bool(int(os.environ.get('VERIFY_SSL',0)))
+
 import oidc
 from oidc.oidc import TokenIntrospection
 client_id = os.environ['OIDC_CLIENT_ID']
 client_secret = os.environ['OIDC_CLIENT_SECRET']
-rs = TokenIntrospection(client_id, client_secret)
+rs = TokenIntrospection(client_id, client_secret, verify=VERIFY_SSL)
 
 from warden.sdk.warden import Warden
 warden_url = os.environ['WARDEN_API_URL']
-warden = Warden(warden_url, client_id, client_secret)
+warden = Warden(warden_url, client_id, client_secret, verify=VERIFY_SSL)
 
 from rest_utils import register_encoder
 
