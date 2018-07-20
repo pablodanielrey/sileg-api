@@ -63,10 +63,7 @@ def usuarios(uid=None, token=None):
         return r
 
 @app.route(API_BASE + '/usuarios', methods=['PUT','POST'])
-<<<<<<< HEAD
-=======
 @rs.require_valid_token
->>>>>>> c0fb197c8f1430835f359cfb2319139cebbdebef
 @jsonapi
 def crear_usuario(token=None):
 
