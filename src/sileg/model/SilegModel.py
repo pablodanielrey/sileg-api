@@ -14,7 +14,7 @@ from .entities import *
 
 class SilegModel:
 
-    verify = True
+    verify = bool(int(os.environ.get('VERIFY_SSL',0)))
     usuarios_url = os.environ['USERS_API_URL']
     client_id = os.environ['OIDC_CLIENT_ID']
     client_secret = os.environ['OIDC_CLIENT_SECRET']
@@ -22,7 +22,7 @@ class SilegModel:
     @classmethod
     def _get_token(cls):
         ''' obtengo un token mediante el flujo client_credentials para poder llamar a la api de usuarios '''
-        grant = ClientCredentialsGrant(cls.client_id, cls.client_secret)
+        grant = ClientCredentialsGrant(cls.client_id, cls.client_secret, verify=cls.verify)
         token = grant.get_token(grant.access_token())
         if not token:
             raise Exception()
