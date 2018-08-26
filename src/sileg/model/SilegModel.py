@@ -299,6 +299,15 @@ class SilegModel:
         q = q.order_by(Designacion.desde.desc())
         return q.all()
 
+    @classmethod
+    def chequear_acceso_designaciones(cls, session, usuario_logueado, uid):
+        assert usuario_logueado is not None
+        assert uid is not None
+
+        ''' ahora chequeamos que el usuario logueado tenga permisos para consultar las designaciones de uid '''
+
+        return usuario_logueado == uid
+
 
     @classmethod
     def designaciones(cls,

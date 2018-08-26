@@ -128,10 +128,23 @@ def agregar_correo(uid=None, token=None):
 @jsonapi
 def obtener_designaciones_por_usuario(uid=None, token=None):
     assert uid is not None
+
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
+    if prof and prof['profile']:
+        with obtener_session() as session:
+            designaciones = SilegModel.designaciones(session=session, persona=uid, historico=True, expand=True)
+            logging.debug(designaciones)
+            return designaciones
+
+    usuario_logueado = token['sub']
     with obtener_session() as session:
-        designaciones = SilegModel.designaciones(session=session, persona=uid, historico=True, expand=True)
-        logging.debug(designaciones)
-        return designaciones
+        if SilegModel.chequear_acceso_designaciones(session, usuario_logueado, uid):
+            designaciones = SilegModel.designaciones(session=session, persona=uid, historico=True, expand=True)
+            logging.debug(designaciones)
+            return designaciones
+        else:
+            return ('no tiene los permisos suficientes', 403)
+
 
 @app.route(API_BASE + '/generar_clave/<uid>', methods=['GET'])
 @rs.require_valid_token
