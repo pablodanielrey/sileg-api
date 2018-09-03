@@ -424,11 +424,15 @@ class SilegModel:
         nombre = lugar["nombre"].strip()
         l = Lugar(nombre)
         l.id = str(uuid.uuid4())
-        l.descripcion = lugar["descripcion"]
         l.tipo = lugar["tipo"]
-        l.numero = lugar["numero"]
-        l.telefono = lugar["telefono"]
-        l.correo = lugar["email"]
+        if lugar["descripcion"] is not None:
+            l.descripcion = lugar["descripcion"]
+        if lugar["numero"] is not None:
+            l.numero = lugar["numero"]
+        if lugar["telefono"] is not None:
+            l.telefono = lugar["telefono"]
+        if lugar["email"] is not None:
+            l.correo = lugar["email"]
         session.add(l)
         return l
 
