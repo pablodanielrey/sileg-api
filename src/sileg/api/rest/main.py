@@ -34,6 +34,38 @@ register_encoder(app)
 
 API_BASE = os.environ['API_BASE']
 
+@app.route(API_BASE + '/acceso_modulos', methods=['GET'])
+@rs.require_valid_token
+@jsonapi
+def obtener_acceso_modulos(token=None):
+
+    prof = warden.has_one_profile(token, ['gelis-super-admin'])
+    if prof and prof['profile'] == True:
+        a = [
+            'super-admin'
+        ]
+        return json.dumps(a)
+
+    prof = warden.has_one_profile(token, ['gelis-admin'])
+    if prof and prof['profile'] == True:
+        a = [
+            'buscar_usuario',
+            'crear_usuario',
+            'buscar_lugar',
+            'crear_lugar'
+        ]
+        return json.dumps(a)
+
+    prof = warden.has_one_profile(token, ['gelis-operator'])
+    if prof and prof['profile'] == True:
+        a = [
+            'buscar_usuario',
+            'buscar_lugar'
+        ]
+        return json.dumps(a)
+    a = []
+    return json.dumps(a)
+
 @app.route(API_BASE + '/usuarios/', methods=['GET'], defaults={'uid':None})
 @app.route(API_BASE + '/usuarios/<uid>', methods=['GET'])
 @rs.require_valid_token
@@ -61,7 +93,7 @@ def usuarios(uid=None, token=None):
             fecha_str = request.args.get('f', None)
             fecha = parser.parse(fecha_str) if fecha_str else None
             r = SilegModel.usuarios(session=session, search=search, retornarClave=c, offset=offset, limit=limit, fecha=fecha)
-        
+
         return r
 
 @app.route(API_BASE + '/usuarios', methods=['PUT','POST'])
