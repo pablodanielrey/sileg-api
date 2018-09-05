@@ -427,12 +427,20 @@ class SilegModel:
         l.tipo = lugar["tipo"]
         if lugar["descripcion"] is not None:
             l.descripcion = lugar["descripcion"]
+        else:
+            l.descripcion = ''
         if lugar["numero"] is not None:
             l.numero = lugar["numero"]
+        else:
+            l.numero = ''
         if lugar["telefono"] is not None:
             l.telefono = lugar["telefono"]
+        else:
+            l.telefono = ''
         if lugar["email"] is not None:
             l.correo = lugar["email"]
+        else:
+            l.correo = ''
         session.add(l)
         return l
 
