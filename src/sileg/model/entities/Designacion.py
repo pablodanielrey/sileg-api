@@ -31,8 +31,7 @@ class Designacion(Base):
 
     #designaciones = relationship('Designacion', back_populates='designacion')
 
-    usuario_id = Column(String, ForeignKey('usuario.id'))
-    usuario = relationship('Usuario', back_populates='designaciones')
+    usuario_id = Column(String)
 
     cargo_id = Column(String, ForeignKey('cargo.id'))
     cargo = relationship('Cargo', back_populates='designaciones')
@@ -50,11 +49,9 @@ class Designacion(Base):
 
     @classmethod
     def find(cls, session):
-        query = session.query(cls).join(Designacion.usuario).join(Designacion.lugar).join(Designacion.cargo)
+        query = session.query(cls).join(Designacion.lugar).join(Designacion.cargo)
         return query
 
-
-Usuario.designaciones = relationship('Designacion', back_populates='usuario')
 Cargo.designaciones = relationship('Designacion', back_populates='cargo')
 Lugar.designaciones = relationship('Designacion', back_populates='lugar')
 
