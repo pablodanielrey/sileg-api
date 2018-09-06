@@ -425,19 +425,20 @@ class SilegModel:
         l = Lugar(nombre)
         l.id = str(uuid.uuid4())
         l.tipo = lugar["tipo"]
-        if lugar["descripcion"] is not None:
+
+        if "descripcion" in lugar and lugar["descripcion"] is not None:
             l.descripcion = lugar["descripcion"]
         else:
             l.descripcion = ''
-        if lugar["numero"] is not None:
+        if "numero" in lugar and lugar["numero"] is not None:
             l.numero = lugar["numero"]
         else:
             l.numero = ''
-        if lugar["telefono"] is not None:
+        if "telefono" in lugar and lugar["telefono"] is not None:
             l.telefono = lugar["telefono"]
         else:
             l.telefono = ''
-        if lugar["email"] is not None:
+        if "email" in lugar and lugar["email"] is not None:
             l.correo = lugar["email"]
         else:
             l.correo = ''
