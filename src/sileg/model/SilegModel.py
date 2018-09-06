@@ -137,17 +137,12 @@ class SilegModel:
 
         ''' genero la designacion con los datos pasados '''
         cf = CumpleFunciones()
-        u = session.query(Usuario).filter(Usuario.id == uid).one_or_none()
-        if not u:
-            u = Usuario()
-            u.id = uid
-            session.add(u)
 
         d = Designacion()
         d.id = str(uuid.uuid4())
         d.tipo = 'original'
         d.desde = datetime.datetime.now()
-        d.usuario_id = u.id
+        d.usuario_id = uid
         d.cargo_id = cf.id
         d.lugar_id = pedido['lugar_id']
         session.add(d)
@@ -203,18 +198,10 @@ class SilegModel:
         r = cls.api(query)
         if not r.ok:
             return []
-
         usr = r.json()
-        susr = session.query(Usuario).filter(Usuario.id == uid).one_or_none()
-        if susr:
-            return {
-                'usuario': usr,
-                'sileg': susr
-            }
-        else:
-            return {
-                'usuario': usr
-            }
+        return {
+            'usuario': usr
+        }
 
 
     @classmethod
@@ -239,37 +226,12 @@ class SilegModel:
             return []
 
         usrs = r.json()
-        idsProcesados = {}
-        rusers = []
-        for u in usrs:
-            uid = u['id']
-            idsProcesados[uid] = u
-            surs = session.query(Usuario).filter(Usuario.id == uid).one_or_none()
-            rusers.append({
-                'usuario': u,
-                'sileg': surs
-            })
-
-        if not fecha:
-            return rusers
-
-        """ tengo en cuenta los que se pudieron haber agregado al sileg despues """
-        token = cls._get_token()
-        q = None
-        q = session.query(Usuario).filter(or_(Usuario.creado >= fecha, Usuario.actualizado >= fecha)).all()
-        for u in q:
-            if u.id not in idsProcesados.keys():
-                query = '{}/{}/{}'.format(cls.usuarios_url, 'usuarios', u.id)
-                r = cls.api(query, params={'c':True}, token=token)
-                if not r.ok:
-                    continue
-                usr = r.json()
-                if usr:
-                    rusers.append({
-                        'agregado': True,
-                        'usuario': usr,
-                        'sileg': u
-                    })
+        rusers = [ 
+            {
+            'usuario': u,
+            'sileg': None
+            } 
+            for u in usrs ]
         return rusers
 
     @classmethod
@@ -280,6 +242,7 @@ class SilegModel:
         q = q.limit(limit) if limit else q
         return q
 
+    """
     @classmethod
     def prorrogas(cls, session, designacion,
                     persona=None,
@@ -298,6 +261,7 @@ class SilegModel:
         q = q.options(joinedload('usuario'), joinedload('lugar'), joinedload('cargo'))
         q = q.order_by(Designacion.desde.desc())
         return q.all()
+    """
 
     @classmethod
     def chequear_acceso_designaciones(cls, session, usuario_logueado, uid):
@@ -326,8 +290,6 @@ class SilegModel:
         q = q.order_by(Designacion.desde.desc())
         q = cls._agregar_filtros_comunes(q, offset=offset, limit=limit, persona=persona, lugar=lugar)
         if expand:
-            if not persona:
-                q = q.options(joinedload('usuario'))
             if not lugar:
                 q = q.options(joinedload('lugar').joinedload('padre'))
             q = q.options(joinedload('cargo'))

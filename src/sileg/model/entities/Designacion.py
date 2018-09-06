@@ -4,7 +4,6 @@ from model_utils import Base
 
 from .Cargo import Cargo
 from .Lugar import Lugar
-from .Usuario import Usuario
 
 categoria_designacion_table = Table('categoria_designacion', Base.metadata,
     Column('designacion_id', String, ForeignKey('designacion.id')),
