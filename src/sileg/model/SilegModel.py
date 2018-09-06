@@ -422,7 +422,7 @@ class SilegModel:
             Catedra
         ])
         nombre = lugar["nombre"].strip()
-        l = lugares(nombre)
+        l = Lugar(nombre)
         l.id = str(uuid.uuid4())
         l.tipo = lugar["tipo"]
 
