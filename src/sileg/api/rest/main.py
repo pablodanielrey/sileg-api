@@ -296,6 +296,7 @@ def eliminar_designacion(did, token):
         session.commit()
         return True
 
+"""
 @app.route(API_BASE + '/prorrogas/<designacion>', methods=['GET'])
 @rs.require_valid_token
 @jsonapi
@@ -307,6 +308,7 @@ def prorrogas(designacion, token=None):
     historico = request.args.get('h',False,bool)
     with obtener_session() as session:
         return SilegModel.prorrogas(session=session, offset=offset, limit=limit, designacion=designacion, lugar=lugar, persona=persona, historico=historico)
+"""
 
 @app.route(API_BASE + '/cargos', methods=['GET'])
 @rs.require_valid_token
