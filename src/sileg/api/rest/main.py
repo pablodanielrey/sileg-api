@@ -140,6 +140,19 @@ def eliminar_correo(uid=None, cid=None, token=None):
     assert cid is not None
     return SilegModel.eliminarCorreo(uid, cid)
 
+@app.route(API_BASE + '/usuarios/<uid>/telefonos/<tid>', methods=['DELETE'])
+@app.route(API_BASE + '/telefonos/<tid>', methods=['DELETE'])
+@rs.require_valid_token
+@jsonapi
+def eliminar_telefono(uid=None, tid=None, token=None):
+
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
+    if not prof['profile']:
+        return ('no tiene los permisos suficientes', 403)
+
+    assert tid is not None
+    return SilegModel.eliminarTelefono(uid, tid)
+
 @app.route(API_BASE + '/usuarios/<uid>/correos', methods=['PUT','POST'])
 @rs.require_valid_token
 @jsonapi

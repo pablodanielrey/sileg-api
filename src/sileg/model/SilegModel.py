@@ -179,6 +179,15 @@ class SilegModel:
         return r.json()
 
     @classmethod
+    def eliminarTelefono(cls, uid, tid):
+        query = cls.usuarios_url + '/usuarios/{}/telefonos/{}'.format(uid, tid)
+        r = cls.api_delete(query)
+        if not r.ok:
+            raise Exception(r.text)
+        logging.info(r.json())
+        return r.json()
+
+    @classmethod
     def crearUsuario(cls, usuario):
         query = cls.usuarios_url + '/usuarios'
         r = cls.api_put(query, data=usuario)
