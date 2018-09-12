@@ -126,6 +126,21 @@ def actualizar_usuario(uid, token=None):
     assert usuario is not None
     return SilegModel.actualizarUsuario(uid, usuario)
 
+'''
+@app.route(API_BASE + '/usuarios/<uid>/telefono', methods=['POST'])
+@rs.require_valid_token
+@jsonapi
+def crear_telefono(uid, token=None):
+
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
+    if not prof['profile']:
+        return ('no tiene los permisos suficientes', 403)
+
+    telefono = request.get_json()
+    assert uid is not None
+    assert telefono is not None
+    return SilegModel.agregarTelefono(uid, telefono)
+'''
 
 @app.route(API_BASE + '/usuarios/<uid>/correos/<cid>', methods=['DELETE'])
 @app.route(API_BASE + '/correos/<cid>', methods=['DELETE'])

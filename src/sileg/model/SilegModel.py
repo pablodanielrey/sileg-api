@@ -200,6 +200,17 @@ class SilegModel:
         logging.info(r.json())
         return r.json()
 
+    '''
+    @classmethod
+    def agregarTelefono(cls, uid, telefono):
+        query = cls.usuarios_url + '/usuarios/{}/telefono'.format(uid)
+        r = cls.api_post(query, data=telefono)
+        if not r.ok:
+            raise Exception(r.text)
+        logging.info(r.json())
+        return r.json()
+    '''
+
     @classmethod
     def usuario(cls, session, uid, retornarClave=False):
         query = cls.usuarios_url + '/usuarios/' + uid
