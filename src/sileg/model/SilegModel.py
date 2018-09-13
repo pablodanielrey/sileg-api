@@ -87,46 +87,10 @@ class SilegModel:
         logging.debug(r)
         return r
 
-
-    @classmethod
-    def generarClave(cls, uid):
-        query = cls.usuarios_url + '/generar_clave/' + uid
-        r = cls.api(query)
-        logging.info(r.json())
-        return r.json()
-
-    @classmethod
-    def _agregarCorreo(cls, session, uid, correo):
-        ''' chequeo que la clave del usuario tenga mas de 8 caracteres '''
-        datos = cls.usuario(session, uid, retornarClave=True)
-        assert 'claves' in datos['usuario']
-        assert datos['usuario']['claves'] is not None
-        for c in datos['usuario']['claves']:
-            if len(c['clave']) >= 8:
-                break
-        else:
-            raise Exception('La clave no cumple los requisitos mínimos')
-
-        logging.debug('tiene designacion asi que se llama a la api de usuarios')
-        query = cls.usuarios_url + '/usuarios/{}/correo'.format(uid)
-        r = cls.api_post(query, data={'correo':correo})
-        if not r.ok:
-            raise Exception(r.text)
-        logging.info(r.json())
-        return r.json()
-
     @staticmethod
     def _chequearParam(param, d):
         assert param in d
         assert d[param] is not None
-
-    @classmethod
-    def crearDesignacionCumpliendoFuncionesConCorreo(cls, session, pedido):
-        cls._chequearParam('correo', pedido)
-        uid = pedido['usuario_id']
-        correo = pedido['correo']
-        cls._agregarCorreo(session, uid, correo)
-        return cls.crearDesignacionCumpliendoFunciones(session, pedido)
 
     @classmethod
     def crearDesignacionCumpliendoFunciones(cls, session, pedido):
@@ -147,113 +111,7 @@ class SilegModel:
         d.lugar_id = pedido['lugar_id']
         session.add(d)
         return d
-
-    @classmethod
-    def verificarDisponibilidadCorreo(cls, cuenta):
-        query = cls.usuarios_url + '/correo/' + cuenta
-        r = cls.api(query)
-        if not r.ok:
-            raise Exception(r.text)
-        logging.info(r.json())
-        return r.json()
-
-    @classmethod
-    def agregarCorreo(cls, session, uid, correo):
-        ''' verifico que tenga designacion '''
-        if session.query(Designacion).filter(Designacion.usuario_id == uid).count() <= 0:
-            raise Exception('no tiene designacion')
-        return cls._agregarCorreo(session, uid, correo)
-
-    @classmethod
-    def eliminarCorreo(cls, uid, cid):
-        query = cls.usuarios_url + '/usuarios/{}/correos/{}'.format(uid, cid)
-        r = cls.api_delete(query)
-        if not r.ok:
-            raise Exception(r.text)
-        logging.info(r.json())
-        return r.json()
-
-    @classmethod
-    def eliminarTelefono(cls, uid, tid):
-        query = cls.usuarios_url + '/usuarios/{}/telefonos/{}'.format(uid, tid)
-        r = cls.api_delete(query)
-        if not r.ok:
-            raise Exception(r.text)
-        logging.info(r.json())
-        return r.json()
-
-    @classmethod
-    def crearUsuario(cls, usuario):
-        query = cls.usuarios_url + '/usuarios'
-        r = cls.api_put(query, data=usuario)
-        if not r.ok:
-            raise Exception(r.text)
-        logging.info(r.json())
-        return r.json()
-
-    @classmethod
-    def actualizarUsuario(cls, uid, usuario):
-        query = cls.usuarios_url + '/usuarios/{}'.format(uid)
-        r = cls.api_post(query, data=usuario)
-        if not r.ok:
-            raise Exception(r.text)
-        logging.info(r.json())
-        return r.json()
-
-    '''
-    @classmethod
-    def agregarTelefono(cls, uid, telefono):
-        query = cls.usuarios_url + '/usuarios/{}/telefono'.format(uid)
-        r = cls.api_post(query, data=telefono)
-        if not r.ok:
-            raise Exception(r.text)
-        logging.info(r.json())
-        return r.json()
-    '''
-
-    @classmethod
-    def usuario(cls, session, uid, retornarClave=False):
-        query = cls.usuarios_url + '/usuarios/' + uid
-        query = query + '?c=True' if retornarClave else query
-        r = cls.api(query)
-        if not r.ok:
-            return []
-        usr = r.json()
-        return {
-            'usuario': usr
-        }
-
-
-    @classmethod
-    def usuarios(cls, session, search=None, retornarClave=False, fecha=None, offset=None, limit=None):
-        logging.debug(fecha)
-        query = cls.usuarios_url + '/usuarios/'
-        params = {}
-        if search:
-            params['q'] = search
-        if offset:
-            params['offset'] = offset
-        if limit:
-            params['limit'] = limit
-        if fecha:
-            params['f'] = fecha
-        if retornarClave:
-            params['c'] = True
-
-        logging.debug(query)
-        r = cls.api(query, params)
-        if not r.ok:
-            return []
-
-        usrs = r.json()
-        rusers = [ 
-            {
-            'usuario': u,
-            'sileg': None
-            } 
-            for u in usrs ]
-        return rusers
-
+  
     @classmethod
     def _agregar_filtros_comunes(cls, q, persona=None, lugar=None, offset=None, limit=None):
         q = q.filter(Designacion.usuario_id == persona) if persona else q
@@ -472,8 +330,6 @@ class SilegModel:
         l = session.query(lugares).filter(lugares.id == lid).one()
         l.eliminado = datetime.datetime.now()
         return l.eliminado
-
-
 
     @classmethod
     def restaurarLugar(cls, session, lid):

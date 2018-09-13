@@ -66,65 +66,6 @@ def obtener_acceso_modulos(token=None):
     a = []
     return json.dumps(a)
 
-@app.route(API_BASE + '/usuarios/', methods=['GET'], defaults={'uid':None})
-@app.route(API_BASE + '/usuarios/<uid>', methods=['GET'])
-@rs.require_valid_token
-@jsonapi
-def usuarios(uid=None, token=None):
-    c = False
-
-    prof = warden.has_all_profiles(token, ['gelis-super-admin'])
-    if prof['profile']:
-        c = request.args.get('c',False,bool)
-    else:
-        prof = warden.has_all_profiles(token, ['gelis-admin'])
-        if not prof['profile']:
-            return ('no tiene los permisos suficientes', 403)
-
-    search = request.args.get('q',None)
-    offset = request.args.get('offset',None,int)
-    limit = request.args.get('limit',None,int)
-
-    with obtener_session() as session:
-        r = None
-        if uid:
-            r = SilegModel.usuario(session, uid, retornarClave=c)
-        else:
-            fecha_str = request.args.get('f', None)
-            fecha = parser.parse(fecha_str) if fecha_str else None
-            r = SilegModel.usuarios(session=session, search=search, retornarClave=c, offset=offset, limit=limit, fecha=fecha)
-
-        return r
-
-@app.route(API_BASE + '/usuarios', methods=['PUT','POST'])
-@rs.require_valid_token
-@jsonapi
-def crear_usuario(token=None):
-
-    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
-    if not prof['profile']:
-        return ('no tiene los permisos suficientes', 403)
-
-    usuario = request.get_json()
-    if not usuario:
-        raise Exception('usuario == None')
-    logging.debug(usuario)
-    return SilegModel.crearUsuario(usuario)
-
-
-@app.route(API_BASE + '/usuarios/<uid>', methods=['POST'])
-@rs.require_valid_token
-@jsonapi
-def actualizar_usuario(uid, token=None):
-
-    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
-    if not prof['profile']:
-        return ('no tiene los permisos suficientes', 403)
-
-    usuario = request.get_json()
-    assert uid is not None
-    assert usuario is not None
-    return SilegModel.actualizarUsuario(uid, usuario)
 
 '''
 @app.route(API_BASE + '/usuarios/<uid>/telefono', methods=['POST'])
@@ -142,46 +83,6 @@ def crear_telefono(uid, token=None):
     return SilegModel.agregarTelefono(uid, telefono)
 '''
 
-@app.route(API_BASE + '/usuarios/<uid>/correos/<cid>', methods=['DELETE'])
-@app.route(API_BASE + '/correos/<cid>', methods=['DELETE'])
-@rs.require_valid_token
-@jsonapi
-def eliminar_correo(uid=None, cid=None, token=None):
-
-    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
-    if not prof['profile']:
-        return ('no tiene los permisos suficientes', 403)
-
-    assert cid is not None
-    return SilegModel.eliminarCorreo(uid, cid)
-
-@app.route(API_BASE + '/usuarios/<uid>/telefonos/<tid>', methods=['DELETE'])
-@app.route(API_BASE + '/telefonos/<tid>', methods=['DELETE'])
-@rs.require_valid_token
-@jsonapi
-def eliminar_telefono(uid=None, tid=None, token=None):
-
-    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
-    if not prof['profile']:
-        return ('no tiene los permisos suficientes', 403)
-
-    assert tid is not None
-    return SilegModel.eliminarTelefono(uid, tid)
-
-@app.route(API_BASE + '/usuarios/<uid>/correos', methods=['PUT','POST'])
-@rs.require_valid_token
-@jsonapi
-def agregar_correo(uid=None, token=None):
-
-    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
-    if not prof['profile']:
-        return ('no tiene los permisos suficientes', 403)
-
-    datos = request.get_json()
-    logging.debug(datos)
-    with obtener_session() as session:
-        r = SilegModel.agregarCorreo(session, uid, datos['correo'])
-        return r
 
 @app.route(API_BASE + '/usuarios/<uid>/designaciones', methods=['GET'])
 @rs.require_valid_token
@@ -205,28 +106,6 @@ def obtener_designaciones_por_usuario(uid=None, token=None):
         else:
             return ('no tiene los permisos suficientes', 403)
 
-
-@app.route(API_BASE + '/generar_clave/<uid>', methods=['GET'])
-@rs.require_valid_token
-@jsonapi
-def generar_clave(uid, token=None):
-
-    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
-    if not prof['profile']:
-        return ('no tiene los permisos suficientes', 403)
-
-    assert uid is not None
-    return SilegModel.generarClave(uid)
-
-@app.route(API_BASE + '/correo/<cuenta>', methods=['GET'])
-@rs.require_valid_token
-@jsonapi
-def verificarDisponibilidadCorreo(cuenta=None, token=None):
-    if request.method == 'OPTIONS':
-        return 204
-    assert cuenta is not None
-    assert '@' in cuenta
-    return SilegModel.verificarDisponibilidadCorreo(cuenta)
 
 @app.route(API_BASE + '/designaciones/', methods=['GET'])
 @rs.require_valid_token
