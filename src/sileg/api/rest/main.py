@@ -11,16 +11,14 @@ from flask_jsontools import jsonapi
 from dateutil import parser
 
 VERIFY_SSL = bool(int(os.environ.get('VERIFY_SSL',0)))
+OIDC_URL = os.environ['OIDC_URL']
 
-import oidc
-from oidc.oidc import TokenIntrospection
 client_id = os.environ['OIDC_CLIENT_ID']
 client_secret = os.environ['OIDC_CLIENT_SECRET']
-rs = TokenIntrospection(client_id, client_secret, verify=VERIFY_SSL)
 
 from warden.sdk.warden import Warden
 warden_url = os.environ['WARDEN_API_URL']
-warden = Warden(warden_url, client_id, client_secret, verify=VERIFY_SSL)
+warden = Warden(OIDC_URL, warden_url, client_id, client_secret, verify=VERIFY_SSL)
 
 from rest_utils import register_encoder
 
@@ -35,7 +33,7 @@ register_encoder(app)
 API_BASE = os.environ['API_BASE']
 
 @app.route(API_BASE + '/acceso_modulos', methods=['GET'])
-@rs.require_valid_token
+@warden.require_valid_token
 @jsonapi
 def obtener_acceso_modulos(token=None):
 
@@ -69,7 +67,7 @@ def obtener_acceso_modulos(token=None):
 
 '''
 @app.route(API_BASE + '/usuarios/<uid>/telefono', methods=['POST'])
-@rs.require_valid_token
+@warden.require_valid_token
 @jsonapi
 def crear_telefono(uid, token=None):
 
@@ -85,7 +83,7 @@ def crear_telefono(uid, token=None):
 
 
 @app.route(API_BASE + '/usuarios/<uid>/designaciones', methods=['GET'])
-@rs.require_valid_token
+@warden.require_valid_token
 @jsonapi
 def obtener_designaciones_por_usuario(uid=None, token=None):
     assert uid is not None
@@ -108,7 +106,7 @@ def obtener_designaciones_por_usuario(uid=None, token=None):
 
 
 @app.route(API_BASE + '/designaciones/', methods=['GET'])
-@rs.require_valid_token
+@warden.require_valid_token
 @jsonapi
 def designaciones(token):
     offset = request.args.get('offset',None,int)
@@ -121,8 +119,9 @@ def designaciones(token):
         designaciones.append('cantidad:{}'.format(len(designaciones)))
         return designaciones
 
+"""
 @app.route(API_BASE + '/designacion', methods=['POST'])
-@rs.require_valid_token
+@warden.require_valid_token
 @jsonapi
 def crearDesignacion(token=None):
     ''' crea una nueva designacion, solo permite crear cumplimiento de funciones '''
@@ -138,9 +137,11 @@ def crearDesignacion(token=None):
         session.commit()
         logging.debug(json.dumps(d))
         return d.id
+"""
+
 
 @app.route(API_BASE + '/designacion-sin-correo', methods=['PUT'])
-@rs.require_valid_token
+@warden.require_valid_token
 @jsonapi
 def crearDesignacionSinCorreo(token):
     ''' crea una nueva designacion, solo permite crear cumplimiento de funciones '''
@@ -158,7 +159,7 @@ def crearDesignacionSinCorreo(token):
         return d.id
 
 @app.route(API_BASE + '/designacion/<did>', methods=['PUT'])
-@rs.require_valid_token
+@warden.require_valid_token
 @jsonapi
 def modificar_designacion(did, token):
     prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
@@ -176,7 +177,7 @@ def modificar_designacion(did, token):
         session.commit()
 
 @app.route(API_BASE + '/designacion/<did>', methods=['DELETE'])
-@rs.require_valid_token
+@warden.require_valid_token
 @jsonapi
 def eliminar_designacion(did, token):
     prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
@@ -192,7 +193,7 @@ def eliminar_designacion(did, token):
 
 """
 @app.route(API_BASE + '/prorrogas/<designacion>', methods=['GET'])
-@rs.require_valid_token
+@warden.require_valid_token
 @jsonapi
 def prorrogas(designacion, token=None):
     offset = request.args.get('offset',None,int)
@@ -205,14 +206,14 @@ def prorrogas(designacion, token=None):
 """
 
 @app.route(API_BASE + '/cargos', methods=['GET'])
-@rs.require_valid_token
+@warden.require_valid_token
 @jsonapi
 def cargos(token=None):
     with obtener_session() as session:
         return SilegModel.cargos(session)
 
 @app.route(API_BASE + '/lugares', methods=['PUT'])
-@rs.require_valid_token
+@warden.require_valid_token
 @jsonapi
 def crearLugar(token=None):
     prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
@@ -227,7 +228,7 @@ def crearLugar(token=None):
         return l
 
 @app.route(API_BASE + '/lugares/<lid>', methods=['POST'])
-@rs.require_valid_token
+@warden.require_valid_token
 @jsonapi
 def modificar_lugar(lid=None, token=None):
     prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
@@ -239,7 +240,7 @@ def modificar_lugar(lid=None, token=None):
         session.commit()
 
 @app.route(API_BASE + '/lugares/<lid>', methods=['DELETE'])
-@rs.require_valid_token
+@warden.require_valid_token
 @jsonapi
 def eliminar_lugar(lid, token):
     prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
@@ -252,7 +253,7 @@ def eliminar_lugar(lid, token):
         return fecha
 
 @app.route(API_BASE + '/lugares/<lid>/restaurar', methods=['GET'])
-@rs.require_valid_token
+@warden.require_valid_token
 @jsonapi
 def restaurar_lugar(lid, token=None):
     prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
@@ -265,7 +266,7 @@ def restaurar_lugar(lid, token=None):
         return id
 
 @app.route(API_BASE + '/lugares/<lid>/designaciones', methods=['GET'])
-@rs.require_valid_token
+@warden.require_valid_token
 @jsonapi
 def obtener_desginaciones_lugar(lid, token=None):
     assert lid is not None
@@ -274,7 +275,7 @@ def obtener_desginaciones_lugar(lid, token=None):
 
 @app.route(API_BASE + '/lugares/', methods=['GET'], defaults={'lid':None})
 @app.route(API_BASE + '/lugares/<lid>', methods=['GET'])
-@rs.require_valid_token
+@warden.require_valid_token
 @jsonapi
 def lugares(lid=None, token=None):
     with obtener_session() as session:
@@ -288,7 +289,7 @@ def lugares(lid=None, token=None):
             return lugares
 
 @app.route(API_BASE + '/departamentos/', methods=['GET'])
-@rs.require_valid_token
+@warden.require_valid_token
 @jsonapi
 def departamentos(token=None):
     with obtener_session() as session:
@@ -296,7 +297,7 @@ def departamentos(token=None):
 
 @app.route(API_BASE + '/materias/', methods=['GET'], defaults={'materia':None})
 @app.route(API_BASE + '/materias/<materia>', methods=['GET'])
-@rs.require_valid_token
+@warden.require_valid_token
 @jsonapi
 def materias(materia=None, token=None):
     catedra = request.args.get('c',None)
@@ -306,7 +307,7 @@ def materias(materia=None, token=None):
 
 @app.route(API_BASE + '/catedras/', methods=['GET'], defaults={'catedra':None})
 @app.route(API_BASE + '/catedras/<catedra>', methods=['GET'])
-@rs.require_valid_token
+@warden.require_valid_token
 @jsonapi
 def catedras(catedra=None, token=None):
     materia = request.args.get('m',None)
