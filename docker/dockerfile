@@ -14,7 +14,7 @@ COPY docker/pip.conf /etc/
 COPY docker/entrypoint.sh /
 COPY docker/supervisor/rest.conf /etc/supervisor/conf.d
 COPY src /src
-RUN cd /src && pip3 install --trusted-host pypi.econo.unlp.edu.ar --upgrade -e .
+RUN cd /src && pip3 install --upgrade-strategy=eager --trusted-host pypi.econo.unlp.edu.ar --upgrade -e .
 
 COPY scripts /scripts
 
