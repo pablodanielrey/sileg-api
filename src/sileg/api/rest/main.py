@@ -30,6 +30,22 @@ app = Flask(__name__, static_url_path='/src/sileg/web')
 app.wsgi_app = ProxyFix(app.wsgi_app)
 register_encoder(app)
 
+
+DEBUGGING = bool(int(os.environ.get('VSC_DEBUGGING',0)))
+def configurar_debugger():
+    """
+    para debuggear con visual studio code
+    """
+    if DEBUGGING:
+        print('Iniciando Debugger PTVSD')
+        import ptvsd
+        #secret = os.environ.get('VSC_DEBUG_KEY',None)
+        port = int(os.environ.get('VSC_DEBUGGING_PORT', 5678))
+        ptvsd.enable_attach(address=('0.0.0.0',port))
+
+configurar_debugger()
+
+
 API_BASE = os.environ['API_BASE']
 
 @app.route(API_BASE + '/acceso_modulos', methods=['GET'])
@@ -343,7 +359,7 @@ def add_header(r):
     return r
 
 def main():
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=9005, debug=False)
 
 if __name__ == '__main__':
     main()
