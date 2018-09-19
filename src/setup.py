@@ -12,7 +12,7 @@
 from setuptools import setup, find_packages
 
 setup(name='sileg-api',
-          version='0.1.1.a1',
+          version='0.1.1.a2',
           description='proyecto de las designaciones de docentes/no-docentes de la facultad',
           url='https://github.com/pablodanielrey/sileg-api',
           author='Desarrollo DiTeSi, FCE',
