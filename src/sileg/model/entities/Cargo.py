@@ -20,6 +20,10 @@ class Cargo(Base):
         ejemplos de tipo
         Docente
         No Docente
+        Beca
+        Docente Preuniversitario
+        Autoridad Superior
+        Definir        
     """
 
     """
@@ -46,11 +50,40 @@ class Docente(Cargo):
         'polymorphic_identity':'Docente'
     }
 
+
+class DocentePreuniversitario(Cargo):
+
+    __mapper_args__ = {        
+        'polymorphic_identity':'Docente Preuniversitario'
+    }
+
+
+class Definir(Cargo):
+
+    __mapper_args__ = {        
+        'polymorphic_identity':'Definir'
+    }
+    
+
 class NoDocente(Cargo):
 
     __mapper_args__ = {
         'polymorphic_identity':'No Docente'
     }
+
+
+class AutoridadSuperior(Cargo):
+
+    __mapper_args__ = {
+        'polymorphic_identity':'Autoridad Superior'
+    }
+
+
+class Beca(Cargo):
+
+    __mapper_args__ = {
+        'polymorphic_identity':'Beca'
+    }    
 
 
 class CumpleFunciones(NoDocente):
