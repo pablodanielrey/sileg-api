@@ -8,6 +8,7 @@ class Cargo(Base):
 
     nombre = Column(String)
     tipo = Column(String)
+    descripcion = Column(String)
 
     __mapper_args__ = {
         'polymorphic_on':tipo,
