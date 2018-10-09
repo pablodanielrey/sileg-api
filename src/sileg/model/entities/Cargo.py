@@ -80,12 +80,26 @@ class AutoridadSuperior(Cargo):
     }
 
 
-class Beca(Cargo):
+class BecaDeInvestigacion(Cargo):
 
     __mapper_args__ = {
         'polymorphic_identity':'Beca'
-    }    
+    }
 
+
+class BecaExperienciaLaboral(Cargo):
+
+    __mapper_args__ = {
+        'polymorphic_identity':'Beca de Experiencia Laboral'
+    }
+
+
+class ContratoDeObra(Cargo):
+
+    __mapper_args__ = {
+        'polymorphic_identity':'Contrato de Obra'
+    } 
+    
 
 class CumpleFunciones(NoDocente):
 
