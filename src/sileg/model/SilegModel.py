@@ -6,87 +6,47 @@ import os
 import logging
 import uuid
 
-import oidc
-from oidc.oidc import ClientCredentialsGrant
-
+from .API import API
+from .UserCache import UserCache
 from .entities import *
+
+USUARIOS_URL = os.environ['USERS_API_URL']
+api = API()
+
+"""
+    /////////// los getters de la cache //////////
+"""
+
+def _get_user_uuid(uuid, token=None):
+    query = '{}/usuarios/{}'.format(USUARIOS_URL, uuid)
+    r = api.get(query, token=token)
+    if not r.ok:
+        return None
+    usr = r.json()        
+    return usr
+
+def _get_user_dni(dni, token=None):
+    query = '{}/usuarios/'.format(USUARIOS_URL)
+    r = api.get(query, params={'q':dni}, token=token)
+    if not r.ok:
+        return None
+    for usr in r.json():
+        return usr        
+    return None
+
+"""
+    ////////////////
+"""
 
 
 class SilegModel:
 
-    verify = bool(int(os.environ.get('VERIFY_SSL',0)))
-    usuarios_url = os.environ['USERS_API_URL']
-    oidc_url = os.environ['OIDC_URL']
-    client_id = os.environ['OIDC_CLIENT_ID']
-    client_secret = os.environ['OIDC_CLIENT_SECRET']
+    
+    REDIS_HOST = os.environ.get('REDIS_HOST')
+    REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
 
-    @classmethod
-    def _get_token(cls):
-        ''' obtengo un token mediante el flujo client_credentials para poder llamar a la api de usuarios '''
-        grant = ClientCredentialsGrant(cls.oidc_url,cls.client_id, cls.client_secret, verify=cls.verify)
-        token = grant.get_token(grant.access_token())
-        if not token:
-            raise Exception()
-        return token
+    cache = UserCache(REDIS_HOST, REDIS_PORT, _get_user_uuid, _get_user_dni)
 
-    @classmethod
-    def api(cls, api, params=None, token=None):
-        if not token:
-            token = cls._get_token()
-
-        ''' se deben cheqeuar intentos de login, y disparar : SeguridadError en el caso de que se haya alcanzado el máximo de intentos '''
-        headers = {
-            'Authorization': 'Bearer {}'.format(token)
-        }
-        logging.debug(api)
-        logging.debug(params)
-        r = requests.get(api, verify=cls.verify, headers=headers, params=params)
-        logging.debug(r)
-        return r
-
-    @classmethod
-    def api_post(cls, api, data=None, token=None):
-        if not token:
-            token = cls._get_token()
-
-        ''' se deben cheqeuar intentos de login, y disparar : SeguridadError en el caso de que se haya alcanzado el máximo de intentos '''
-        headers = {
-            'Authorization': 'Bearer {}'.format(token)
-        }
-        logging.debug(api)
-        logging.debug(data)
-        r = requests.post(api, verify=cls.verify, headers=headers, json=data)
-        logging.debug(r)
-        return r
-
-    @classmethod
-    def api_put(cls, api, data=None, token=None):
-        if not token:
-            token = cls._get_token()
-
-        ''' se deben cheqeuar intentos de login, y disparar : SeguridadError en el caso de que se haya alcanzado el máximo de intentos '''
-        headers = {
-            'Authorization': 'Bearer {}'.format(token)
-        }
-        logging.debug(api)
-        logging.debug(data)
-        r = requests.put(api, verify=cls.verify, headers=headers, json=data)
-        logging.debug(r)
-        return r
-
-    @classmethod
-    def api_delete(cls, api, token=None):
-        if not token:
-            token = cls._get_token()
-
-        ''' se deben cheqeuar intentos de login, y disparar : SeguridadError en el caso de que se haya alcanzado el máximo de intentos '''
-        headers = {
-            'Authorization': 'Bearer {}'.format(token)
-        }
-        logging.debug(api)
-        r = requests.delete(api, verify=cls.verify, headers=headers)
-        logging.debug(r)
-        return r
 
     @staticmethod
     def _chequearParam(param, d):
@@ -356,11 +316,9 @@ class SilegModel:
         # obtengo las designaciones del lugar
         designaciones = []
         desig = cls.designaciones(session=session, lugar=lid)
-        tk = cls._get_token()
+        tk = api._get_token()
         for d in desig:
-            query = cls.usuarios_url + '/usuarios/' + d.usuario_id
-            r = cls.api(query, token=tk)
-            usr = r.json() if r.ok else None
+            usr = cls.cache.obtener_usuario_por_uid(d.usuario_id, token=tk)
             designaciones.append({'designacion':d, 'usuario': usr})
 
 
