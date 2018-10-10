@@ -356,9 +356,10 @@ class SilegModel:
         # obtengo las designaciones del lugar
         designaciones = []
         desig = cls.designaciones(session=session, lugar=lid)
+        tk = cls._get_token()
         for d in desig:
             query = cls.usuarios_url + '/usuarios/' + d.usuario_id
-            r = cls.api(query)
+            r = cls.api(query, token=tk)
             usr = r.json() if r.ok else None
             designaciones.append({'designacion':d, 'usuario': usr})
 

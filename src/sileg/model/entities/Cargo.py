@@ -99,7 +99,7 @@ class ContratoDeObra(Cargo):
     __mapper_args__ = {
         'polymorphic_identity':'Contrato de Obra'
     } 
-    
+
 
 class CumpleFunciones(NoDocente):
 
