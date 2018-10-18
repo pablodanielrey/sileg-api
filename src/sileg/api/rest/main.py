@@ -104,7 +104,7 @@ def crear_telefono(uid, token=None):
 def obtener_designaciones_por_usuario(uid=None, token=None):
     assert uid is not None
 
-    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin', 'gelis-operator'])
     if prof and prof['profile']:
         with obtener_session() as session:
             designaciones = SilegModel.designaciones(session=session, persona=uid, historico=True, expand=True)
@@ -125,6 +125,11 @@ def obtener_designaciones_por_usuario(uid=None, token=None):
 @warden.require_valid_token
 @jsonapi
 def designaciones(token):
+
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin', 'gelis-operator'])
+    if not prof or not prof['profile']:
+        return ('no tiene los permisos suficientes', 403)
+
     offset = request.args.get('offset',None,int)
     limit = request.args.get('limit',None,int)
     lugar = request.args.get('l',None)
@@ -285,6 +290,10 @@ def restaurar_lugar(lid, token=None):
 @warden.require_valid_token
 @jsonapi
 def obtener_desginaciones_lugar(lid, token=None):
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin', 'gelis-operator'])
+    if not prof or not prof['profile']:
+        return ('no tiene los permisos suficientes', 403)
+
     assert lid is not None
     with obtener_session() as session:
         return SilegModel.obtenerDesignacionesLugar(session, lid)
