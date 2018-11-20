@@ -81,27 +81,6 @@ class SilegModel:
         q = q.limit(limit) if limit else q
         return q
 
-    """
-    @classmethod
-    def prorrogas(cls, session, designacion,
-                    persona=None,
-                    lugar=None,
-                    historico=False,
-                    offset=None, limit=None):
-
-        q = Designacion.find(session)
-        q = q.filter(Designacion.designacion_id == designacion, Designacion.tipo == 'prorroga')
-
-        if not historico:
-            ahora = datetime.datetime.now().date()
-            q = q.filter(or_(Designacion.hasta == None, Designacion.hasta >= ahora))
-
-        q = cls._agregar_filtros_comunes(q, persona, lugar, offset, limit)
-        q = q.options(joinedload('usuario'), joinedload('lugar'), joinedload('cargo'))
-        q = q.order_by(Designacion.desde.desc())
-        return q.all()
-    """
-
     @classmethod
     def chequear_acceso_designaciones(cls, session, usuario_logueado, uid):
         assert usuario_logueado is not None
@@ -121,8 +100,6 @@ class SilegModel:
                     historico=False, expand=False):
 
         q = Designacion.find(session)
-        q = q.filter(Designacion.designacion_id == None, or_(Designacion.tipo == 'original', Designacion.tipo == None))
-
         if not historico:
             q = q.filter(or_(Designacion.historico == None, Designacion.historico == False))
 
@@ -133,6 +110,7 @@ class SilegModel:
                 q = q.options(joinedload('lugar').joinedload('padre'))
             q = q.options(joinedload('cargo'))
         return q.all()
+
 
     @classmethod
     def cargos(cls, session):
