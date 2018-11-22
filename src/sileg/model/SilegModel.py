@@ -125,12 +125,15 @@ class SilegModel:
 
     @classmethod
     def cargos(cls, session):
+        """
         cargos = with_polymorphic(Cargo,[
             Docente,
             CumpleFunciones,
             NoDocente
         ])
         return session.query(cargos).all()
+        """
+        return session.query(Cargo).all()
 
 
     @classmethod
