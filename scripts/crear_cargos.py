@@ -34,9 +34,10 @@ if __name__ == '__main__':
 
     with obtener_session() as s:
         for c in cargos:
-            c1 = s.query(Cargo).filter(Cargo.id == c.id).one()
+            c1 = s.query(Cargo).filter(Cargo.id == c.id).one_or_none()
             if c1:
                 c1.nombre = c.nombre
+                c1.tipo = c.tipo
             else:
                 s.add(c)
             s.commit()
