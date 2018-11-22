@@ -113,6 +113,17 @@ class SilegModel:
 
 
     @classmethod
+    def obtener_designaciones_docentes_por_persona(cls, session, persona):
+        pass
+
+    @classmethod
+    def obtener_designaciones_no_docentes_por_persona(cls, session, persona):
+        pass
+
+
+
+
+    @classmethod
     def cargos(cls, session):
         cargos = with_polymorphic(Cargo,[
             Docente,

@@ -10,22 +10,24 @@ class Cargo(Base):
     tipo = Column(String)
     descripcion = Column(String)
 
+    _tipos = [
+        'Docente',
+        'No Docente',
+        'Autoridad',
+        'Pre Grado'
+    ]
+
     __mapper_args__ = {
         'polymorphic_on':tipo,
         'polymorphic_identity':'cargo'
     }
 
+    def __init__(self, id=None, nombre = None, tipo = None, descripcion = ''):
+        self.id = id if id
+        self.nombre = nombre if nombre
+        self.tipo = tipo if tipo
+        self.descripcion = descripcion
 
-
-    """
-        ejemplos de tipo
-        Docente
-        No Docente
-        Beca
-        Docente Preuniversitario
-        Autoridad Superior
-        Definir        
-    """
 
     """
         ejemplos de cargos
