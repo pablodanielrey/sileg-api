@@ -3,7 +3,6 @@ if __name__ == '__main__':
 
     from sileg.model import obtener_session
     from sileg.model.entities import Cargo
-    s = obtener_session()
 
     cargos = {
         # docentes
@@ -32,7 +31,9 @@ if __name__ == '__main__':
         Cargo(id='245eae51-28c4-4c6b-9085-354606399666', nombre='Cumple Funciones', tipo=Cargo._tipos[1])
     }
 
-    for c in cargos:
-        if s.query(Cargo).filter(Cargo.id == c.id).count() <= 0:
-            s.add(c)
-            s.commit()
+
+    with obtener_session() as s:
+        for c in cargos:
+            if s.query(Cargo).filter(Cargo.id == c.id).count() <= 0:
+                s.add(c)
+                s.commit()
