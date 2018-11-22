@@ -17,10 +17,12 @@ class Cargo(Base):
         'Pre Grado'
     ]
 
+    """
     __mapper_args__ = {
         'polymorphic_on':tipo,
         'polymorphic_identity':'cargo'
     }
+    """
 
     def __init__(self, id=None, nombre = None, tipo = None, descripcion = ''):
         if id: self.id = id
@@ -47,6 +49,7 @@ class Cargo(Base):
     """
 
 
+"""
 class Docente(Cargo):
 
     __mapper_args__ = {
@@ -108,3 +111,4 @@ class CumpleFunciones(NoDocente):
     def __init__(self):
         self.id = '245eae51-28c4-4c6b-9085-354606399666'
         self.nombre = 'Cumple Funciones'
+"""
