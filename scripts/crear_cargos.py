@@ -22,7 +22,7 @@ if __name__ == '__main__':
         #autoridades
 
         Cargo(id='325e5e55-375b-4768-9e7b-c14de0a85553', nombre='Secretario', tipo=Cargo._tipos[2]),
-        Cargo(id='84a2bc10-f82d-489b-962c-1a8f25bd1796', nombre='Pro Secretario D/S', tipo=Cargo._tipos[2]),
+        Cargo(id='84a2bc10-f82d-489b-962c-1a8f25bd1796', nombre='Pro Secretario', tipo=Cargo._tipos[2]),
         Cargo(id='28b3a978-15ad-4c17-9421-c1fd75ee01ef', nombre='Vicedecano', tipo=Cargo._tipos[2]),
         Cargo(id='06adf7ed-51a9-4774-8606-0f46a69fbadf', nombre='Decano', tipo=Cargo._tipos[2]),
 

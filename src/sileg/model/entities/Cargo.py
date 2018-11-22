@@ -23,9 +23,9 @@ class Cargo(Base):
     }
 
     def __init__(self, id=None, nombre = None, tipo = None, descripcion = ''):
-        self.id = id if id
-        self.nombre = nombre if nombre
-        self.tipo = tipo if tipo
+        if id: self.id = id
+        if nombre: self.nombre = nombre
+        if tipo: self.tipo = tipo
         self.descripcion = descripcion
 
 
