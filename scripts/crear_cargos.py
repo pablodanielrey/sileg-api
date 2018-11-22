@@ -34,6 +34,9 @@ if __name__ == '__main__':
 
     with obtener_session() as s:
         for c in cargos:
-            if s.query(Cargo).filter(Cargo.id == c.id).count() <= 0:
+            c1 = s.query(Cargo).filter(Cargo.id == c.id).one()
+            if c1:
+                c1.nombre = c.nombre
+            else:
                 s.add(c)
-                s.commit()
+            s.commit()
