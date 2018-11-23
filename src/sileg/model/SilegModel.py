@@ -288,7 +288,8 @@ class SilegModel:
             if not lugar:
                 q = q.options(joinedload('lugar').joinedload('padre'))
             q = q.options(joinedload('cargo'))
-        return q.all()
+        r = q.all()
+        return sorted(r, key=lambda d: d.desde)
 
     @classmethod
     def obtener_designaciones_docentes_por_persona(cls, session, persona):
