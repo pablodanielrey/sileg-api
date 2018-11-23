@@ -300,16 +300,38 @@ class SilegModel:
 
     @classmethod
     def detalleDesignacion(cls, session, did):
+        designaciones = {}
         d = session.query(Designacion).filter(Designacion.id == did).one()
+
+        ''' me muevo a la raiz del arbol de designaciones '''
+        while d.designacion_id is not None:
+            d = session.query(Designacion).filter(Designacion.id == d.designacion_id).one()
+        
+        a_procesar = set()
+        a_procesar.add(d)
+
+        ''' proceso los hijos '''
+        while len(a_procesar) > 0:
+            r = a_procesar.pop()
+            if r.id not in designaciones:
+                designaciones[r.id] = r
+                relacionadas = session.query(Designacion).filter(Designacion.designacion_id == r.id).all()
+                a_procesar.update(relacionadas)
+
+
+        retorno = []
         tk = api._get_token()
-        usr = cls.cache.obtener_usuario_por_uid(d.usuario_id, token=tk)
-        retorno = {
-            'lugar': d.lugar,
-            'usuario': usr,
-            'cargo': d.cargo,
-            'designacion': d
-        }
-        return retorno
+        for k,d in designaciones.items():
+            usr = cls.cache.obtener_usuario_por_uid(d.usuario_id, token=tk)
+            r = {
+                'lugar': d.lugar,
+                'usuario': usr,
+                'cargo': d.cargo,
+                'designacion': d
+            }
+            retorno.append(r)
+
+        return sorted(retorno, key=lambda d: d['designacion'].desde)
 
     @classmethod
     def obtenerDesignacionesLugar(cls, session, lid):
@@ -324,7 +346,13 @@ class SilegModel:
             desig = cls.designaciones(session=session, lugar=llid, historico=True)
             for d in desig:
                 usr = cls.cache.obtener_usuario_por_uid(d.usuario_id, token=tk)
-                designaciones.append({'designacion':d, 'usuario': usr})
+                r = {
+                    'designacion': d,
+                    'usuario': usr,
+                    'cargo': d.cargo,
+                    'lugar': d.lugar
+                }
+                designaciones.append(r)
 
         return { 'lugar':lugar, 'designaciones': designaciones }
 
