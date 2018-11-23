@@ -40,10 +40,12 @@ class Designacion(Base):
 
     old_id = Column(String)
 
+    """
     _mapper_args__ = {
         'polymorphic_on':tipo,
         'polymorphic_identity':'designacion'
     }
+    """
 
 
     @classmethod
@@ -55,11 +57,12 @@ Cargo.designaciones = relationship('Designacion', back_populates='cargo')
 Lugar.designaciones = relationship('Designacion', back_populates='lugar')
 
 
+"""
 class BajaDesignacion(Designacion):
     __mapper_args__ = {
         'polymorphic_identity':'baja'
     }
-
+"""
 
 class Categoria(Base):
 

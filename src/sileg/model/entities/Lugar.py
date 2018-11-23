@@ -1,6 +1,8 @@
 from sqlalchemy import Column, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, backref
 from model_utils import Base, generateId
+
+
 class Lugar(Base):
     __tablename__ = 'lugar'
 

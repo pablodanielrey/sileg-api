@@ -212,6 +212,18 @@ def eliminar_designacion(did, token):
         session.commit()
         return True
 
+@app.route(API_BASE + '/designacion/<did>/detalle', methods=['GET'])
+@warden.require_valid_token
+@jsonapi
+def detalle_designacion(did, token):
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
+    if not prof['profile']:
+        return ('no tiene los permisos suficientes', 403)
+
+    assert did is not None
+    with obtener_session() as session:
+        return SilegModel.detalleDesignacion(session, did)
+
 """
 @app.route(API_BASE + '/prorrogas/<designacion>', methods=['GET'])
 @warden.require_valid_token

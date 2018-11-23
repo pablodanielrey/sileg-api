@@ -61,7 +61,7 @@ class SilegModel:
         uid = pedido['usuario_id']
 
         ''' genero la designacion con los datos pasados '''
-        cf = CumpleFunciones()
+        cf = Cargo(id='245eae51-28c4-4c6b-9085-354606399666', nombre='Cumple Funciones', tipo=Cargo._tipos[1])
 
         d = Designacion()
         d.id = str(uuid.uuid4())
@@ -89,38 +89,6 @@ class SilegModel:
         ''' ahora chequeamos que el usuario logueado tenga permisos para consultar las designaciones de uid '''
 
         return usuario_logueado == uid
-
-
-    @classmethod
-    def designaciones(cls,
-                    session,
-                    offset=None, limit=None,
-                    persona=None,
-                    lugar=None,
-                    historico=False, expand=False):
-
-        q = Designacion.find(session)
-        if not historico:
-            q = q.filter(or_(Designacion.historico == None, Designacion.historico == False))
-
-        q = q.order_by(Designacion.desde.desc())
-        q = cls._agregar_filtros_comunes(q, offset=offset, limit=limit, persona=persona, lugar=lugar)
-        if expand:
-            if not lugar:
-                q = q.options(joinedload('lugar').joinedload('padre'))
-            q = q.options(joinedload('cargo'))
-        return q.all()
-
-
-    @classmethod
-    def obtener_designaciones_docentes_por_persona(cls, session, persona):
-        pass
-
-    @classmethod
-    def obtener_designaciones_no_docentes_por_persona(cls, session, persona):
-        pass
-
-
 
 
     @classmethod
@@ -301,18 +269,62 @@ class SilegModel:
         l.eliminado = None
         return l.id
 
+
+    @classmethod
+    def designaciones(cls,
+                    session,
+                    offset=None, limit=None,
+                    persona=None,
+                    lugar=None,
+                    historico=False, expand=False):
+
+        q = Designacion.find(session)
+        if not historico:
+            q = q.filter(or_(Designacion.historico == None, Designacion.historico == False))
+
+        q = q.order_by(Designacion.desde.desc())
+        q = cls._agregar_filtros_comunes(q, offset=offset, limit=limit, persona=persona, lugar=lugar)
+        if expand:
+            if not lugar:
+                q = q.options(joinedload('lugar').joinedload('padre'))
+            q = q.options(joinedload('cargo'))
+        return q.all()
+
+    @classmethod
+    def obtener_designaciones_docentes_por_persona(cls, session, persona):
+        pass
+
+    @classmethod
+    def obtener_designaciones_no_docentes_por_persona(cls, session, persona):
+        pass
+
+    @classmethod
+    def detalleDesignacion(cls, session, did):
+        d = session.query(Designacion).filter(Designacion.id == did).one()
+        tk = api._get_token()
+        usr = cls.cache.obtener_usuario_por_uid(d.usuario_id, token=tk)
+        retorno = {
+            'lugar': d.lugar,
+            'usuario': usr,
+            'cargo': d.cargo,
+            'designacion': d
+        }
+        return retorno
+
     @classmethod
     def obtenerDesignacionesLugar(cls, session, lid):
-        # obtengo el lugares
         lugar = cls.lugar(session, lid)
+        lugares = [lid]
+        lugares.extend([l.id for l in lugar.hijos])
+                
         # obtengo las designaciones del lugar
-        designaciones = []
-        desig = cls.designaciones(session=session, lugar=lid)
         tk = api._get_token()
-        for d in desig:
-            usr = cls.cache.obtener_usuario_por_uid(d.usuario_id, token=tk)
-            designaciones.append({'designacion':d, 'usuario': usr})
-
+        designaciones = []
+        for llid in lugares:
+            desig = cls.designaciones(session=session, lugar=llid, historico=True)
+            for d in desig:
+                usr = cls.cache.obtener_usuario_por_uid(d.usuario_id, token=tk)
+                designaciones.append({'designacion':d, 'usuario': usr})
 
         return { 'lugar':lugar, 'designaciones': designaciones }
 
