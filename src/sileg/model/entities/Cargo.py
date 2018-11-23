@@ -9,6 +9,7 @@ class Cargo(Base):
     nombre = Column(String)
     tipo = Column(String)
     descripcion = Column(String)
+    old_id = Column(String)
 
     _tipos = [
         'Docente',
@@ -24,11 +25,12 @@ class Cargo(Base):
     }
     """
 
-    def __init__(self, id=None, nombre = None, tipo = None, descripcion = ''):
+    def __init__(self, id=None, nombre = None, tipo = None, descripcion = '', old_id=None):
         if id: self.id = id
         if nombre: self.nombre = nombre
         if tipo: self.tipo = tipo
         self.descripcion = descripcion
+        self.old_id = old_id
 
 
     """
