@@ -270,6 +270,13 @@ class SilegModel:
         return l.id
 
 
+    @staticmethod
+    def _ordernar_designaciones_por_fecha(d):
+        if d.desde:
+            return d.desde
+        return datetime.date(1900,1,1)
+
+
     @classmethod
     def designaciones(cls,
                     session,
@@ -289,7 +296,7 @@ class SilegModel:
                 q = q.options(joinedload('lugar').joinedload('padre'))
             q = q.options(joinedload('cargo'))
         r = q.all()
-        return sorted(r, key=lambda d: d.desde)
+        return sorted(r, key=SilegModel._ordernar_designaciones_por_fecha)
 
     @classmethod
     def obtener_designaciones_docentes_por_persona(cls, session, persona):
