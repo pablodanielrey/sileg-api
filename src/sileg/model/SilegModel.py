@@ -285,7 +285,8 @@ class SilegModel:
                     lugar=None,
                     historico=False, expand=False):
 
-        q = Designacion.find(session)
+        #q = Designacion.find(session)
+        q = Designacion.find(session).filter(or_(Designacion.tipo == None, Designacion.tipo == 'original'))
         if not historico:
             q = q.filter(or_(Designacion.historico == None, Designacion.historico == False))
 
