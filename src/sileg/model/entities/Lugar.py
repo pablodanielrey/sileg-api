@@ -106,6 +106,10 @@ class Facultad(Lugar):
         'polymorphic_identity':'facultad'
     }
 
+    def __init__(self, id=None, nombre=None):
+        if id: self.id = id
+        if nombre: self.nombre = nombre
+
 class Instituto(Lugar):
     __mapper_args__ = {
         'polymorphic_identity':'instituto'

@@ -9,14 +9,14 @@ from .entities import *
 port = os.environ.get('SILEG_DB_PORT', '5432')
 
 @contextlib.contextmanager
-def obtener_session():
+def obtener_session(echo=False):
     engine = create_engine('postgresql://{}:{}@{}:{}/{}'.format(
         os.environ['SILEG_DB_USER'],
         os.environ['SILEG_DB_PASSWORD'],
         os.environ['SILEG_DB_HOST'],
         port,
         os.environ['SILEG_DB_NAME']
-    ), echo=True)
+    ), echo=echo)
 
     Session = sessionmaker(bind=engine, autoflush=False, autocommit=False)
     session = Session()
