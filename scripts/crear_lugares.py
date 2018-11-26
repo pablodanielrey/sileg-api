@@ -37,7 +37,6 @@ if __name__ == '__main__':
 
     """ creo los lugares """
 
-    """
     lugares = [{
         'lugar': Facultad(id='67bb4146-46aa-4602-b019-6ea189dbb779', nombre='Facultad de Ciencias Económicas (FCE)'),
         'hijos': []
@@ -51,4 +50,3 @@ if __name__ == '__main__':
                 pid = c['lugar'].id
                 crear_lugares(s, pid, c['hijos'])
             s.commit()
-    """
