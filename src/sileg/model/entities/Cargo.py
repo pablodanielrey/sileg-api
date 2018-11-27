@@ -15,7 +15,8 @@ class Cargo(Base):
         'Docente',
         'No Docente',
         'Autoridad',
-        'Pre Grado'
+        'Pre Grado',
+        'Alumno'
     ]
 
     """
