@@ -112,7 +112,11 @@ if __name__ == '__main__':
 
         # no docentes
 
-        Cargo(id='245eae51-28c4-4c6b-9085-354606399666', nombre='Cumple Funciones', tipo=Cargo._tipos[1], old_id=None)
+        Cargo(id='245eae51-28c4-4c6b-9085-354606399666', nombre='Cumple Funciones', tipo=Cargo._tipos[1], old_id=None),
+        
+        # alumnos
+
+        Cargo(id='74913809-2c2e-4ece-9546-5da8148adc71', nombre='Alumno Proyecto', tipo=Cargo._tipos[4], old_id=None)
     }
 
 
