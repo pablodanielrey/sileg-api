@@ -5,8 +5,10 @@ import logging
 logging.getLogger().setLevel(logging.DEBUG)
 
 from sqlalchemy import or_
+from sqlalchemy import func
+
 from sileg.model import obtener_session
-from sileg.model.entities import Lugar, Facultad, LugarDictado, Departamento, Instituto, Oficina
+from sileg.model.entities import Lugar, Facultad, LugarDictado, Departamento, Instituto, Oficina, Materia
 import os
 import uuid
 
@@ -83,7 +85,33 @@ def importar_lugares(s, cur, raiz):
             logging.info("Oficina a crear: {}".format(c.__dict__))
             s.add(c)
 
-def importar_materias(s, cur, raiz):
+def importar_materias(s, cur):
+    sql = "select materia_id as id, materia_nombre as nombre from materia"
+    cur.execute(sql)
+    for r in cur:
+        id = str(r["id"])
+        mat = s.query(Materia).filter(or_(func.lower(Materia.nombre) == r['nombre'].lower() , Materia.old_id == id)).one_or_none()
+        if mat:
+            logging.info("Actualizar materia {}".format(r["nombre"]))
+            mat.nombre = r["nombre"]
+            mat.old_id = id
+        else:
+            logging.info("Crear materia {}".format(r["nombre"]))
+            mat = Materia()
+            mat.nombre = r["nombre"]
+            mat.old_id = id
+            s.add(mat)                        
+
+def importar_catedras(s, cur, raiz):
+    sql = """select catxmat_id as id, materia_dpto_id as dpto_id, materia_nombre, materia_id, c.catedra_nombre as catedra \
+            from catedras_x_materia cm \
+            inner join materia m on (m.materia_id = cm.catxmat_materia_id) \
+            inner join catedra c on (c.catedra_id = cm.catxmat_catedra_id)
+    """
+    cur.execute(sql)
+    for r in cur:
+
+        logging.info(r)
     pass
 
 if __name__ == '__main__':
@@ -113,18 +141,41 @@ if __name__ == '__main__':
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         try:              
             logging.info("Importar centros regionales")  
-            importar_centros_regionales(s, cur, raiz['lugar'])
-            s.commit()
-            logging.info("Importar centros departamentos")  
-            importar_departamentos(s, cur, raiz['lugar'])
-            s.commit()
-            logging.info("Importar centros institutos")  
-            importar_institutos(s, cur, raiz['lugar'])
-            s.commit()
-            logging.info("Importar lugares de trabajo")
-            importar_lugares(s,cur, raiz['lugar'])  
-            s.commit()
-            importar_materias(s,cur, raiz['lugar'])
+            # importar_centros_regionales(s, cur, raiz['lugar'])
+            # s.commit()
+            # logging.info("Importar centros departamentos")  
+            # importar_departamentos(s, cur, raiz['lugar'])
+            # s.commit()
+            # logging.info("Importar centros institutos")  
+            # importar_institutos(s, cur, raiz['lugar'])
+            # s.commit()
+            # logging.info("Importar lugares de trabajo")
+            # importar_lugares(s,cur, raiz['lugar'])  
+            # s.commit()
+            importar_materias(s,cur)
+            #s.commit()
+            #importar_catedras(s,cur, raiz['lugar'])
         finally:
             cur.close()
             conn.close()        
+
+
+
+
+
+"""
+
+sileg=# select * from materia where old_id is null order by nombre;
+                  id                  |           creado           | actualizado |                                         nombre                                         | old_id 
+--------------------------------------+----------------------------+-------------+----------------------------------------------------------------------------------------+--------
+ 165bbf19-b978-4ab7-90bd-d6c23e4ff109 | 2017-07-19 12:17:40.779934 |             | administración i (introducción a la administración y al estudio de las organizaciones) | 
+ 476c4b2b-f1a7-49f8-ae7c-762d188321a4 | 2017-07-19 12:17:41.346569 |             | administración i (introducción a la economía y al estructura económica argentina       | 
+ af01103c-a044-4782-bdb9-adb740bd68f3 | 2017-07-19 12:17:30.205851 |             | contabilidad sup.i                                                                     | 
+ d543f683-0881-47a7-abde-83a73e684ecc | 2017-07-19 12:17:48.122235 |             | contabilidad vi (costos para la gestión)                                               | 
+ c96dd42f-9007-4cc3-b059-5490dad69a6d | 2017-07-19 12:17:49.063458 |             | contabilidad v (sistemas de información)                                               | 
+ c6476ef2-3978-4096-93e7-8e5d992e8ed5 | 2017-07-19 12:15:44.813965 |             | matemática i(análisis)                                                                 | 
+ 2f1248c8-4b55-4280-99c0-d7a2a486df56 | 2017-07-19 12:17:25.364086 |             | matemática i(análisis matemático)                                                      | 
+ 39120b86-4390-482a-84aa-19b728b4cb53 | 2017-07-19 12:17:25.721907 |             | matemática ii(algebra)                                                                 | 
+ ed8850f0-63c9-4f9a-b41b-618156b152df | 2017-07-19 12:15:58.398029 |             | seminario depto economia                                                               | 
+
+"""

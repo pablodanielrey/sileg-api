@@ -7,6 +7,7 @@ class Materia(Base):
     __tablename__ = 'materia'
 
     nombre = Column(String)
+    old_id = Column(String)
 
     @classmethod
     def find(cls, session):
