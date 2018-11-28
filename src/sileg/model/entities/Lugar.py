@@ -20,6 +20,8 @@ class Lugar(Base):
     cambio_id = Column(String, ForeignKey('lugar.id'))
     cambios = relationship("Lugar",  foreign_keys=[cambio_id], backref=backref('cambio', remote_side="Lugar.id"))
 
+    old_id = Column(String)
+
     __mapper_args__ = {
         'polymorphic_on':tipo,
         'polymorphic_identity':'lugar'
