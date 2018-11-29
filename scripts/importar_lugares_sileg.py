@@ -4,11 +4,11 @@ from psycopg2.extras import DictCursor
 import logging
 logging.getLogger().setLevel(logging.DEBUG)
 
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 from sqlalchemy import func
 
 from sileg.model import obtener_session
-from sileg.model.entities import Lugar, Facultad, LugarDictado, Departamento, Instituto, Oficina, Materia
+from sileg.model.entities import Lugar, Facultad, LugarDictado, Departamento, Instituto, Oficina, Materia, Catedra
 import os
 import uuid
 
@@ -109,10 +109,33 @@ def importar_catedras(s, cur, raiz):
             inner join catedra c on (c.catedra_id = cm.catxmat_catedra_id)
     """
     cur.execute(sql)
-    for r in cur:
+    for r in cur:  
 
-        logging.info(r)
-    pass
+        materia = s.query(Materia).filter(Materia.old_id == str(r['materia_id'])).one_or_none()
+        if materia is None:
+            logging.info("No existe la materia {}".format(r["materia_nombre"]))
+            continue
+        
+        dpto_old_id = 'dpto{}'.format(r["dpto_id"])
+        padre = s.query(Lugar).filter(Lugar.old_id == dpto_old_id).one_or_none()
+        padre_id = padre.id if padre else raiz.id
+
+        old_id = str(r["id"])
+        nombre = "{} {}".format(r["materia_nombre"], r["catedra"])
+
+        l = s.query(Catedra).filter(or_(and_(func.lower(Catedra.nombre) == r['catedra'].lower(),Catedra.materia_id == materia.id),Catedra.old_id == old_id)).one_or_none()
+
+        if l:
+            l.old_id = old_id
+            l.nombre = nombre
+            l.padre_id = padre_id
+            l.materia_id = materia.id
+            logging.info("Catedra actualizada: {}".format(l.__dict__))
+        else:
+            l = Catedra(nombre=nombre, materia_id=materia.id, padre_id=padre_id)
+            l.old_id = old_id
+            s.add(l)
+            logging.info("Catedra creada: {}".format(l.__dict__))        
 
 if __name__ == '__main__':
 
@@ -141,20 +164,23 @@ if __name__ == '__main__':
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         try:              
             logging.info("Importar centros regionales")  
-            # importar_centros_regionales(s, cur, raiz['lugar'])
-            # s.commit()
-            # logging.info("Importar centros departamentos")  
-            # importar_departamentos(s, cur, raiz['lugar'])
-            # s.commit()
-            # logging.info("Importar centros institutos")  
-            # importar_institutos(s, cur, raiz['lugar'])
-            # s.commit()
-            # logging.info("Importar lugares de trabajo")
-            # importar_lugares(s,cur, raiz['lugar'])  
-            # s.commit()
+            importar_centros_regionales(s, cur, raiz['lugar'])
+            s.commit()
+            logging.info("Importar centros departamentos")  
+            importar_departamentos(s, cur, raiz['lugar'])
+            s.commit()
+            logging.info("Importar centros institutos")  
+            importar_institutos(s, cur, raiz['lugar'])
+            s.commit()
+            logging.info("Importar lugares de trabajo")
+            importar_lugares(s,cur, raiz['lugar'])  
+            s.commit()
+            logging.info("Importar materias")
             importar_materias(s,cur)
-            #s.commit()
-            #importar_catedras(s,cur, raiz['lugar'])
+            s.commit()
+            logging.info("Importar catedras")
+            importar_catedras(s,cur, raiz['lugar'])
+            s.commit()
         finally:
             cur.close()
             conn.close()        
@@ -164,6 +190,8 @@ if __name__ == '__main__':
 
 
 """
+Estas son las materias que quedaron sin old_id
+
 
 sileg=# select * from materia where old_id is null order by nombre;
                   id                  |           creado           | actualizado |                                         nombre                                         | old_id 
