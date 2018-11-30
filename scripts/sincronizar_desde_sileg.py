@@ -208,25 +208,12 @@ inner join tipo_dedicacion de on (d.desig_tipodedicacion_id = de.tipodedicacion_
 """
 
 
-def importar_cargos(cur):
-    logging.info("-------------- Importando cargos --------------")
-    return
-
-
-"""
-select cm.catxmat_id, materia_nombre, catedra_nombre
-from catedras_x_materia cm inner join materia m on(cm.catxmat_materia_id = m.materia_id) inner join catedra c on (cm.catxmat_catedra_id = c.catedra_id);
-
-"""
-def importar_lugares(cur):
-    logging.info("-------------- Importando lugares --------------")
-    return
-
 def obtener_prorroga(prorroga_id, cur):
     cur.execute("""
         SELECT prorroga_id, prorroga_fecha_desde, prorroga_fecha_hasta, prorroga_prorrogada_con
         FROM prorroga
         WHERE prorroga_id = %s
+        ORDER BY 
     """,(prorroga_id,))
     return cur.fetchone()
 
@@ -241,6 +228,33 @@ def obtener_prorrogas_de(prorroga_id, cur):
             p = None
     return prorrogas
 
+def obtener_extensiones(desig_id, cur):
+    cur.execute(" SELECT * FROM extension WHERE extension_designacion_id = %s",(desig_id,))
+    return cur.fetchall()
+
+def importar_designacion(d, cur):
+    logging.info("Importando designacion: {}".format(d))
+    id = d["desig_id"]
+
+    if d["desig_tipobaja_id"]:
+        logging.info("Crear designaciones de baja")
+
+    prorrogas = []
+    if d["desig_prorrogada_con"]:
+        prorrogas = obtener_prorrogas_de(d["desig_prorrogada_con"], cur)
+        for p in prorrogas:
+            logging.info("Crear prorroga: {}".format(p))
+
+    
+    extensiones = obtener_extensiones(id, cur)
+    for e in extensiones:
+        if e["extension_prorrogada_con"]:
+            prorrogas_ext = obtener_prorrogas_de(d["extension_prorrogada_con"], cur)
+            logging.info("Creo extension: {}".format(e))
+            for ep in prorrogas_ext:
+                logging.info("Creo extension prorroga {}".format(ep))
+
+
 if __name__ == '__main__':
     conn = psycopg2.connect("host='{}' user='{}' password='{}' dbname={}".format(
         os.environ['OLD_SILEG_DB_HOST'],
@@ -250,11 +264,9 @@ if __name__ == '__main__':
     ))
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     try:
-        importar_cargos(cur)
-        importar_lugares(cur)
-        prorrogas = obtener_prorrogas_de(1, cur)
-        for p in prorrogas:
-            logging.info(p)
+        cur.execute("SELECT * FROM designacion_docente where desig_id =  208")
+        for d in cur:
+            importar_designacion(d, cur)
 
 
     finally:
