@@ -39,47 +39,67 @@ if __name__ == '__main__':
 
     lugares = [{
         'lugar': Facultad(id='67bb4146-46aa-4602-b019-6ea189dbb779', nombre='Facultad de Ciencias Económicas (FCE)'),
-        'hijos': [{
-            'lugar': Facultad(id='f450f268-ff9d-4e37-9628-0f4a9ed81a34', nombre='Secretaría de Administración y Finanzas'),
-            'hijos': [{
-                'lugar': Facultad(id='4f677488-3eca-4f53-ba36-e50d2c2640ac', nombre='Secretaría Administrativa'),
-                'hijos':[{
-                    'lugar': Facultad(id='f788cdf9-d54e-46b7-a0a1-126110f1d843', nombre='Dirección de Biblioteca'),
-                    'hijos':[
-                        {'lugar': Facultad(id='', nombre='Departamento de Hemeroteca')},
-                        {'lugar': Facultad(id='', nombre='Departamento de Ciculación y Préstamos')}
-                    ]},
-                    {'lugar': Facultad(id='', nombre='Dirección Económico Financiero'),
-                    'hijos':[
-                        {'lugar': Facultad(id='', nombre='Departamento de Compras')},
-                        {'lugar': Facultad(id='', nombre='Departamento de Tesorería')},
-                        {'lugar': Facultad(id='', nombre='Departamento de Registros Contables')}
-                    ]},
-                    {'lugar': Facultad(id='8407abb2-33c2-46e7-bef6-d00bab573306', nombre='Dirección de Mantenimiento y Servicios Generales'),
-                    'hijos':[
-                        {'lugar': Facultad(id='', nombre='Mantenimiento')},
-                        {'lugar': Facultad(id='', nombre='Servicios Generales')}
-                    ]},
-                    {'lugar': Facultad(id='', nombre='Dirección de Enseñanza'),
-                    'hijos':[
-                        {'lugar': Facultad(id='', nombre='Departamento de Alumnos')},
-                        {'lugar': Facultad(id='', nombre='Sala de Profesores')}
-                    ]},
-                    {'lugar': Facultad(id='', nombre='Impresiones')},
-                    {'lugar': Facultad(id='', nombre='Dirección del Área Operativa'),
-                    'hijos':[
-                        {'lugar': Facultad(id='', nombre='Departamento de Mesa de Entradas')},
-                        {'lugar': Facultad(id='', nombre='Departamento de Personal')},
-                        {'lugar': Facultad(id='', nombre='Departamento de Despacho')},
-                        {'lugar': Facultad(id='', nombre='Departamento de Consejo Académico')},
-                        {'lugar': Facultad(id='', nombre='Departamento de Concursos')}
-                    ]},
-                    {'lugar': Facultad(id='', nombre='Dirección de Tecnologías y Sistemas Informática')},
-                    {'lugar': Facultad(id='', nombre='Dirección de Doctorado y Posgrado')}
-                }]
+        'hijos': [
+            {'lugar': Facultad(id='5776a70e-a9af-466d-b9c4-89e646fc39af', nombre='Desconocido')},
+            {'lugar': Facultad(id='f450f268-ff9d-4e37-9628-0f4a9ed81a34', nombre='Secretaría de Administración y Finanzas')},
+            {'lugar': Facultad(id='4f677488-3eca-4f53-ba36-e50d2c2640ac', nombre='Secretaría Administrativa')},
+            'hijos':[
+                {'lugar': Facultad(id='f788cdf9-d54e-46b7-a0a1-126110f1d843', nombre='Dirección Docentes')},
+                {
+                'lugar': Facultad(id='f788cdf9-d54e-46b7-a0a1-126110f1d843', nombre='Dirección de Biblioteca'),
+                'hijos':[
+                    {'lugar': Facultad(id='', nombre='Departamento de Hemeroteca')},
+                    {'lugar': Facultad(id='', nombre='Departamento de Ciculación y Préstamos')}
+                ]},
+                {'lugar': Facultad(id='', nombre='Dirección Económico Financiero'),
+                'hijos':[
+                    {'lugar': Facultad(id='', nombre='Departamento de Compras')},
+                    {'lugar': Facultad(id='', nombre='Departamento de Tesorería')},
+                    {'lugar': Facultad(id='', nombre='Departamento de Registros Contables')}
+                ]},
+                {'lugar': Facultad(id='8407abb2-33c2-46e7-bef6-d00bab573306', nombre='Mantenimiento y Servicios Generales'),
+                'hijos':[
+                    {'lugar': Facultad(id='', nombre='Mantenimiento')},
+                    {'lugar': Facultad(id='', nombre='Servicios Generales')}
+                ]},
+                {'lugar': Facultad(id='', nombre='Dirección de Enseñanza'),
+                'hijos':[
+                    {'lugar': Facultad(id='', nombre='Departamento de Alumnos')}
+                ]},
+                {'lugar': Facultad(id='', nombre='Impresiones')},
+                {'lugar': Facultad(id='', nombre='Dirección del Área Operativa'),
+                'hijos':[
+                    {'lugar': Facultad(id='', nombre='Departamento de Mesa de Entradas')},
+                    {'lugar': Facultad(id='', nombre='Departamento de Personal')},
+                    {'lugar': Facultad(id='', nombre='Departamento de Despacho')},
+                    {'lugar': Facultad(id='', nombre='Departamento de Consejo Académico')},
+                    {'lugar': Facultad(id='', nombre='Departamento de Concursos')}
+                ]},
+                {'lugar': Facultad(id='', nombre='Dirección de Tecnologías y Sistemas Informática (DiTeSI)')},
+                {'lugar': Facultad(id='', nombre='Dirección de Doctorado y Posgrado')}
             }]
         }]
     }]
+
+
+    personas = [
+        {
+            # finanzas
+            lid:'f450f268-ff9d-4e37-9628-0f4a9ed81a34',
+            dnis:['27947761', '28390126', '31256282']
+        },
+        {
+            # administrativa
+            lid: '4f677488-3eca-4f53-ba36-e50d2c2640ac',
+            dnis: ['27528150', '27528195', '32393755', '34770399']
+        },
+        {
+            #
+            lid: '',
+            dnis: []
+        }
+    ]
+
 
     pid = None
     with obtener_session() as s:
