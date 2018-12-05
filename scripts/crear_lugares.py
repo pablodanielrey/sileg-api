@@ -8,6 +8,7 @@ def crear_lugares(s, padre_id, lugares):
             logging.debug('actualizando {}'.format(l['lugar'].nombre))
             c.nombre = l['lugar'].nombre
             c.padre_id = padre_id
+            c.tipo = l['lugar'].tipo
         else:
             logging.debug('creando {}'.format(l['lugar'].nombre))
             s.add(l['lugar'])
@@ -31,7 +32,7 @@ if __name__ == '__main__':
 
     from sqlalchemy import or_
     from sileg.model import obtener_session
-    from sileg.model.entities import Lugar, Facultad, Direccion, Departamento, Division, Secretaria
+    from sileg.model.entities import Lugar, Facultad, Direccion, Departamento, Division, Secretaria, Area, Categoria
 
 
     """ muestro la estructura actual de lugares """
@@ -48,18 +49,18 @@ if __name__ == '__main__':
     """ creo los lugares """
 
     lugares = [
-        {'lugar': Lugar(id='5776a70e-a9af-466d-b9c4-89e646fc39af', nombre='Desconocido')},
+        {'lugar': Categoria(id='5776a70e-a9af-466d-b9c4-89e646fc39af', nombre='Personas a Ubicar')},
         {
             'lugar': Facultad(id='06b1159e-8a83-4e4e-b8af-a8ad3dd47258', nombre='Facultad de Ciencias Económicas (FCE)'),
             'hijos': [
                 {
-                    'lugar': Lugar(id='2d14c2ce-7a8c-45dc-8aab-3eeff0f2aa2c', nombre='NODOCENTE'),
+                    'lugar': Categoria(id='2d14c2ce-7a8c-45dc-8aab-3eeff0f2aa2c', nombre='NODOCENTE'),
                     'hijos': [
                         {'lugar': Secretaria(id='f450f268-ff9d-4e37-9628-0f4a9ed81a34', nombre='Secretaría de Administración y Finanzas')},
                         {
                             'lugar': Secretaria(id='387af5e1-f281-4aba-9454-1d5cbbb1f5c7', nombre='Secretaría Administrativa'),
                             'hijos':[
-                                {'lugar': Division(id='2ec05fd9-7db9-4626-94c9-b682af530736', nombre='Limpieza')},
+                                {'lugar': Area(id='2ec05fd9-7db9-4626-94c9-b682af530736', nombre='Limpieza')},
                                 {'lugar': Direccion(id='6b74d542-bdca-432e-9840-a57ea5388e88', nombre='Dirección Docentes')},
                                 {
                                     'lugar': Direccion(id='f788cdf9-d54e-46b7-a0a1-126110f1d843', nombre='Dirección de Biblioteca'),

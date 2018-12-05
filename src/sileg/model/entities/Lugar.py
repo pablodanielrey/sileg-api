@@ -27,7 +27,6 @@ class Lugar(Base):
         'polymorphic_identity':'lugar'
     }
 
-
     def __init__(self, id=None, nombre=None):
         if id: self.id = id
         if nombre: self.nombre = nombre
@@ -53,11 +52,9 @@ class Catedra(Lugar):
         self.materia_id = materia_id
         self.padre_id = padre_id
 
-
     @property
     def getNombre(self):
         return self.nombre + ' ' + self.materia.nombre
-
 
     __mapper_args__ = {
         'polymorphic_identity':'catedra'
@@ -72,7 +69,6 @@ class LugarDictado(Lugar):
     def __init__(self, id=None, nombre=None):
         if id: self.id = id
         if nombre: self.nombre = nombre    
-
 
 class Centro(Lugar):
     __mapper_args__ = {
@@ -125,10 +121,10 @@ class Externo(Lugar):
         'polymorphic_identity':'externo'
     }
 
-
     def __init__(self, id=None, nombre=None):
         if id: self.id = id
         if nombre: self.nombre = nombre
+
 
 class Facultad(Lugar):
     __mapper_args__ = {
@@ -212,6 +208,25 @@ class Oficina(Lugar):
 class Division(Lugar):
     __mapper_args__ = {
         'polymorphic_identity':'division'
+    }
+
+    def __init__(self, id=None, nombre=None):
+        if id: self.id = id
+        if nombre: self.nombre = nombre    
+
+class Area(Lugar):
+    __mapper_args__ = {
+        'polymorphic_identity':'area'
+    }
+
+    def __init__(self, id=None, nombre=None):
+        if id: self.id = id
+        if nombre: self.nombre = nombre    
+
+
+class Categoria(Lugar):
+    __mapper_args__ = {
+        'polymorphic_identity':'categoria'
     }
 
     def __init__(self, id=None, nombre=None):
