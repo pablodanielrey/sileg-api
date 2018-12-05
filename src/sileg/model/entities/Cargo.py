@@ -16,7 +16,9 @@ class Cargo(Base):
         'No Docente',
         'Autoridad',
         'Pre Grado',
-        'Alumno'
+        'Alumno',
+        'Ingreso',
+        'Indefinido'
     ]
 
     """
@@ -32,24 +34,6 @@ class Cargo(Base):
         if tipo: self.tipo = tipo
         self.descripcion = descripcion
         self.old_id = old_id
-
-
-    """
-        ejemplos de cargos
-        A7
-        E7
-        Titular
-        Adjunto
-        Adscripto
-        Director
-        E2
-        A2
-        Cumple Funciones
-        Beca
-        Contrato de Obra
-        Contrato de Servicio
-        Contrato de Gestión
-    """
 
 
 """
