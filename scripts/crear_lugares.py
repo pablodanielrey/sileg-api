@@ -2,11 +2,14 @@
 
 def crear_lugares(s, padre_id, lugares):
     for l in lugares:
+        logging.debug('procesando {}'.format(l['lugar'].nombre))
         c = s.query(Lugar).filter(Lugar.id == l['lugar'].id).one_or_none()
         if c:
+            logging.debug('actualizando {}'.format(l['lugar'].nombre))
             c.nombre = l['lugar'].nombre
             c.padre_id = padre_id
         else:
+            logging.debug('creando {}'.format(l['lugar'].nombre))
             s.add(l['lugar'])
         s.commit()
         if 'hijos' in l and len('hijos') > 0:
@@ -23,6 +26,7 @@ def imprimir_lugar(s, tabs, l):
 if __name__ == '__main__':
 
     import logging
+    logging.getLogger().setLevel(logging.DEBUG)
     logging.getLogger('sqlalchemy').setLevel(logging.ERROR)
 
     from sqlalchemy import or_
@@ -32,11 +36,13 @@ if __name__ == '__main__':
 
     """ muestro la estructura actual de lugares """
 
+    """
     pid = None
     with obtener_session() as s:
         q = s.query(Lugar).filter(or_(Lugar.padre_id == None, Lugar.padre_id == '')).all()
         for l in q:
             imprimir_lugar(s, '', l)
+    """
 
 
     """ creo los lugares """
@@ -86,7 +92,7 @@ if __name__ == '__main__':
                                 },
                                 {'lugar': Division(id='1b65fe02-a5c7-431e-8226-517fb275c4a2', nombre='Impresiones')},
                                 {
-                                    'lugar': Direccion(id='', nombre='Dirección del Área Operativa'),
+                                    'lugar': Direccion(id='5986c50e-52f9-4a96-8d91-602bbcf1cd61', nombre='Dirección del Área Operativa'),
                                     'hijos':[
                                         {'lugar': Departamento(id='fe736967-e618-4766-8bf0-b7bdf22ce922', nombre='Departamento de Mesa de Entradas')},
                                         {'lugar': Departamento(id='988e2b23-2fd7-497e-974a-4a0a25b85744', nombre='Departamento de Personal')},
