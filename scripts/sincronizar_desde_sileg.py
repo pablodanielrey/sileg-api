@@ -3,7 +3,7 @@ from psycopg2.extras import DictCursor
 import os
 import uuid
 import datetime
-from sileg.model.entities import Designacion, Categoria, Lugar
+from sileg.model.entities import Designacion, CategoriaDesignacion, Lugar
 import logging
 logging.getLogger().setLevel(logging.DEBUG)
 from sileg.model import obtener_session
@@ -84,9 +84,9 @@ def importar_categorias(cur, s):
     logging.info("Importando categorias")
     cur.execute("SELECT tipobajadesig_id, tipobajadesig_nombre FROM tipo_baja")
     for c in cur:
-        categoria = session.query(Categoria).filter(Categoria.old_id == str(c["tipobajadesig_id"])).one_or_none()
+        categoria = session.query(CategoriaDesignacion).filter(CategoriaDesignacion.old_id == str(c["tipobajadesig_id"])).one_or_none()
         if categoria is None:            
-            categoria = Categoria()
+            categoria = CategoriaDesignacion()
             categoria.id = str(uuid.uuid4())
             categoria.old_id = str(c["tipobajadesig_id"])
             categoria.nombre = "Baja por {}".format(c["tipobajadesig_nombre"])

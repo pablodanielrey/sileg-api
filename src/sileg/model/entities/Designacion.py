@@ -66,7 +66,7 @@ class BajaDesignacion(Designacion):
     }
 """
 
-class Categoria(Base):
+class CategoriaDesignacion(Base):
 
     __tablename__ = 'categoria'
 
