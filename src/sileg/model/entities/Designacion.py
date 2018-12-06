@@ -22,7 +22,7 @@ class Designacion(Base):
     resolucion = Column(String)
 
     tipo = Column(String)
-    categorias = relationship('Categoria', secondary=categoria_designacion_table, back_populates='designaciones')
+    categorias = relationship('CategoriaDesignacion', secondary=categoria_designacion_table, back_populates='designaciones')
 
     designacion_id = Column(String, ForeignKey('designacion.id'))
     designacion = relationship('Designacion', foreign_keys=[designacion_id])
