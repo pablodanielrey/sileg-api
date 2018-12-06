@@ -3,7 +3,7 @@ from psycopg2.extras import DictCursor
 import os
 import uuid
 import datetime
-from sileg.model.entities import Designacion, Categoria
+from sileg.model.entities import Designacion, Categoria, Lugar
 import logging
 logging.getLogger().setLevel(logging.DEBUG)
 from sileg.model import obtener_session
@@ -80,16 +80,18 @@ def importar_designacion(d, cur):
                 logging.info("Creo extension prorroga {}".format(ep))
 
 
-def importar_categorias(cur, session):
+def importar_categorias(cur, s):
+    logging.info("Importando categorias")
     cur.execute("SELECT tipobajadesig_id, tipobajadesig_nombre FROM tipo_baja")
     for c in cur:
         categoria = session.query(Categoria).filter(Categoria.old_id == str(c["tipobajadesig_id"])).one_or_none()
-        if categoria is None:
+        if categoria is None:            
             categoria = Categoria()
             categoria.id = str(uuid.uuid4())
             categoria.old_id = str(c["tipobajadesig_id"])
             categoria.nombre = "Baja por {}".format(c["tipobajadesig_nombre"])
-    session.commit()
+        logging.info(categoria.__dict__)
+    #session.commit()
 
 if __name__ == '__main__':
     conn = psycopg2.connect("host='{}' user='{}' password='{}' dbname={}".format(
@@ -102,12 +104,14 @@ if __name__ == '__main__':
     try:
         with obtener_session() as session:
             importar_categorias(cur, session)
+            
             cur.execute(""" SELECT * 
             FROM designacion_docente where desig_id =  208
             """)
+            """
             for d in cur:
                 importar_designacion(d, cur)
-
+            """
 
     finally:
         cur.close()

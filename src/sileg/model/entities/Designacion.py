@@ -75,3 +75,4 @@ class Categoria(Base):
     designaciones = relationship('Designacion', secondary=categoria_designacion_table, back_populates='categorias')
 
     old_id = Column(String)
+
