@@ -66,7 +66,9 @@ def obtener_acceso_modulos(token=None):
             'buscar_usuario',
             'crear_usuario',
             'buscar_lugar',
-            'crear_lugar'
+            'crear_lugar',
+            'sincronizacion_usuario',
+            'sincronizacion_login'
         ]
         return json.dumps(a)
 
@@ -74,7 +76,9 @@ def obtener_acceso_modulos(token=None):
     if prof and prof['profile'] == True:
         a = [
             'buscar_usuario',
-            'buscar_lugar'
+            'buscar_lugar',
+            'sincronizacion_usuario',
+            'sincronizacion_login'
         ]
         return json.dumps(a)
     a = []
