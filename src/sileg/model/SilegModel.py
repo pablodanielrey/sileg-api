@@ -413,8 +413,8 @@ class SilegModel:
             registros = [
                 {
                     'usuario': d.usuario_id,
-                    'cargo': d.cargo.nombre,
-                    'lugar': d.lugar.nombre
+                    'cargo': d.cargo.nombre if d.cargo else '',
+                    'lugar': d.lugar.nombre if d.lugar else ''
                 }
                 for d in ds 
             ]
