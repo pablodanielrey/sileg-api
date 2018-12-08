@@ -126,15 +126,16 @@ def obtener_designaciones_por_usuario(uid=None, token=None):
 
 
 @app.route(API_BASE + '/usuarios', methods=['GET'])
-@warden.require_valid_token
 @jsonapi
 def obtener_usuarios(token=None):
     """
         obtengo los usuarios que tienen alguna designacion
     """
+    """
     prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin', 'gelis-operator'])
     if not prof or prof['profile'] == False:
         return ('no tiene los permisos suficientes', 403)
+    """
 
     with obtener_session() as session:
         return SilegModel.obtener_usuarios(session)
