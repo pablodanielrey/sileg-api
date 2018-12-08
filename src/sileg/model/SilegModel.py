@@ -381,11 +381,27 @@ class SilegModel:
         d.cargo_id = designacion["cargo_id"]
 
     @classmethod
+    def obtener_usuarios(cls, session):
+        """
+            retorna todos los usuarios que tengan designacion
+        """
+        ds = session.query(Designacion)
+        registros = [
+            {
+                'usuario': d.usuario_id,
+                'cargo': d.cargo.nombre,
+                'lugar': d.lugar.nombre
+            }
+            for d in ds 
+        ]
+        return registros
+
+    @classmethod
     def obtener_subusuarios(cls, session, uid):
         """
             retorna todos los usuarios que están en la misma oficina que el usuario uid, o en suboficinas de esta
         """
-        ds = session.query(Designacion.lugar_id).filter(Designacion.usuario_id == uid)
+        ds = session.query(Designacion.lugar_id).filter(Designacion.usuario_id == uid).distinct()
         lugares = []
         for lid in ds:
             lugares.append(lid)
