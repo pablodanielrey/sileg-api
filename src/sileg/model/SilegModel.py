@@ -379,3 +379,39 @@ class SilegModel:
 
         d.desde = designacion["desde"]
         d.cargo_id = designacion["cargo_id"]
+
+    @classmethod
+    def obtener_subusuarios(cls, session, uid):
+        """
+            retorna todos los usuarios que están en la misma oficina que el usuario uid, o en suboficinas de esta
+        """
+        ds = session.query(Designacion.lugar_id).filter(Designacion.usuario_id == uid)
+        lugares = []
+        for lid in ds:
+            lugares.append(lid)
+            cls.obtener_sublugares(session, lid, lugares)
+
+        usuarios = []
+        for lid in lugares:
+            ds = session.query(Designacion).filter(Designacion.lugar_id == lid)
+            registros = [
+                {
+                    'usuario': d.usuario_id,
+                    'cargo': d.cargo.nombre,
+                    'lugar': d.lugar.nombre
+                }
+                for d in ds 
+            ]
+            usuarios.extend(registros)
+
+        return usuarios
+
+    @classmethod
+    def obtener_sublugares(cls, session, lid, acumulator=[]):
+        '''
+            retorna todos los ids de los lugares que pertenecen al arbol de lugares con raiz == lid
+        '''
+        lids = session.query(Lugar.id).filter(Lugar.padre_id == lid).all()
+        acumulator.extend(lids)
+        for lid in lids:
+            cls.obtener_sublugares(session, lid, acumulator)

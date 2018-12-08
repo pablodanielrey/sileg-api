@@ -125,6 +125,23 @@ def obtener_designaciones_por_usuario(uid=None, token=None):
             return ('no tiene los permisos suficientes', 403)
 
 
+@app.route(API_BASE + '/usuarios/<uid>/subusuarios', methods=['GET'])
+@warden.require_valid_token
+@jsonapi
+def obtener_subusuarios(uid, token=None):
+    """
+        obtengo los usuarios que están en la misma oficina o suboficinas del usuario identificado por uid
+    """
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin', 'gelis-operator'])
+    if not prof or prof['profile'] == False:
+        if uid != token['sub']:
+            return ('no tiene los permisos suficientes', 403)
+
+    with obtener_session() as session:
+        return SilegModel.obtener_subusuarios(session, uid)
+
+
+
 @app.route(API_BASE + '/designaciones/', methods=['GET'])
 @warden.require_valid_token
 @jsonapi
