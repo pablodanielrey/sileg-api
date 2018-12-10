@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, ForeignKey
+from sqlalchemy import Column, String, Numeric, ForeignKey
 from sqlalchemy.orm import relationship
 from model_utils import Base
 
@@ -10,6 +10,8 @@ class Cargo(Base):
     tipo = Column(String)
     descripcion = Column(String)
     old_id = Column(String)
+    nivel = Column(Numeric)
+
 
     _tipos = [
         'Docente',

@@ -153,7 +153,7 @@ def obtener_subusuarios(uid, token=None):
             return ('no tiene los permisos suficientes', 403)
 
     with obtener_session() as session:
-        return SilegModel.obtener_subusuarios(session, uid)
+        return SilegModel.obtener_subusuarios_usuario(session, uid)
 
 
 
@@ -345,6 +345,22 @@ def obtener_desginaciones_lugar(lid, token=None):
     assert lid is not None
     with obtener_session() as session:
         return SilegModel.obtenerDesignacionesLugar(session, lid)
+
+
+@app.route(API_BASE + '/lugares/<lid>/subusuarios', methods=['GET'])
+@warden.require_valid_token
+@jsonapi
+def obtener_lugar_subusuarios(lid, token=None):
+    """
+        obtengo los usuarios que están en el arbol de las oficinas que tiene como raiz lid
+    """
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin', 'gelis-operator'])
+    if not prof or prof['profile'] == False:
+        return ('no tiene los permisos suficientes', 403)
+
+    with obtener_session() as session:
+        return SilegModel.obtener_subusuarios_lugares(session, [lid])
+
 
 @app.route(API_BASE + '/lugares/', methods=['GET'], defaults={'lid':None})
 @app.route(API_BASE + '/lugares/<lid>', methods=['GET'])

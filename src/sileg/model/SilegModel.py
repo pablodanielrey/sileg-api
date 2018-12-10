@@ -6,46 +6,45 @@ import os
 import logging
 import uuid
 
-from .API import API
-from .UserCache import UserCache
 from .entities import *
 
-USUARIOS_URL = os.environ['USERS_API_URL']
-api = API()
 
 """
-    /////////// los getters de la cache //////////
+    ###############
+    para la cache de usuarios
+"""
+from model_utils.API import API
+from model_utils.UserCache import UserCache
+from model_utils.UsersAPI import UsersAPI
+"""
+    ###############
 """
 
-def _get_user_uuid(uuid, token=None):
-    query = '{}/usuarios/{}'.format(USUARIOS_URL, uuid)
-    r = api.get(query, token=token)
-    if not r.ok:
-        return None
-    usr = r.json()        
-    return usr
+VERIFY_SSL = bool(int(os.environ.get('VERIFY_SSL',0)))
+USERS_API = os.environ['USERS_API_URL']
+OIDC_URL = os.environ['OIDC_URL']
+OIDC_CLIENT_ID = os.environ['OIDC_CLIENT_ID']
+OIDC_CLIENT_SECRET = os.environ['OIDC_CLIENT_SECRET']
+REDIS_HOST = os.environ.get('REDIS_HOST')
+REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
 
-def _get_user_dni(dni, token=None):
-    query = '{}/usuarios/'.format(USUARIOS_URL)
-    r = api.get(query, params={'q':dni}, token=token)
-    if not r.ok:
-        return None
-    for usr in r.json():
-        return usr        
-    return None
 
-"""
-    ////////////////
-"""
+_API = API(url=OIDC_URL, 
+              client_id=OIDC_CLIENT_ID, 
+              client_secret=OIDC_CLIENT_SECRET, 
+              verify_ssl=VERIFY_SSL)
+
+_USERS_API = UsersAPI(api_url=USERS_API, api=_API)
 
 
 class SilegModel:
 
-    
-    REDIS_HOST = os.environ.get('REDIS_HOST')
-    REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
-
-    cache = UserCache(REDIS_HOST, REDIS_PORT, _get_user_uuid, _get_user_dni)
+    api = _API
+    cache_usuarios = UserCache(host=REDIS_HOST, 
+                                port=REDIS_PORT, 
+                                user_getter=_USERS_API._get_user_uuid,
+                                users_getter=_USERS_API._get_users_uuid,
+                                user_getter_dni=_USERS_API._get_user_dni)
 
 
     @staticmethod
@@ -329,9 +328,9 @@ class SilegModel:
 
 
         retorno = []
-        tk = api._get_token()
+        tk = cls.api._get_token()
         for k,d in designaciones.items():
-            usr = cls.cache.obtener_usuario_por_uid(d.usuario_id, token=tk)
+            usr = cls.cache_usuarios.obtener_usuario_por_uid(d.usuario_id, token=tk)
             r = {
                 'lugar': d.lugar,
                 'usuario': usr,
@@ -349,12 +348,12 @@ class SilegModel:
         lugares.extend([l.id for l in lugar.hijos])
                 
         # obtengo las designaciones del lugar
-        tk = api._get_token()
+        tk = cls.api._get_token()
         designaciones = []
         for llid in lugares:
             desig = cls.designaciones(session=session, lugar=llid, historico=True)
             for d in desig:
-                usr = cls.cache.obtener_usuario_por_uid(d.usuario_id, token=tk)
+                usr = cls.cache_usuarios.obtener_usuario_por_uid(d.usuario_id, token=tk)
                 r = {
                     'designacion': d,
                     'usuario': usr,
@@ -397,13 +396,28 @@ class SilegModel:
         return registros
 
     @classmethod
-    def obtener_subusuarios(cls, session, uid):
+    def obtener_lugares_usuario(cls, session, uid):
+        ds = session.query(Designacion.lugar_id).filter(Designacion.usuario_id == uid).distinct()
+        lugares = [d for d in ds]
+        return lugares
+
+    @classmethod
+    def obtener_subusuarios_usuario(cls, session, uid):
         """
             retorna todos los usuarios que están en la misma oficina que el usuario uid, o en suboficinas de esta
         """
-        ds = session.query(Designacion.lugar_id).filter(Designacion.usuario_id == uid).distinct()
+        lugares = cls.obtener_lugares_usuario(session, uid)
+        usuarios = cls.obtener_subusuarios_lugares(session, lugares)
+        return usuarios
+
+    @classmethod
+    def obtener_subusuarios_lugares(cls, session, lids=[]):
+        """
+            retorna todos los usuarios que tienen designaciones en los arboles de lugares que tienen como raiz los
+            ids dados en lids
+        """
         lugares = []
-        for lid in ds:
+        for lid in lids:
             lugares.append(lid)
             cls.obtener_sublugares(session, lid, lugares)
 
@@ -421,6 +435,13 @@ class SilegModel:
             usuarios.extend(registros)
 
         return usuarios
+
+    @classmethod
+    def obtener_usuarios_lugar(cls, session, lid):
+        ds = session.query(Designacion).filter(Designacion.lugar_id == lid)
+        uids = [d.usuario_id for d in ds]
+        return uids
+
 
     @classmethod
     def obtener_sublugares(cls, session, lid, acumulator=[]):
