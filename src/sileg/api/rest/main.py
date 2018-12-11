@@ -153,7 +153,7 @@ def obtener_subusuarios(uid, token=None):
             return ('no tiene los permisos suficientes', 403)
 
     with obtener_session() as session:
-        return SilegModel.obtener_subusuarios_usuario(session, uid)
+        return SilegModel.obtener_subusuarios_por_usuario(session, uid)
 
 
 
@@ -359,7 +359,7 @@ def obtener_lugar_subusuarios(lid, token=None):
         return ('no tiene los permisos suficientes', 403)
 
     with obtener_session() as session:
-        return SilegModel.obtener_subusuarios_lugares(session, [lid])
+        return SilegModel.obtener_subusuarios_por_lugares(session, [lid])
 
 
 @app.route(API_BASE + '/lugares/', methods=['GET'], defaults={'lid':None})

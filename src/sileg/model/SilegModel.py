@@ -395,23 +395,18 @@ class SilegModel:
         ]
         return registros
 
-    @classmethod
-    def obtener_lugares_usuario(cls, session, uid):
-        ds = session.query(Designacion.lugar_id).filter(Designacion.usuario_id == uid).distinct()
-        lugares = [d for d in ds]
-        return lugares
 
     @classmethod
-    def obtener_subusuarios_usuario(cls, session, uid):
+    def obtener_subusuarios_por_usuario(cls, session, uid):
         """
             retorna todos los usuarios que están en la misma oficina que el usuario uid, o en suboficinas de esta
         """
-        lugares = cls.obtener_lugares_usuario(session, uid)
-        usuarios = cls.obtener_subusuarios_lugares(session, lugares)
+        lugares = cls.obtener_lugares_por_usuario(session, uid)
+        usuarios = cls.obtener_subusuarios_por_lugares(session, lugares)
         return usuarios
 
     @classmethod
-    def obtener_subusuarios_lugares(cls, session, lids=[]):
+    def obtener_subusuarios_por_lugares(cls, session, lids=[]):
         """
             retorna todos los usuarios que tienen designaciones en los arboles de lugares que tienen como raiz los
             ids dados en lids
@@ -423,25 +418,29 @@ class SilegModel:
 
         usuarios = []
         for lid in lugares:
-            ds = session.query(Designacion).filter(Designacion.lugar_id == lid)
-            registros = [
-                {
-                    'usuario': d.usuario_id,
-                    'cargo': d.cargo.nombre if d.cargo else '',
-                    'lugar': d.lugar.nombre if d.lugar else ''
-                }
-                for d in ds 
-            ]
+            registros = cls.obtener_usuarios_por_lugar(session, lid)
             usuarios.extend(registros)
 
         return usuarios
 
     @classmethod
-    def obtener_usuarios_lugar(cls, session, lid):
-        ds = session.query(Designacion).filter(Designacion.lugar_id == lid)
-        uids = [d.usuario_id for d in ds]
-        return uids
+    def obtener_lugares_por_usuario(cls, session, uid):
+        ds = session.query(Designacion.lugar_id).filter(Designacion.usuario_id == uid).distinct()
+        lugares = [d for d in ds]
+        return lugares
 
+    @classmethod
+    def obtener_usuarios_por_lugar(cls, session, lid):
+        ds = session.query(Designacion).filter(Designacion.lugar_id == lid)
+        registros = [
+            {
+                'usuario': d.usuario_id,
+                'cargo': d.cargo.nombre if d.cargo else '',
+                'lugar': d.lugar.nombre if d.lugar else ''
+            } 
+            for d in ds
+        ]
+        return registros
 
     @classmethod
     def obtener_sublugares(cls, session, lid, acumulator=[], profundidad_actual=0, profundidad_maxima=5):
