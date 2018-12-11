@@ -444,11 +444,15 @@ class SilegModel:
 
 
     @classmethod
-    def obtener_sublugares(cls, session, lid, acumulator=[]):
+    def obtener_sublugares(cls, session, lid, acumulator=[], profundidad_actual=0, profundidad_maxima=5):
         '''
             retorna todos los ids de los lugares que pertenecen al arbol de lugares con raiz == lid
         '''
+        if profundidad_actual >= profundidad_maxima:
+            """ chequeo de seguridad por el formato del arbol. para no armar loop infinito """
+            return
+
         lids = session.query(Lugar.id).filter(Lugar.padre_id == lid).all()
         acumulator.extend(lids)
         for lid in lids:
-            cls.obtener_sublugares(session, lid, acumulator)
+            cls.obtener_sublugares(session, lid, acumulator, profundidad_actual=profundidad_actual + 1)
