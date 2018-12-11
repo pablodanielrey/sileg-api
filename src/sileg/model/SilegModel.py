@@ -426,7 +426,7 @@ class SilegModel:
     @classmethod
     def obtener_lugares_por_usuario(cls, session, uid):
         ds = session.query(Designacion.lugar_id).filter(Designacion.usuario_id == uid).distinct()
-        lugares = [d for d in ds]
+        lugares = [d[0] for d in ds]
         return lugares
 
     @classmethod
@@ -452,6 +452,7 @@ class SilegModel:
             return
 
         lids = session.query(Lugar.id).filter(Lugar.padre_id == lid).all()
-        acumulator.extend(lids)
+        acumulator.extend([l[0] for l in lids])
         for lid in lids:
             cls.obtener_sublugares(session, lid, acumulator, profundidad_actual=profundidad_actual + 1)
+        return acumulator

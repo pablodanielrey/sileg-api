@@ -101,6 +101,26 @@ def crear_telefono(uid, token=None):
     return SilegModel.agregarTelefono(uid, telefono)
 '''
 
+@app.route(API_BASE + '/usuarios/<uid>/lugares', methods=['GET'])
+@warden.require_valid_token
+@jsonapi
+def obtener_lugares_por_usuario(uid=None, token=None):
+    assert uid is not None
+
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin', 'gelis-operator'])
+    if prof and prof['profile']:
+        with obtener_session() as session:
+            lugares = SilegModel.obtener_lugares_por_usuario(session, uid)
+            return lugares
+
+    usuario_logueado = token['sub']
+    if usuario_logueado == uid:
+        with obtener_session() as session:
+            lugares = SilegModel.obtener_lugares_por_usuario(session, uid)
+            return lugares
+
+    return ('no tiene los permisos suficientes', 403)
+
 
 @app.route(API_BASE + '/usuarios/<uid>/designaciones', methods=['GET'])
 @warden.require_valid_token
@@ -360,6 +380,20 @@ def obtener_lugar_subusuarios(lid, token=None):
 
     with obtener_session() as session:
         return SilegModel.obtener_subusuarios_por_lugares(session, [lid])
+
+@app.route(API_BASE + '/lugares/<lid>/sublugares', methods=['GET'])
+@warden.require_valid_token
+@jsonapi
+def obtener_lugar_sublugares(lid, token=None):
+    """
+        obtengo los lugares que están en el arbol de las oficinas que tiene como raiz lid
+    """
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin', 'gelis-operator'])
+    if not prof or prof['profile'] == False:
+        return ('no tiene los permisos suficientes', 403)
+
+    with obtener_session() as session:
+        return SilegModel.obtener_sublugares(session, lid)
 
 
 @app.route(API_BASE + '/lugares/', methods=['GET'], defaults={'lid':None})
