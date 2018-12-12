@@ -393,7 +393,8 @@ def obtener_lugar_sublugares(lid, token=None):
         return ('no tiene los permisos suficientes', 403)
 
     with obtener_session() as session:
-        return SilegModel.obtener_sublugares(session, lid)
+        sublugares = SilegModel.obtener_sublugares(session, lid)
+        return list(set(sublugares))
 
 
 @app.route(API_BASE + '/lugares/', methods=['GET'], defaults={'lid':None})
