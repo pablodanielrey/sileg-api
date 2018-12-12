@@ -202,6 +202,7 @@ if __name__ == '__main__':
                 logging.info("Actualizando cargo {}".format(c.nombre))
                 c1.nombre = c.nombre
                 c1.tipo = c.tipo
+                c1.old_id = c.old_id
             else:
                 logging.info("Creando cargo {}".format(c.nombre))
                 s.add(c)

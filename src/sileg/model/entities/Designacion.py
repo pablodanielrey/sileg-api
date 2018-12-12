@@ -20,6 +20,7 @@ class Designacion(Base):
 
     expediente = Column(String)
     resolucion = Column(String)
+    #corresponde = Column(String)
 
     tipo = Column(String)
     categorias = relationship('CategoriaDesignacion', secondary=categoria_designacion_table, back_populates='designaciones')

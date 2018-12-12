@@ -3,15 +3,84 @@ from psycopg2.extras import DictCursor
 import os
 import uuid
 import datetime
-from sileg.model.entities import Designacion, CategoriaDesignacion, Lugar
+from sileg.model.entities import Designacion, CategoriaDesignacion, Lugar, Cargo
+from sileg.model import obtener_session
+from model_utils.API import API
+from model_utils.UserCache import UserCache
+from model_utils.UsersAPI import UsersAPI
+
 import logging
 logging.getLogger().setLevel(logging.DEBUG)
-from sileg.model import obtener_session
 
 tipo_designacion = ['original', 'baja', 'prorroga', 'extension', 'prorroga de extension']
 
-def crear_designacion(session=None,desde=None, hasta=None, old_id=None, historico=False, tipo=tipo_designacion[0], designacion_relacionada=None,
-                    resolucion_id=None, observaciones='', categoria=None, expediente=None, resolucion=None, corresponde=None):
+USERS_API = os.environ['USERS_API_URL']
+REDIS_HOST = os.environ.get('REDIS_HOST')
+REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
+OIDC_URL = os.environ['OIDC_URL']
+OIDC_CLIENT_ID = os.environ['OIDC_CLIENT_ID']
+OIDC_CLIENT_SECRET = os.environ['OIDC_CLIENT_SECRET']
+VERIFY_SSL = bool(int(os.environ.get('VERIFY_SSL',0)))
+
+_API = API(url=OIDC_URL, 
+              client_id=OIDC_CLIENT_ID, 
+              client_secret=OIDC_CLIENT_SECRET, 
+              verify_ssl=VERIFY_SSL)
+
+_USERS_API = UsersAPI(api_url=USERS_API, api=_API)
+
+
+api = _API
+
+def _get_user_uuid(uuid, token=None):
+    query = '{}/usuarios/{}'.format(USERS_API, uuid)
+    r = api.get(query, token=token)
+    if not r.ok:
+        return None
+    usr = r.json()        
+    return usr
+
+def _get_user_dni(dni, token=None):
+    query = '{}/usuarios/'.format(USERS_API)
+    r = api.get(query, params={'q':dni}, token=token)
+    if not r.ok:
+        return None
+    logging.info(r.json())
+    for usr in r.json():
+        logging.info("USR:::")
+        logging.info(usr)
+        return usr        
+    return None
+
+cache_usuarios = UserCache(host=REDIS_HOST, 
+                            port=REDIS_PORT, 
+                            user_getter=_USERS_API._get_user_uuid,
+                            users_getter=_USERS_API._get_users_uuid,
+                            user_getter_dni=_get_user_dni)
+
+def obtener_persona(cur, empleado_id):
+    cur.execute("select pers_nrodoc from persona p inner join empleado e on p.pers_id = e.empleado_pers_id where empleado_id = %s",(empleado_id,))
+    r = cur.fetchone()
+    dni = str(r[0]) if r else None
+    tk = api._get_token()
+    logging.info("dni:{}".format(dni))
+    usr = cache_usuarios.obtener_usuario_por_dni(dni, tk)
+    logging.info("Id de la persona con dni {}: {}".format(dni,usr["id"]))
+    return usr['id']
+
+def obtener_lugar(session, catxmat_id, lugdetrab):
+    old_id = 'lugar{}'.format(lugdetrab) if lugdetrab else str(catxmat_id)
+    lugar = session.query(Lugar).filter(Lugar.old_id == old_id).one_or_none()
+    return lugar.id if lugar else None
+
+def obtener_cargo(session, cargo_id, dedicacion_id):
+    old_id = 'c{}d{}'.format(cargo_id, dedicacion_id)
+    cargo = session.query(Cargo).filter(Cargo.old_id == old_id).one_or_none()
+    logging.info("OLD ID: {}".format(old_id))
+    return cargo.id if cargo else None    
+
+def crear_designacion(session=None,desde=None, hasta=None, old_id=None, historico=False, tipo=tipo_designacion[0], designacion_relacionada=None, resolucion_id=None,
+                    observaciones='', categoria=None, expediente=None, resolucion=None, corresponde=None, usuario_id=None, lugar_id=None, cargo_id=None):
     d = session.query(Designacion).filter(Designacion.old_id == old_id).one_or_none()
     if d is None:
         d = Designacion()        
@@ -26,6 +95,9 @@ def crear_designacion(session=None,desde=None, hasta=None, old_id=None, historic
     d.expediente = expediente
     d.resolucion = resolucion
     d.categorias = [categoria] if categoria else []
+    d.usuario_id = usuario_id
+    d.lugar_id = lugar_id
+    d.cargo_id = cargo_id
     if not d.id:
         d.id = str(uuid.uuid4())
         session.add(d)
@@ -61,11 +133,6 @@ def obtener_resolucion(cur, resolucion_id):
     r = cur.fetchone()    
     return r if (r["resolucion_numero"] and r["resolucion_numero"] != '') or (r["resolucion_expediente"] and r["resolucion_expediente"] != '') else None
 
-def obtener_persona(cur, session, empleado_id):
-    cur.execute("select pers_nrodoc from persona p inner join empleado e on p.pers_id = e.empleado_pers_id where empleado_id = %s",(empleado_id,))
-    r = cur.fetchone()    
-    # TODO: falta obtener el usuario dado el dni
-
 def importar_designacion(d, cur, session):
     logging.info("Importando designacion: {}".format(d))
     id = d["desig_id"]
@@ -74,8 +141,11 @@ def importar_designacion(d, cur, session):
     expediente = resolucion["resolucion_expediente"] if resolucion else None
     resol = resolucion["resolucion_numero"] if resolucion else None
     corresponde = resolucion["resolucion_corresponde"] if resolucion else None
-    desig = crear_designacion(session=session, desde=d["desig_fecha_desde"], hasta=d["desig_fecha_hasta"], old_id=old_id, historico=False, tipo=tipo_designacion[0], designacion_relacionada=None,
-                        resolucion_id=d["desig_resolucionalta_id"], observaciones=d["desig_observaciones"], expediente=expediente, resolucion=resol, corresponde=corresponde)
+    usuario_id = obtener_persona(cur=cur, empleado_id=d["desig_empleado_id"])
+    lugar_id = obtener_lugar(session, d["desig_catxmat_id"], d["desig_lugdetrab_id"])
+    cargo_id = obtener_cargo(session, d["desig_tipocargo_id"], d["desig_tipodedicacion_id"])   
+    desig = crear_designacion(session=session, desde=d["desig_fecha_desde"], hasta=d["desig_fecha_hasta"], old_id=old_id, historico=False, tipo=tipo_designacion[0], designacion_relacionada=None, resolucion_id=d["desig_resolucionalta_id"],
+                        observaciones=d["desig_observaciones"], expediente=expediente, resolucion=resol, corresponde=corresponde, usuario_id=usuario_id, lugar_id=lugar_id, cargo_id=cargo_id)
 
     logging.info("Desginacion creada: {}".format(desig.__dict__))    
     session.commit()
