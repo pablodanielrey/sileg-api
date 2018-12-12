@@ -436,6 +436,7 @@ class SilegModel:
             {
                 'usuario': d.usuario_id,
                 'cargo': d.cargo.nombre if d.cargo else '',
+                'cargo_nivel': d.cargo.nivel if d.cargo else 100,
                 'lugar': d.lugar.nombre if d.lugar else ''
             } 
             for d in ds
