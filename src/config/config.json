@@ -1,0 +1,35 @@
+{
+	"ui": {
+		"mostrar_organigrama": false,
+		"mostrar_sincronizacion_usuarios": false,
+		"mostrar_sincronizacion_login": false
+	},
+	"api":{
+		"perfiles": [
+			{
+				"perfil": "gelis-super-admin",
+				"funciones": ["super-admin"]
+			},
+			{
+				"perfil": "gelis-admin",
+				"funciones": [
+					"buscar_usuario",
+            		"crear_usuario",
+            		"buscar_lugar",
+            		"crear_lugar",
+            		"sincronizacion_usuario",
+            		"sincronizacion_logi"
+				]
+			},
+			{
+				"perfil": "gelis-operator",
+				"funciones": [
+					"buscar_usuario",
+            		"buscar_lugar",
+            		"sincronizacion_usuario",
+					"sincronizacion_login"
+				]
+			}
+		]
+	}
+}
