@@ -12,7 +12,7 @@ from model_utils.UsersAPI import UsersAPI
 import logging
 logging.getLogger().setLevel(logging.DEBUG)
 
-tipo_designacion = ['original', 'baja', 'prorroga', 'extension', 'prorroga de extension', 'reemplaza a']
+tipo_designacion = ['original', 'baja', 'prorroga', 'extension', 'prorroga de extension', 'reemplaza a', 'prorroga ordenanza']
 
 USERS_API = os.environ['USERS_API_URL']
 REDIS_HOST = os.environ.get('REDIS_HOST')
@@ -165,6 +165,21 @@ def importar_designacion(d, cur, session):
 
     logging.info("Desginacion creada: {}".format(desig.__dict__))    
     session.commit()
+
+    # verifico si tiene una prorroga por la ordenanza 174
+    if d["desig_resolucionord_id"]:
+        resolucion = obtener_resolucion(cur=cur, resolucion_id=d["desig_resolucionord_id"])
+        expediente = resolucion["resolucion_expediente"] if resolucion else None
+        resol = resolucion["resolucion_numero"] if resolucion else None 
+        if resol or expediente:
+            tipo = tipo_designacion[6]
+            logging.info("Crear designacion ")       
+            old_id = "pro_ord_{}".format(d["desig_id"])
+            crear_designacion(session=session, desde=d["desig_ord_fdesde"], hasta=d["desig_ord_fhasta"], old_id=old_id, historico=False, tipo=tipo, designacion_relacionada=desig.id, resolucion_id=d["desig_resolucionalta_id"],
+                        observaciones=d["desig_observaciones"], expediente=expediente, resolucion=resol, corresponde=corresponde, usuario_id=usuario_id, lugar_id=lugar_id, cargo_id=cargo_id, caracter_id=caracter_id)
+            session.commit()
+
+
     if d["desig_resolucionbaja_id"]:
         resolucion = obtener_resolucion(cur=cur, resolucion_id=d["desig_resolucionbaja_id"])
         if resolucion:
@@ -313,7 +328,7 @@ if __name__ == '__main__':
             importar_caracter(cur, session)
             
             cur.execute(""" SELECT * 
-            FROM designacion_docente where desig_id =  179
+            FROM designacion_docente where desig_id =  760
             """)
             for d in cur:
                 importar_designacion(d, cur, session)
