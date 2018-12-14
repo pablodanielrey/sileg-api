@@ -5,6 +5,7 @@ import requests
 import os
 import logging
 import uuid
+import json
 
 from .entities import *
 
@@ -46,6 +47,13 @@ class SilegModel:
                                 users_getter=_USERS_API._get_users_uuid,
                                 user_getter_dni=_USERS_API._get_user_dni)
 
+
+    @classmethod
+    def _config(cls):
+        volumen = os.environ['VOLUMEN_CONFIG']
+        with open(volumen + '/config.json','r') as f:
+            config = json.load(f)
+        return config
 
     @staticmethod
     def _chequearParam(param, d):

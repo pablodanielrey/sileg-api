@@ -48,6 +48,12 @@ configurar_debugger()
 
 API_BASE = os.environ['API_BASE']
 
+@app.route(API_BASE + '/obtener_config', methods=['GET'])
+@jsonapi
+def retornar_config_ui():
+    config = SilegModel._config()
+    return config['ui']
+
 @app.route(API_BASE + '/acceso_modulos', methods=['GET'])
 @warden.require_valid_token
 @jsonapi
