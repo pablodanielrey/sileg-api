@@ -4,7 +4,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from model_utils import Base
-from .entities import *
+#from .entities import *
+from .entities.Designacion import Caracter
 
 port = os.environ.get('SILEG_DB_PORT', '5432')
 

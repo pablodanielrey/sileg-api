@@ -3,7 +3,7 @@ from psycopg2.extras import DictCursor
 import os
 import uuid
 import datetime
-from sileg.model.entities import Designacion, CategoriaDesignacion, Lugar, Cargo
+from sileg.model.entities import Designacion, CategoriaDesignacion, Lugar, Cargo, Caracter
 from sileg.model import obtener_session
 from model_utils.API import API
 from model_utils.UserCache import UserCache
@@ -12,7 +12,7 @@ from model_utils.UsersAPI import UsersAPI
 import logging
 logging.getLogger().setLevel(logging.DEBUG)
 
-tipo_designacion = ['original', 'baja', 'prorroga', 'extension', 'prorroga de extension']
+tipo_designacion = ['original', 'baja', 'prorroga', 'extension', 'prorroga de extension', 'reemplaza a']
 
 USERS_API = os.environ['USERS_API_URL']
 REDIS_HOST = os.environ.get('REDIS_HOST')
@@ -80,7 +80,7 @@ def obtener_cargo(session, cargo_id, dedicacion_id):
     return cargo.id if cargo else None    
 
 def crear_designacion(session=None,desde=None, hasta=None, old_id=None, historico=False, tipo=tipo_designacion[0], designacion_relacionada=None, resolucion_id=None,
-                    observaciones='', categoria=None, expediente=None, resolucion=None, corresponde=None, usuario_id=None, lugar_id=None, cargo_id=None):
+                    observaciones='', categoria=None, expediente=None, resolucion=None, corresponde=None, usuario_id=None, lugar_id=None, cargo_id=None, caracter_id=None):
     d = session.query(Designacion).filter(Designacion.old_id == old_id).one_or_none()
     if d is None:
         d = Designacion()        
@@ -99,6 +99,7 @@ def crear_designacion(session=None,desde=None, hasta=None, old_id=None, historic
     d.usuario_id = usuario_id
     d.lugar_id = lugar_id
     d.cargo_id = cargo_id
+    d.caracter_id = caracter_id
     if not d.id:
         d.id = str(uuid.uuid4())
         session.add(d)
@@ -134,6 +135,10 @@ def obtener_resolucion(cur, resolucion_id):
     r = cur.fetchone()    
     return r if (r["resolucion_numero"] and r["resolucion_numero"] != '') or (r["resolucion_expediente"] and r["resolucion_expediente"] != '') else None
 
+def obtener_caracter(session, old_id):
+    caracter = session.query(Caracter).filter(Caracter.old_id == str(old_id)).one_or_none()
+    return caracter.id if caracter else None
+
 def importar_designacion(d, cur, session):
     logging.info("Importando designacion: {}".format(d))
     id = d["desig_id"]
@@ -145,8 +150,18 @@ def importar_designacion(d, cur, session):
     usuario_id = obtener_persona(cur=cur, empleado_id=d["desig_empleado_id"])
     lugar_id = obtener_lugar(session, d["desig_catxmat_id"], d["desig_lugdetrab_id"])
     cargo_id = obtener_cargo(session, d["desig_tipocargo_id"], d["desig_tipodedicacion_id"])   
-    desig = crear_designacion(session=session, desde=d["desig_fecha_desde"], hasta=d["desig_fecha_hasta"], old_id=old_id, historico=False, tipo=tipo_designacion[0], designacion_relacionada=None, resolucion_id=d["desig_resolucionalta_id"],
-                        observaciones=d["desig_observaciones"], expediente=expediente, resolucion=resol, corresponde=corresponde, usuario_id=usuario_id, lugar_id=lugar_id, cargo_id=cargo_id)
+    caracter_id = obtener_caracter(session, d["desig_tipocaracter_id"])
+
+    if d["desig_reempa"] is None:
+        tipo = tipo_designacion[0]
+        relacionada = None
+    else:
+        tipo = tipo_designacion[5]
+        relacionada = session.query(Designacion).filter(Designacion.old_id == "desig_{}".format(d["desig_reempa"])).one_or_none()
+        relacionada = relacionada.id if relacionada else None
+
+    desig = crear_designacion(session=session, desde=d["desig_fecha_desde"], hasta=d["desig_fecha_hasta"], old_id=old_id, historico=False, tipo=tipo, designacion_relacionada=relacionada, resolucion_id=d["desig_resolucionalta_id"],
+                        observaciones=d["desig_observaciones"], expediente=expediente, resolucion=resol, corresponde=corresponde, usuario_id=usuario_id, lugar_id=lugar_id, cargo_id=cargo_id, caracter_id=caracter_id)
 
     logging.info("Desginacion creada: {}".format(desig.__dict__))    
     session.commit()
@@ -162,7 +177,7 @@ def importar_designacion(d, cur, session):
             if d["desig_tipobaja_id"]:
                 categoria = session.query(CategoriaDesignacion).filter(CategoriaDesignacion.old_id == str(d["desig_tipobaja_id"])).one_or_none()
             crear_designacion(session=session, desde=d["desig_fecha_baja"], hasta=None, old_id=old_id, historico=True, tipo=tipo_designacion[1], designacion_relacionada=desig.id, resolucion_id=d["desig_resolucionbaja_id"],
-                            observaciones=d["desig_observaciones"], categoria=categoria, expediente=expediente, resolucion=resol, corresponde=corresponde, usuario_id=usuario_id, lugar_id=lugar_id, cargo_id=cargo_id)
+                            observaciones=d["desig_observaciones"], categoria=categoria, expediente=expediente, resolucion=resol, corresponde=corresponde, usuario_id=usuario_id, lugar_id=lugar_id, cargo_id=cargo_id, caracter_id=caracter_id)
             desig.historico = True
 
     prorrogas = []
@@ -177,7 +192,7 @@ def importar_designacion(d, cur, session):
             resol = resolucion["resolucion_numero"] if resolucion else None      
             corresponde = resolucion["resolucion_corresponde"] if resolucion else None               
             pro_desig = crear_designacion(session=session,desde=p["prorroga_fecha_desde"], hasta=p["prorroga_fecha_hasta"], old_id=old_id, historico=historico, tipo=tipo_designacion[2],designacion_relacionada=desig.id,
-                              resolucion_id=p["prorroga_resolucionalta_id"], observaciones="", expediente=expediente, resolucion=resol, corresponde=corresponde, usuario_id=usuario_id, lugar_id=lugar_id, cargo_id=cargo_id)
+                              resolucion_id=p["prorroga_resolucionalta_id"], observaciones="", expediente=expediente, resolucion=resol, corresponde=corresponde, usuario_id=usuario_id, lugar_id=lugar_id, cargo_id=cargo_id, caracter_id=caracter_id)
             logging.info("Crear prorroga: {}".format(p))
             session.commit()
             # verifico si tiene una baja
@@ -194,7 +209,7 @@ def importar_designacion(d, cur, session):
                     if p["prorroga_tipobaja_id"]:
                         categoria = session.query(CategoriaDesignacion).filter(CategoriaDesignacion.old_id == str(p["prorroga_tipobaja_id"])).one_or_none()
                     crear_designacion(session=session, desde=desde, hasta=None, old_id=old_id, historico=False, tipo=tipo_designacion[1],designacion_relacionada=pro_desig.id, resolucion_id=p["prorroga_resolucionbaja_id"],
-                            observaciones="", categoria=categoria, expediente=expediente, resolucion=resol, corresponde=corresponde, usuario_id=usuario_id, lugar_id=lugar_id, cargo_id=cargo_id)
+                            observaciones="", categoria=categoria, expediente=expediente, resolucion=resol, corresponde=corresponde, usuario_id=usuario_id, lugar_id=lugar_id, cargo_id=cargo_id, caracter_id=caracter_id)
                     pro_desig.historico = True
     session.commit()        
 
@@ -208,7 +223,7 @@ def importar_designacion(d, cur, session):
         old_id = "extension_{}".format(e["extension_id"])        
         cargo_id = obtener_cargo(session, d["desig_tipocargo_id"], e["extension_nuevadedicacion_id"])   
         ext = crear_designacion(session=session, desde=e["extension_fecha_desde"], hasta=e["extension_fecha_hasta"], old_id=old_id, historico=False, tipo=tipo_designacion[3],designacion_relacionada=desig.id,
-                resolucion_id=e["extension_resolucionalta_id"], observaciones="", expediente=expediente, resolucion=resol, corresponde=corresponde, usuario_id=usuario_id, lugar_id=lugar_id, cargo_id=cargo_id)
+                resolucion_id=e["extension_resolucionalta_id"], observaciones="", expediente=expediente, resolucion=resol, corresponde=corresponde, usuario_id=usuario_id, lugar_id=lugar_id, cargo_id=cargo_id, caracter_id=caracter_id)
         session.commit()
         # verifico si tiene baja
         if e["extension_resolucionbaja_id"]:
@@ -221,7 +236,7 @@ def importar_designacion(d, cur, session):
                 old_id = "extensionbaja_{}".format(e["extension_id"])
                 desde = e["extension_fecha_baja"] if e["extension_fecha_baja"] else e["extension_fecha_hasta"]
                 crear_designacion(session=session, desde=desde, hasta=None, old_id=old_id, historico=True, tipo=tipo_designacion[1], designacion_relacionada=ext.id, 
-                        resolucion_id=e["extension_resolucionbaja_id"], observaciones="", categoria=categoria, expediente=expediente, resolucion=resol, corresponde=corresponde)
+                        resolucion_id=e["extension_resolucionbaja_id"], observaciones="", categoria=categoria, expediente=expediente, resolucion=resol, corresponde=corresponde, caracter_id=caracter_id)
                 ext.historico = True
         if e["extension_prorrogada_con"]:
             prorrogas_ext = obtener_prorrogas_de(d["extension_prorrogada_con"], cur)
@@ -234,7 +249,7 @@ def importar_designacion(d, cur, session):
                 resol = resolucion["resolucion_numero"] if resolucion else None      
                 corresponde = resolucion["resolucion_corresponde"] if resolucion else None                
                 pro_ext = crear_designacion(session=session,desde=ep["prorroga_fecha_desde"], hasta=ep["prorroga_fecha_hasta"], old_id=old_id, historico=historico, tipo=tipo_designacion[4],
-                                designacion_relacionada=ext.id, resolucion_id=ep["prorroga_resolucionalta_id"], observaciones="", expediente=expediente, resolucion=resol, corresponde=corresponde)            
+                                designacion_relacionada=ext.id, resolucion_id=ep["prorroga_resolucionalta_id"], observaciones="", expediente=expediente, resolucion=resol, corresponde=corresponde, caracter_id=caracter_id)            
                 logging.info("Crear prorroga: {}".format(ep))                
                 session.commit()
                 
@@ -252,7 +267,7 @@ def importar_designacion(d, cur, session):
                         if ep["prorroga_tipobaja_id"]:
                             categoria = session.query(CategoriaDesignacion).filter(CategoriaDesignacion.old_id == str(p["prorroga_tipobaja_id"])).one_or_none()
                         crear_designacion(session=session, desde=desde, hasta=None, old_id=old_id, historico=False, tipo=tipo_designacion[4], designacion_relacionada=pro_ext.id,
-                                resolucion_id=ep["prorroga_resolucionbaja_id"], observaciones="", categoria=categoria, expediente=expediente, resolucion=resol, corresponde=corresponde)            
+                                resolucion_id=ep["prorroga_resolucionbaja_id"], observaciones="", categoria=categoria, expediente=expediente, resolucion=resol, corresponde=corresponde, caracter_id=caracter_id)            
     session.commit()
 
 
@@ -270,6 +285,20 @@ def importar_categorias(cur, s):
             logging.info(categoria.__dict__)
     session.commit()
 
+def importar_caracter(cur, session):
+    logging.info("Importando dedicacion")
+    cur.execute("SELECT tipocaracter_id, tipocaracter_nombre FROM tipo_caracter")
+    for c in cur:
+        caracter = session.query(Caracter).filter(Caracter.old_id == str(c["tipocaracter_id"])).one_or_none()
+        if caracter is None:            
+            caracter = Caracter()
+            caracter.id = str(uuid.uuid4())
+            caracter.old_id = str(c["tipocaracter_id"])
+            caracter.nombre = c["tipocaracter_nombre"]
+            session.add(caracter)
+            logging.info(caracter.__dict__)
+    session.commit()
+
 if __name__ == '__main__':
     conn = psycopg2.connect("host='{}' user='{}' password='{}' dbname={}".format(
         os.environ['OLD_SILEG_DB_HOST'],
@@ -281,6 +310,7 @@ if __name__ == '__main__':
     try:
         with obtener_session() as session:
             importar_categorias(cur, session)
+            importar_caracter(cur, session)
             
             cur.execute(""" SELECT * 
             FROM designacion_docente where desig_id =  179

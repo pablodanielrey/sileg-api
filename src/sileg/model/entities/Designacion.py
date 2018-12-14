@@ -10,6 +10,14 @@ categoria_designacion_table = Table('categoria_designacion', Base.metadata,
     Column('categoria_id', String, ForeignKey('categoria.id'))
 )
 
+class Caracter(Base):
+
+    __tablename__ = 'caracter'
+
+    nombre = Column(String, unique=True)
+
+    old_id = Column(String)
+
 class Designacion(Base):
 
     __tablename__ = 'designacion'
@@ -38,6 +46,9 @@ class Designacion(Base):
 
     lugar_id = Column(String, ForeignKey('lugar.id'))
     lugar = relationship('Lugar', back_populates='designaciones')
+
+    caracter_id = Column(String, ForeignKey('caracter.id'))
+    #caracter = relationship('Caracter', back_populates='tipos_caracter')
 
     observaciones = Column(String)
 
@@ -76,4 +87,3 @@ class CategoriaDesignacion(Base):
     designaciones = relationship('Designacion', secondary=categoria_designacion_table, back_populates='categorias')
 
     old_id = Column(String)
-
