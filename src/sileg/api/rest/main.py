@@ -396,6 +396,22 @@ def obtener_lugar_sublugares(lid, token=None):
         sublugares = SilegModel.obtener_sublugares(session, lid)
         return list(set(sublugares))
 
+@app.route(API_BASE + '/lugares/<lid>/arbol', methods=['GET'])
+@warden.require_valid_token
+@jsonapi
+def obtener_lugar_subarbol(lid, token=None):
+    """
+        obtengo todos los cargos y lugares que cuelgan de lid, retornados en formato de arbol json.
+    """
+    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin', 'gelis-operator'])
+    if not prof or prof['profile'] == False:
+        return ('no tiene los permisos suficientes', 403)
+
+    with obtener_session() as session:
+        arbol = SilegModel.obtener_arbol(session, lid)
+        return arbol
+
+
 
 @app.route(API_BASE + '/lugares/', methods=['GET'], defaults={'lid':None})
 @app.route(API_BASE + '/lugares/<lid>', methods=['GET'])
