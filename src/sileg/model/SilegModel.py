@@ -6,6 +6,7 @@ import os
 import logging
 import uuid
 import json
+import re
 
 from .entities import *
 
@@ -15,7 +16,7 @@ from .entities import *
     para la cache de usuarios
 """
 from model_utils.API import API
-from model_utils.UserCache import UserCache
+from model_utils.UserCache import MongoUserCache
 from model_utils.UsersAPI import UsersAPI
 """
     ###############
@@ -28,7 +29,7 @@ OIDC_CLIENT_ID = os.environ['OIDC_CLIENT_ID']
 OIDC_CLIENT_SECRET = os.environ['OIDC_CLIENT_SECRET']
 REDIS_HOST = os.environ.get('REDIS_HOST')
 REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
-
+MONGO_URL = os.environ['MONGO_URL']
 
 _API = API(url=OIDC_URL, 
               client_id=OIDC_CLIENT_ID, 
@@ -37,16 +38,31 @@ _API = API(url=OIDC_URL,
 
 _USERS_API = UsersAPI(api_url=USERS_API, api=_API)
 
+class UA:
+
+    def __init__(self, api_url, api):
+        self.url = api_url
+        self.api = api
+
+    def _search_user(self, search, token=None):
+        params = {
+            'q':search
+        }
+        query = '{}/usuarios'.format(self.url)
+        r = self.api.get(query, params=params, token=token)
+        if not r.ok:
+            return []
+        users = r.json()
+        return users
 
 class SilegModel:
 
     api = _API
-    cache_usuarios = UserCache(host=REDIS_HOST, 
-                                port=REDIS_PORT, 
-                                user_getter=_USERS_API._get_user_uuid,
-                                users_getter=_USERS_API._get_users_uuid,
-                                user_getter_dni=_USERS_API._get_user_dni)
+    cache_usuarios = MongoUserCache(mongo_url=MONGO_URL,
+                                    getters=_USERS_API,
+                                    timeout=60*60)
 
+    api_usuarios = UA(api_url=USERS_API, api=_API)
 
     @classmethod
     def _config(cls):
@@ -59,6 +75,54 @@ class SilegModel:
     def _chequearParam(param, d):
         assert param in d
         assert d[param] is not None
+
+
+    """
+        ///////////////////////// métodos sileg-ui /////////////////////
+    """
+
+
+    @classmethod
+    def usuarios_admin_search(cls, session, autorizador_id, search):
+        """
+        uids = cls.cache_usuarios.obtener_uids()
+        usuarios = cls.cache_usuarios.obtener_usuarios_por_uids(uids)
+
+        ''' mejoro un poco el texto de search para que matchee la cadena de nombre apellido dni'''
+        rsearch = '.*{}.*'.format(search.replace('.','').replace(' ', '.*'))
+        r = re.compile(rsearch, re.I)
+        filtrados = [ u for u in usuarios if r.match(u['nombre'] + ' ' + u['apellido'] + ' ' + u['dni'])]
+        return filtrados        
+        """
+        usr = cls.api_usuarios._search_user(search)
+        return usr
+
+    @classmethod
+    def usuarios_search(cls, session, autorizador_id, serarch):
+        """
+            hay que manejar perfiles de acceso a los datos de usuarios.
+            por ejemplo ciertas oficinas se encargan de ciertos tipos de usuario definidos por los cargos
+            DeTISE --> docentes
+            DiTESI --> ADMIN
+            Personal --> ADMIN
+            Departamentos --> usuarios dentro del departamento
+
+            por ahora solo retorno todos los que tengan designacion
+        """
+        ds = session.query(Designacion.usuario_id).distinct()
+        uids = [u[0] for u in ds]
+        usuarios = cls.cache_usuarios.obtener_usuarios_por_uids(uids)
+
+        ''' mejoro un poco el texto de search para que matchee la cadena de nombre apellido dni'''
+        rsearch = '.*{}.*'.format(search.replace('.','').replace(' ', '.*'))
+        r = re.compile(rsearch, re.I)
+        filtrados = [ u for u in usuarios if r.match(u['nombre'] + ' ' + u['apellido'] + ' ' + u['dni'])]
+        return filtrados
+
+    """
+        /////////////////////////////////////////////////////////////////
+    """
+
 
     @classmethod
     def crearDesignacionCumpliendoFunciones(cls, session, pedido):

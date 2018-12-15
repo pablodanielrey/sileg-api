@@ -26,10 +26,12 @@ from sileg.model.SilegModel import SilegModel
 from sileg.model import obtener_session
 
 # set the project root directory as the static folder, you can set others.
+from flask_cors import CORS
+
 app = Flask(__name__, static_url_path='/src/sileg/web')
 app.wsgi_app = ProxyFix(app.wsgi_app)
 register_encoder(app)
-
+CORS(app)
 
 DEBUGGING = bool(int(os.environ.get('VSC_DEBUGGING',0)))
 def configurar_debugger():
@@ -89,6 +91,44 @@ def obtener_acceso_modulos(token=None):
         return json.dumps(a)
     a = []
     return json.dumps(a)
+
+
+"""
+    //////////////////////////////////
+    métodos usados en la web sileg-ui
+    /////////////////////////////////
+"""
+
+@app.route(API_BASE + '/usuarios/<search>/search', methods=['GET'])
+@warden.require_valid_token
+@jsonapi
+def usuarios_search(search, token=None):
+    autorizador_id = token['sub']
+
+    prof = warden.has_one_profile(token, ['gelis-super-admin','gelis-admin','gelis-operator'])
+    if prof and prof['profile']:
+        with obtener_session() as session:
+            usuarios = SilegModel.usuarios_admin_search(session, autorizador_id, search)
+            return usuarios
+    
+    with obtener_session() as session:
+        usuarios = SilegModel.usuarios_search(session, autorizador_id, search)
+        return usuarios
+
+
+@app.route(API_BASE + '/print_routes', methods=['GET'])
+@jsonapi
+def print_routes():
+    r = [
+        url_for('usuarios_search', search=' '),
+        url_for('options', path='/usuarios/ /search')
+    ]
+    return r
+
+"""
+    //////////////////////////////
+"""
+
 
 
 '''
@@ -151,20 +191,6 @@ def obtener_designaciones_por_usuario(uid=None, token=None):
             return ('no tiene los permisos suficientes', 403)
 
 
-@app.route(API_BASE + '/usuarios', methods=['GET'])
-@jsonapi
-def obtener_usuarios(token=None):
-    """
-        obtengo los usuarios que tienen alguna designacion
-    """
-    """
-    prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin', 'gelis-operator'])
-    if not prof or prof['profile'] == False:
-        return ('no tiene los permisos suficientes', 403)
-    """
-
-    with obtener_session() as session:
-        return SilegModel.obtener_usuarios(session)
 
 @app.route(API_BASE + '/usuarios/<uid>/subusuarios', methods=['GET'])
 @warden.require_valid_token
@@ -462,7 +488,8 @@ def catedras(catedra=None, token=None):
         return SilegModel.catedras(session=session, catedra=catedra, materia=materia, departamento=departamento)
 
 
-@app.route(API_BASE + '*', methods=['OPTIONS'])
+"""
+@app.route(API_BASE + '<path:path>', methods=['OPTIONS'])
 def options():
     if request.method == 'OPTIONS':
         return 204
@@ -472,8 +499,10 @@ def options():
 def cors_after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    response.headers.add('Allow', 'GET,PUT,POST,DELETE,OPTIONS')
     return response
+"""
 
 @app.after_request
 def add_header(r):
