@@ -44,16 +44,6 @@ class UA:
         self.url = api_url
         self.api = api
 
-    def _search_user(self, search, token=None):
-        params = {
-            'q':search
-        }
-        query = '{}/usuarios'.format(self.url)
-        r = self.api.get(query, params=params, token=token)
-        if not r.ok:
-            return []
-        users = r.json()
-        return users
 
 class SilegModel:
 
@@ -94,11 +84,11 @@ class SilegModel:
         filtrados = [ u for u in usuarios if r.match(u['nombre'] + ' ' + u['apellido'] + ' ' + u['dni'])]
         return filtrados        
         """
-        usr = cls.api_usuarios._search_user(search)
+        usr = _USERS_API._search_user(search)
         return usr
 
     @classmethod
-    def usuarios_search(cls, session, autorizador_id, serarch):
+    def usuarios_search(cls, session, autorizador_id, search):
         """
             hay que manejar perfiles de acceso a los datos de usuarios.
             por ejemplo ciertas oficinas se encargan de ciertos tipos de usuario definidos por los cargos
