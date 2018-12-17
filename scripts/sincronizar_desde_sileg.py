@@ -200,7 +200,7 @@ def importar_designacion(d, cur, session):
         prorrogas = obtener_prorrogas_de(d["desig_prorrogada_con"], cur)
         desig.historico = True
         for p in prorrogas:
-            historico = p["prorroga_prorrogada_con"] is None or p["prorroga_resolucionbaja_id"] is not None
+            historico = p["prorroga_prorrogada_con"] is not None
             old_id = "prorroga_{}".format(p["prorroga_id"])
             resolucion = obtener_resolucion(cur=cur, resolucion_id=p["prorroga_resolucionalta_id"])            
             expediente = resolucion["resolucion_expediente"] if resolucion else None
@@ -257,7 +257,7 @@ def importar_designacion(d, cur, session):
             prorrogas_ext = obtener_prorrogas_de(d["extension_prorrogada_con"], cur)
             ext.historico = True
             for ep in prorrogas_ext:
-                historico = ep["prorroga_prorrogada_con"] is None or ep["prorroga_resolucionbaja_id"] is not None
+                historico = ep["prorroga_prorrogada_con"] is not None
                 old_id = "prorrogaextension_{}".format(ep["prorroga_id"])
                 resolucion = obtener_resolucion(cur=cur, resolucion_id=ep["prorroga_resolucionbaja_id"])
                 expediente = resolucion["resolucion_expediente"] if resolucion else None
@@ -283,6 +283,7 @@ def importar_designacion(d, cur, session):
                             categoria = session.query(CategoriaDesignacion).filter(CategoriaDesignacion.old_id == str(p["prorroga_tipobaja_id"])).one_or_none()
                         crear_designacion(session=session, desde=desde, hasta=None, old_id=old_id, historico=False, tipo=tipo_designacion[4], designacion_relacionada=pro_ext.id,
                                 resolucion_id=ep["prorroga_resolucionbaja_id"], observaciones="", categoria=categoria, expediente=expediente, resolucion=resol, corresponde=corresponde, caracter_id=caracter_id)            
+                        pro_ext.historico = True
     session.commit()
 
 
