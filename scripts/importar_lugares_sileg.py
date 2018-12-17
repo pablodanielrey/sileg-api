@@ -8,9 +8,14 @@ from sqlalchemy import or_, and_
 from sqlalchemy import func
 
 from sileg.model import obtener_session
-from sileg.model.entities import Lugar, Facultad, LugarDictado, Departamento, Instituto, Oficina, Materia, Catedra
+from sileg.model.entities import Lugar, Facultad, LugarDictado, Departamento, Instituto, Oficina, Materia, Catedra, Categoria
 import os
 import uuid
+
+categoria_centro_id = '2d4fa072-740a-421d-a63e-1059717a6d8d'
+categoria_dpto_id = 'f948ac90-82c1-42ea-a34a-018c17eb36d7'
+categoria_inst_id = '582a7772-6f92-4bda-8896-917b405384a0'
+categoria_lugares_id = '2b3fab6f-5545-453a-b672-4539d6850bab'
 
 def crear_lugares(s, padre_id, lugares):
     for l in lugares:
@@ -20,8 +25,8 @@ def crear_lugares(s, padre_id, lugares):
         else:
             s.add(l['lugar'])
 
-def importar_centros_regionales(s, cur, padre):
-    sql = "select dpto_id, dpto_nombre from departamento where dpto_nombre like 'C. %'"    
+def importar_centros_regionales(s, cur, padre):    
+    sql = "select dpto_id, dpto_nombre from departamento where lower(dpto_nombre) like 'c. %' or lower(dpto_nombre) like 'c.u.%'"    
     cur.execute(sql)
     for r in cur:
         old_id = 'dpto{}'.format(r["dpto_id"])
@@ -34,6 +39,9 @@ def importar_centros_regionales(s, cur, padre):
             c.padre_id = padre.id
             c.old_id = old_id
             s.add(c)
+        else:
+            c.padre_id = padre.id
+            c.old_id = old_id            
 
 def importar_departamentos(s, cur, padre):
     sql = "select dpto_id, dpto_nombre from departamento where dpto_nombre like 'Departamento %'"    
@@ -41,14 +49,17 @@ def importar_departamentos(s, cur, padre):
     for r in cur:
         old_id = 'dpto{}'.format(r["dpto_id"])
         logging.info("Departamento id:{} nombre:{}".format(old_id, r["dpto_nombre"]))
-        c = s.query(Lugar).filter(Lugar.old_id == old_id).one_or_none()
-        if not c:
+        d = s.query(Lugar).filter(Lugar.old_id == old_id).one_or_none()
+        if not d:
             logging.info("Creando departamento: {}".format(r["dpto_nombre"]))            
-            c = Departamento(nombre=r["dpto_nombre"])
-            c.id = str(uuid.uuid4())
-            c.padre_id = padre.id
-            c.old_id = old_id
-            s.add(c)    
+            d = Departamento(nombre=r["dpto_nombre"])
+            d.id = str(uuid.uuid4())
+            d.padre_id = padre.id
+            d.old_id = old_id
+            s.add(d)   
+        else:
+            d.padre_id = padre.id
+            d.old_id = old_id             
 
 def importar_institutos(s, cur, padre):
     sql = "select dpto_id, dpto_nombre from departamento where dpto_nombre like 'Instituto %'"    
@@ -63,7 +74,10 @@ def importar_institutos(s, cur, padre):
             c.id = str(uuid.uuid4())
             c.padre_id = padre.id
             c.old_id = old_id
-            s.add(c)           
+            s.add(c)          
+        else:
+            c.padre_id = padre.id
+            c.old_id = old_id            
 
 def importar_lugares(s, cur, raiz):
     sql = "select lugdetrab_id as id, lugdetrab_nombre as nombre, dpto_id from lugar_de_trabajo l left outer join departamento d on (l.lugdetrab_dpto_id = dpto_id)"
@@ -84,6 +98,14 @@ def importar_lugares(s, cur, raiz):
             c.old_id = old_id
             logging.info("Oficina a crear: {}".format(c.__dict__))
             s.add(c)
+        else:
+            padre = None            
+            if r["dpto_id"] is not None:
+                padre_id = 'dpto{}'.format(r["dpto_id"])
+                padre = s.query(Lugar).filter(Lugar.old_id == padre_id).one_or_none()
+
+            c.padre_id = padre.id if padre else raiz.id
+            c.old_id = old_id            
 
 def importar_materias(s, cur):
     sql = "select materia_id as id, materia_nombre as nombre from materia"
@@ -164,17 +186,45 @@ if __name__ == '__main__':
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         try:              
             logging.info("Importar centros regionales")  
-            importar_centros_regionales(s, cur, raiz['lugar'])
+            padre_centro = s.query(Lugar).filter(Lugar.id == categoria_centro_id).one_or_none()
+            if padre_centro is None:
+                padre_centro = Categoria(id=categoria_centro_id, nombre="Centros Regionales")
+                padre_centro.padre_id = raiz['lugar'].id
+                s.add(padre_centro)
+                s.commit()
+            importar_centros_regionales(s, cur, padre_centro)
             s.commit()
-            logging.info("Importar centros departamentos")  
-            importar_departamentos(s, cur, raiz['lugar'])
+
+            logging.info("Importar departamentos")  
+            padre_dptos = s.query(Lugar).filter(Lugar.id == categoria_dpto_id).one_or_none()
+            if padre_dptos is None:
+                padre_dptos = Categoria(id=categoria_dpto_id, nombre="Departamentos")
+                padre_dptos.padre_id = raiz['lugar'].id
+                s.add(padre_dptos)
+                s.commit()            
+            importar_departamentos(s, cur, padre_dptos)
             s.commit()
-            logging.info("Importar centros institutos")  
-            importar_institutos(s, cur, raiz['lugar'])
+
+            logging.info("Importar institutos")  
+            padre_inst = s.query(Lugar).filter(Lugar.id == categoria_inst_id).one_or_none()
+            if padre_inst is None:
+                padre_inst = Categoria(id=categoria_inst_id, nombre="Institutos")
+                padre_inst.padre_id = raiz['lugar'].id
+                s.add(padre_inst)
+                s.commit()               
+            importar_institutos(s, cur, padre_inst)
             s.commit()
+            
             logging.info("Importar lugares de trabajo")
-            importar_lugares(s,cur, raiz['lugar'])  
+            padre_lugares = s.query(Lugar).filter(Lugar.id == categoria_lugares_id).one_or_none()
+            if padre_lugares is None:
+                padre_lugares = Categoria(id=categoria_lugares_id, nombre="Lugares")
+                padre_lugares.padre_id = raiz['lugar'].id
+                s.add(padre_lugares)
+                s.commit()                           
+            importar_lugares(s,cur, padre_lugares)  
             s.commit()
+
             logging.info("Importar materias")
             importar_materias(s,cur)
             s.commit()
