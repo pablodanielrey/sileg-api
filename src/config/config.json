@@ -1,8 +1,8 @@
 {
 	"ui": {
-		"mostrar_organigrama": false,
-		"mostrar_sincronizacion_usuarios": false,
-		"mostrar_sincronizacion_login": false
+		"mostrar_organigrama": true,
+		"mostrar_sincronizacion_usuarios": true,
+		"mostrar_sincronizacion_login": true
 	},
 	"api":{
 		"perfiles": [
@@ -18,7 +18,7 @@
             		"buscar_lugar",
             		"crear_lugar",
             		"sincronizacion_usuario",
-            		"sincronizacion_logi"
+            		"sincronizacion_login"
 				]
 			},
 			{

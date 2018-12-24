@@ -60,7 +60,20 @@ def retornar_config_ui():
 @warden.require_valid_token
 @jsonapi
 def obtener_acceso_modulos(token=None):
+    config = SilegModel._config()
+    perfiles = config['api']['perfiles']
+    for perfil in perfiles:
+        p = perfil['perfil']
+        response = warden.has_all_profiles(token, [p])
+        if 'profile' in response and response['profile']:
+            return perfil['funciones']
+   
+    """
+        si no matcheo anteriorment entonces retorno un arreglo vacio sin funciones
+    """
+    return json.dumps([])
 
+    """
     prof = warden.has_one_profile(token, ['gelis-super-admin'])
     if prof and prof['profile'] == True:
         a = [
@@ -91,7 +104,7 @@ def obtener_acceso_modulos(token=None):
         return json.dumps(a)
     a = []
     return json.dumps(a)
-
+    """
 
 """
     //////////////////////////////////
