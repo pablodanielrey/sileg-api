@@ -73,39 +73,6 @@ def obtener_acceso_modulos(token=None):
     """
     return json.dumps([])
 
-    """
-    prof = warden.has_one_profile(token, ['gelis-super-admin'])
-    if prof and prof['profile'] == True:
-        a = [
-            'super-admin'
-        ]
-        return json.dumps(a)
-
-    prof = warden.has_one_profile(token, ['gelis-admin'])
-    if prof and prof['profile'] == True:
-        a = [
-            'buscar_usuario',
-            'crear_usuario',
-            'buscar_lugar',
-            'crear_lugar',
-            'sincronizacion_usuario',
-            'sincronizacion_login'
-        ]
-        return json.dumps(a)
-
-    prof = warden.has_one_profile(token, ['gelis-operator'])
-    if prof and prof['profile'] == True:
-        a = [
-            'buscar_usuario',
-            'buscar_lugar',
-            'sincronizacion_usuario',
-            'sincronizacion_login'
-        ]
-        return json.dumps(a)
-    a = []
-    return json.dumps(a)
-    """
-
 """
     //////////////////////////////////
     métodos usados en la web sileg-ui
