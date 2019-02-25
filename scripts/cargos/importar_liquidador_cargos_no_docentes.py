@@ -80,8 +80,10 @@ if __name__ == '__main__':
 
     """ ahora si genero las designaciones correctas con la fecha 01/11/2018 ya que no las tengo dentro del liquidador y es la fecha del listado """
 
+    """
     desde = parser.parse('01/11/2018')
     with obtener_session() as session:
         for did, d in desig.items():
             generada_id = SilegModel.crearDesignacion(session, d['usuario_id'], d['cargo_id'], d['lugar_id'], desde)
             logging.info('designacion generada : {}'.format(d))
+    """
