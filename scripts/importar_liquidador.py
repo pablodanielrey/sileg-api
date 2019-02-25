@@ -47,9 +47,6 @@ CARGO_CUMPLE_FUNCIONES_DOCENTE = '07bac038-f4a8-437b-843e-607ea89b72e2'
 
 if __name__ == '__main__':
 
-    #from sileg.model import obtener_session
-    #from sileg.model.entities import Cargo
-
     reg = re.compile('[A|B|C|D|E]+.*')
     
     archivo = sys.argv[1]
