@@ -133,6 +133,17 @@ class SilegModel:
         d.lugar_id = pedido['lugar_id']
         session.add(d)
         return d
+
+    @classmethod
+    def crearDesignacion(cls, session, usuario_id, cargo_id, lugar_id, desde):
+        d = Designacion()
+        d.id = str(uuid.uuid4())
+        d.desde = desde if desde else datetime.datetime.now()
+        d.usuario_id = usuario_id
+        d.cargo_id = cargo_id
+        d.lugar_id = lugar_id
+        session.add(d)
+        return d.id
   
     @classmethod
     def _agregar_filtros_comunes(cls, q, persona=None, lugar=None, offset=None, limit=None):

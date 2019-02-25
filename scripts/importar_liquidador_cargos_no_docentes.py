@@ -2,9 +2,10 @@
 import sys
 import os
 import logging
-logging.getLogger().setLevel(logging.DEBUG)
+logging.getLogger().setLevel(logging.INFO)
 import re
 import json
+from dateutil import parser
 
 from sileg.model import obtener_session, SilegModel
 from model_utils.API import API
@@ -46,17 +47,41 @@ if __name__ == '__main__':
 
             desig[r['dni']] = r
 
-    for did,d in desig.items():
-        api = API(url=OIDC_URL,
-                client_id=OIDC_CLIENT_ID, 
-                client_secret=OIDC_CLIENT_SECRET, 
-                verify_ssl=VERIFY_SSL)
-        users = UsersAPI(api_url=USERS_API, api=api)
 
-        tk = api._get_token()
-        user = users._get_user_dni(dni=d['dni'], token=tk)
-        logging.info(user)
-        d['usuario'] = user
+    agenerar = []
+    with obtener_session() as session:
+        for did,d in desig.items():
+            api = API(url=OIDC_URL,
+                    client_id=OIDC_CLIENT_ID, 
+                    client_secret=OIDC_CLIENT_SECRET, 
+                    verify_ssl=VERIFY_SSL)
+            users = UsersAPI(api_url=USERS_API, api=api)
 
-        logging.info(d)
+            tk = api._get_token()
+            user = users._get_user_dni(dni=d['dni'], token=tk)
+            #logging.info(user)
+            d['usuario_id'] = user['id']
+
+            designaciones = SilegModel.designaciones(session=session, persona=user['id'])
+            if designaciones and len(designaciones) > 0:
+                d['lugar_id'] = designaciones[-1].lugar_id
+                cargo_a_generar = designaciones[-1].cargo_id
+
+                logging.info('chequeando que {} != {}'.format(d['cargo_id'], cargo_a_generar))
+                if d['cargo_id'] != cargo_a_generar:
+                    logging.info('agregando persona a cargar')
+                    logging.info(d)
+                    agenerar.append(d)
+            else:
+                d['lugar_id'] = '5776a70e-a9af-466d-b9c4-89e646fc39af'
+                agenerar.append(d)
     
+    logging.info('cantidad: {}'.format(len(agenerar)))
+
+    """ ahora si genero las designaciones correctas con la fecha 01/11/2018 ya que no las tengo dentro del liquidador y es la fecha del listado """
+
+    desde = parser.parse('01/11/2018')
+    with obtener_session() as session:
+        for did, d in desig.items():
+            generada_id = SilegModel.crearDesignacion(session, d['usuario_id'], d['cargo_id'], d['lugar_id'], desde)
+            logging.info('designacion generada : {}'.format(d))
