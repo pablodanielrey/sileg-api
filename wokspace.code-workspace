@@ -10,5 +10,7 @@
 			"path": "/src/github/microservices_common"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"editor.fontSize": 16
+	}
 }
