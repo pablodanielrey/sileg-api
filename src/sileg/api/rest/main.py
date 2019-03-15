@@ -467,6 +467,39 @@ def catedras(catedra=None, token=None):
     with obtener_session() as session:
         return SilegModel.catedras(session=session, catedra=catedra, materia=materia, departamento=departamento)
 
+from werkzeug.routing import BaseConverter
+class ListConverter(BaseConverter):
+
+    def to_python(self, value):
+        return value.split('+')
+
+    def to_url(self, values):
+        return '+'.join(BaseConverter.to_url(value)
+                        for value in values)
+
+
+app.url_map.converters['list'] = ListConverter
+
+import datetime
+@app.route(API_BASE + '/designaciones/pendientes/lugares/<list:ids>', methods=['GET'])
+# @warden.require_valid_token
+@jsonapi
+def desginaciones_pendientes(ids=[], token=None):
+    # prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin'])
+    # if not prof['profile']:
+    #     return ('no tiene los permisos suficientes', 403)
+    with obtener_session() as session:
+        data = []
+        lids = ['9647a6cb-e0e9-4061-9312-c8ce9f8771b6', '9647a6cb-e0e9-4061-9312-c8ce9f8771b6']
+        for lid in ids:
+            desig_lug = SilegModel.obtenerDesignacionesLugar(session, lid)
+            designaciones = []
+            for d in desig_lug['designaciones']:
+                estado = {'fecha': datetime.date.today(), 'nombre': 'Alta Pendiente', 'authorized': '89d88b81-fbc0-48fa-badb-d32854d3d93a'}
+                designaciones.append({'designacion': d['designacion'], 'ptos': 10, 'estado': estado, 'usuario': d['usuario']})
+            data.append({'lugar':desig_lug['lugar'], 'designaciones': designaciones, 'ptos_alta': 65, 'ptos_baja': 60})
+        return data
+
 
 """
 @app.route(API_BASE + '<path:path>', methods=['OPTIONS'])
