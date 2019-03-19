@@ -481,6 +481,8 @@ class ListConverter(BaseConverter):
 app.url_map.converters['list'] = ListConverter
 
 import datetime
+from functools import reduce
+
 @app.route(API_BASE + '/designaciones/pendientes/lugares/<list:ids>', methods=['GET'])
 # @warden.require_valid_token
 @jsonapi
@@ -490,8 +492,9 @@ def desginaciones_pendientes(ids=[], token=None):
     #     return ('no tiene los permisos suficientes', 403)
     with obtener_session() as session:
         data = []
-        lids = ['9647a6cb-e0e9-4061-9312-c8ce9f8771b6', '9647a6cb-e0e9-4061-9312-c8ce9f8771b6']
-        for lid in ids:
+        aux = []    
+        lids = set([ aux + list(SilegModel.obtener_sublugares(session,id)) for id in ids ][0])
+        for lid in lids:
             desig_lug = SilegModel.obtenerDesignacionesLugar(session, lid)
             designaciones = []
             for d in desig_lug['designaciones']:
