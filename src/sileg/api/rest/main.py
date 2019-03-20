@@ -493,7 +493,7 @@ def desginaciones_pendientes(ids=[], token=None):
     with obtener_session() as session:
         data = []
         aux = []    
-        lids = set([ aux + list(SilegModel.obtener_sublugares(session,id)) for id in ids ][0])
+        lids = set([ aux + SilegModel.obtener_sublugares(session,id) for id in ids ][0])
         for lid in lids:
             desig_lug = SilegModel.obtenerDesignacionesLugar(session, lid)
             designaciones = []
