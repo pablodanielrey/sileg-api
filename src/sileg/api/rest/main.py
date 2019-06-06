@@ -21,7 +21,6 @@ warden_url = os.environ['WARDEN_API_URL']
 warden = Warden(OIDC_URL, warden_url, client_id, client_secret, verify=VERIFY_SSL)
 
 from rest_utils import register_encoder
-
 from sileg.model.SilegModel import SilegModel
 from sileg.model import obtener_session
 
@@ -467,8 +466,8 @@ def catedras(catedra=None, token=None):
     with obtener_session() as session:
         return SilegModel.catedras(session=session, catedra=catedra, materia=materia, departamento=departamento)
 
-from .converters import ListConverter
-app.url_map.converters['list'] = ListConverter
+from .converters import registrar
+registrar(app)
 
 import datetime
 from functools import reduce
@@ -522,6 +521,13 @@ def add_header(r):
     r.headers['Cache-Control'] = 'public, max-age=0'
 
     return r
+
+
+"""
+    registro los blueprints
+"""
+from . import gelis
+app.register_blueprint(gelis.bp)
 
 def main():
     app.run(host='0.0.0.0', port=10202, debug=False)
