@@ -512,7 +512,7 @@ class SilegModel:
                 'cargo_nivel': d.cargo.nivel if d.cargo else 100,
                 'lugar': d.lugar.nombre if d.lugar else ''
             } 
-            for d in ds
+            for d in ds if not d.historico
         ]
         return registros
 
