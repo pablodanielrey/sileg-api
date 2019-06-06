@@ -1,3 +1,11 @@
+"""
+https://github.com/web-push-libs/vapid/tree/master/python
+https://mushfiq.me/2017/09/25/web-push-notification-using-python/
+https://code.luasoftware.com/tutorials/pwa/develop-web-push-notification-server-with-python/
+https://mushfiq.me/2017/09/25/web-push-notification-using-python/
+"""
+
+
 import logging
 import os
 import json
