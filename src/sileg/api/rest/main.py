@@ -526,8 +526,9 @@ def add_header(r):
 """
     registro los blueprints
 """
-from . import gelis
-app.register_blueprint(gelis.bp)
+from . import gelis, webpush
+#app.register_blueprint(gelis.bp)
+app.register_blueprint(webpush.bp)
 
 def main():
     app.run(host='0.0.0.0', port=10202, debug=False)
