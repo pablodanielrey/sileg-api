@@ -34,6 +34,7 @@ WARDEN_API_URL = os.environ['WARDEN_API_URL']
 
 @bp.route('/registrar', methods=['GET'])
 def registrar_permisos():
+    token = ''
     permissions = obtener_lista_permisos(permisos)
-    warden.register_system_perms(permisos)
+    warden.register_system_perms(token, permisos)
     return ('',200)
