@@ -1,6 +1,8 @@
 from sqlalchemy import Column, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, backref
 from model_utils import Base, generateId
+
+
 class Lugar(Base):
     __tablename__ = 'lugar'
 
@@ -18,13 +20,16 @@ class Lugar(Base):
     cambio_id = Column(String, ForeignKey('lugar.id'))
     cambios = relationship("Lugar",  foreign_keys=[cambio_id], backref=backref('cambio', remote_side="Lugar.id"))
 
+    old_id = Column(String)
+
     __mapper_args__ = {
         'polymorphic_on':tipo,
         'polymorphic_identity':'lugar'
     }
 
-    def __init__(self, nombre):
-        self.nombre = nombre
+    def __init__(self, id=None, nombre=None):
+        if id: self.id = id
+        if nombre: self.nombre = nombre
 
     @property
     def getNombre(self):
@@ -47,11 +52,9 @@ class Catedra(Lugar):
         self.materia_id = materia_id
         self.padre_id = padre_id
 
-
     @property
     def getNombre(self):
         return self.nombre + ' ' + self.materia.nombre
-
 
     __mapper_args__ = {
         'polymorphic_identity':'catedra'
@@ -63,34 +66,54 @@ class LugarDictado(Lugar):
         'polymorphic_identity':'lugar dictado'
     }
 
+    def __init__(self, id=None, nombre=None):
+        if id: self.id = id
+        if nombre: self.nombre = nombre    
 
 class Centro(Lugar):
     __mapper_args__ = {
         'polymorphic_identity':'centro'
     }
 
+    def __init__(self, id=None, nombre=None):
+        if id: self.id = id
+        if nombre: self.nombre = nombre    
+
 class Comision(Lugar):
     __mapper_args__ = {
         'polymorphic_identity':'comision'
     }
+
+    def __init__(self, id=None, nombre=None):
+        if id: self.id = id
+        if nombre: self.nombre = nombre    
 
 class Departamento(Lugar):
     __mapper_args__ = {
         'polymorphic_identity':'departamento'
     }
 
+    def __init__(self, id=None, nombre=None):
+        if id: self.id = id
+        if nombre: self.nombre = nombre    
+
 class Direccion(Lugar):
     __mapper_args__ = {
         'polymorphic_identity':'direccion'
     }
 
-    def __init__(self, nombre):
-        super().__init__(nombre)
+    def __init__(self, id=None, nombre=None):
+        if id: self.id = id
+        if nombre: self.nombre = nombre
 
 class Escuela(Lugar):
     __mapper_args__ = {
         'polymorphic_identity':'escuela'
     }
+
+    def __init__(self, id=None, nombre=None):
+        if id: self.id = id
+        if nombre: self.nombre = nombre
 
 
 class Externo(Lugar):
@@ -98,21 +121,39 @@ class Externo(Lugar):
         'polymorphic_identity':'externo'
     }
 
+    def __init__(self, id=None, nombre=None):
+        if id: self.id = id
+        if nombre: self.nombre = nombre
+
 
 class Facultad(Lugar):
     __mapper_args__ = {
         'polymorphic_identity':'facultad'
     }
 
+    def __init__(self, id=None, nombre=None):
+        if id: self.id = id
+        if nombre: self.nombre = nombre
+
+
 class Instituto(Lugar):
     __mapper_args__ = {
         'polymorphic_identity':'instituto'
     }
 
+    def __init__(self, id=None, nombre=None):
+        if id: self.id = id
+        if nombre: self.nombre = nombre
+
+
 class Maestria(Lugar):
     __mapper_args__ = {
         'polymorphic_identity':'maestria'
     }
+
+    def __init__(self, id=None, nombre=None):
+        if id: self.id = id
+        if nombre: self.nombre = nombre
 
 
 class Prosecretaria(Lugar):
@@ -120,22 +161,74 @@ class Prosecretaria(Lugar):
         'polymorphic_identity':'prosecretaria'
     }
 
+    def __init__(self, id=None, nombre=None):
+        if id: self.id = id
+        if nombre: self.nombre = nombre
+
+
 class Secretaria(Lugar):
     __mapper_args__ = {
         'polymorphic_identity':'secretaria'
     }
+
+    def __init__(self, id=None, nombre=None):
+        if id: self.id = id
+        if nombre: self.nombre = nombre
+
 
 class Seminario(Lugar):
     __mapper_args__ = {
         'polymorphic_identity':'seminario'
     }
 
+    def __init__(self, id=None, nombre=None):
+        if id: self.id = id
+        if nombre: self.nombre = nombre
+
+
 class Universidad(Lugar):
     __mapper_args__ = {
         'polymorphic_identity':'universidad'
     }
 
+    def __init__(self, id=None, nombre=None):
+        if id: self.id = id
+        if nombre: self.nombre = nombre
+
+
 class Oficina(Lugar):
     __mapper_args__ = {
         'polymorphic_identity':'oficina'
     }
+
+    def __init__(self, id=None, nombre=None):
+        if id: self.id = id
+        if nombre: self.nombre = nombre    
+
+class Division(Lugar):
+    __mapper_args__ = {
+        'polymorphic_identity':'division'
+    }
+
+    def __init__(self, id=None, nombre=None):
+        if id: self.id = id
+        if nombre: self.nombre = nombre    
+
+class Area(Lugar):
+    __mapper_args__ = {
+        'polymorphic_identity':'area'
+    }
+
+    def __init__(self, id=None, nombre=None):
+        if id: self.id = id
+        if nombre: self.nombre = nombre    
+
+
+class Categoria(Lugar):
+    __mapper_args__ = {
+        'polymorphic_identity':'categoria'
+    }
+
+    def __init__(self, id=None, nombre=None):
+        if id: self.id = id
+        if nombre: self.nombre = nombre    

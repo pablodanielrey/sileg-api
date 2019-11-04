@@ -4,14 +4,13 @@
 			"path": "."
 		},
 		{
-			"path": "/src/github/microservices_common"
-		},
-		{
-			"path": "/src/github/warden-api"
-		},
-		{
 			"path": "/src/gitlab/stacks"
+		},
+		{
+			"path": "/src/github/microservices_common"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"editor.fontSize": 16
+	}
 }
