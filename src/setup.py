@@ -12,7 +12,7 @@
 from setuptools import setup, find_packages
 
 setup(name='sileg-api',
-          version='0.1.1.a2',
+          version='0.2.0.a1',
           description='proyecto de las designaciones de docentes/no-docentes de la facultad',
           url='https://github.com/pablodanielrey/sileg-api',
           author='Desarrollo DiTeSi, FCE',
@@ -26,7 +26,7 @@ setup(name='sileg-api',
             'Programming Language :: Python :: 3.6'
           ],
           packages=find_packages(exclude=['contrib', 'docs', 'test*']),
-          install_requires=['psycopg2',
+          install_requires=['psycopg2-binary',
                             'dateutils>=0.6.6',
                             'requests',
                             'redis==2.10.6',
@@ -39,10 +39,12 @@ setup(name='sileg-api',
                             'google-api-python-client',
                             'httplib2',
                             'pyjwt',
-                            'microservices_common>=2.0.5a4',
+                            'microservices_common>=2.0.7a1',
                             'warden-api',
                             'gunicorn',
-                            'ptvsd'],
+                            'ptvsd',
+                            'py-vapid',
+                            'pywebpush'],
           entry_points={
             'console_scripts': [
                 'rest=sileg.api.rest.main:main'
