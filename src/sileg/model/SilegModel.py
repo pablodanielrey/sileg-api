@@ -66,6 +66,17 @@ class SilegModel:
         assert param in d
         assert d[param] is not None
 
+    """
+        //////// método necesario para el script de chequear cuentas en google ////////
+    """
+
+    @classmethod
+    def obtener_uids(cls, session):
+        """
+            retorna todos los usuarios que tengan designacion sin repetir
+        """
+        ds = session.query(Designacion.usuario_id).distinct()
+        return [d.usuario_id for d in ds]
 
     """
         ///////////////////////// métodos sileg-ui /////////////////////
