@@ -20,6 +20,8 @@ app.config.from_object(Config)
     Registro de blueprints
 """
 ##BP
+from .bp.web.index import bp as bp_web_index
+app.register_blueprint(bp_web_index)
 from .bp.web.users import bp as bp_web_users
 app.register_blueprint(bp_web_users,url_prefix='/usuarios')
 from .bp.web.places import bp as bp_web_places
