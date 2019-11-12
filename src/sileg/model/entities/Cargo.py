@@ -1,10 +1,15 @@
 from sqlalchemy import Column, String, Numeric, ForeignKey
 from sqlalchemy.orm import relationship
-from model_utils import Base
+
+from sileg.model.entities import Base
 
 class Cargo(Base):
 
     __tablename__ = 'cargo'
+
+    id = Column(String(), primary_key=True, default=None)
+    created = Column(DateTime())
+    modified = Column(DateTime())
 
     nombre = Column(String)
     tipo = Column(String)
