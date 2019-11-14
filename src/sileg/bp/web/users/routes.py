@@ -10,12 +10,12 @@ def create():
     Pagina principal de usuarios
     """
     form = UserCreateForm()
-    return render_template('create.html',form=form)
+    return render_template('createUser.html',form=form)
 
 @bp.route('/buscar')
 def search():
     """
     Pagina principal de usuarios
     """
-    return render_template('users.html')
+    return render_template('searchUsers.html')
     
