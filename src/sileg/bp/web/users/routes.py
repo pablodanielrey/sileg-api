@@ -17,5 +17,21 @@ def search():
     """
     Pagina principal de usuarios
     """
-    return render_template('searchUsers.html')
+    users = [{
+        'firstname':'Pablo',
+        'lastname':'Rey',
+    },
+    {
+        'firstname':'Emanuel',
+        'lastname':'Pais',
+    },
+    {
+        'firstname':'Miguel',
+        'lastname':'Macagno',
+    },
+    {
+        'firstname':'Leonardo',
+        'lastname':'Consolini'
+    }]
+    return render_template('searchUsers.html', users=users)
     
