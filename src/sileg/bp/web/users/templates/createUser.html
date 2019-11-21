@@ -57,6 +57,8 @@
                         {{ form.birthplace_state }}
                     </div>
                     <div class="col m3">
+                        <input type="text" id="birthplace_test" class="form-control" placeholder="Busque una ciudad...">
+                        <div class="pl-0 pr-1 col-10 col-sm-10 col-md-5 col-lg-5" id="birthplace_test_list"></div>
                         {{ form.birthplace_city.label }}
                         {{ form.birthplace_city }}
                     </div>
@@ -193,6 +195,39 @@
     <div class="col m1"></div>
 </div>
 <script type="text/javascript">
+    $(document).ready(function () {
+        $('#birthplace_test').keyup(function () {
+            var query = $(this).val();
+            if ((query != '') && (query.length > 2)) {
+                $.ajax({
+                    dataType: "json",
+                    url: "http://localhost:5000/api/v0.1/ciudades/buscar",
+                    xhrFields: { withCredentials: true },
+                    method: "GET",
+                    data: { query: query },
+                    success: function (data) {
+                        let dataHTML = '<ul class="list-unstyled" style="background-color:#e5e5e5; cursor:pointer">';
+                        for (d in data) {
+                            dataHTML += '<li style="padding:12px" id="' + data[d].id + '">' + data[d].name + '</li>';
+                        };
+                        dataHTML += '</ul>';
+                        $('#tutorList').fadeIn();
+                        $('#tutorList').html(dataHTML);
+                    }
+                });
+            } else {
+                $('#tutorList').fadeOut();
+                $('#tutorList').html("");
+                $('#responsible_id').val("");
+            }
+        });
+    });
+    $(document).on('click', 'li', function () {
+        $('#responsible_id').val($(this).attr('id'));
+        $('#tutor').val($(this).text());
+        $('#tutorList').fadeOut();
+    });
+
     $(function () {
         $('.sidenav').sidenav();
         $('select').formSelect();
