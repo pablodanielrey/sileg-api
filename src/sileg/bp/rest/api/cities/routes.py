@@ -9,6 +9,7 @@ def search():
     """
     Api de busqueda de ciudades
     """
-    result = searchCity('bera')
+    search = request.args.get('query',None)
+    result = searchCity(search)
     return json.dumps(result)
     

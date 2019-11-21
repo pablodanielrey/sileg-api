@@ -16,9 +16,8 @@ def searchCity(search=None):
         r = requests.get(f'https://apis.datos.gob.ar/georef/api/localidades?nombre={search}&campos=nombre,provincia.nombre')
         if r.ok:
             js = r.json()
-            print(js)
-            options = [{'nombre': f'{j["nombre"]} {j["provincia"]["nombre"]}'} for j in js['localidades']]
-            return options
+            options = [{'name': f'{j["nombre"]}, {j["provincia"]["nombre"]}'} for j in js['localidades']]
+            return options[0:5]
         else:
             return [{'error':'API Error'}]
     else:

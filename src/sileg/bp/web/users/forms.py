@@ -11,8 +11,9 @@ class UserCreateForm(FlaskForm):
     person_number_type = SelectField('Tipo de Documento', coerce=str)
     person_number = StringField('Nro. de Documento', validators=[DataRequired()])
     gender = SelectField('Genero', coerce=str)
-    birthplace_state = SelectField('Provincia de Nacimiento',coerce=str)
-    birthplace_city = SelectField('Ciudad de Nacimiento',coerce=str)
+    birthplace = StringField('Ciudad de Nacimiento',validators=[DataRequired()])
+    #birthplace_state = SelectField('Provincia de Nacimiento',coerce=str)
+    #birthplace_city = SelectField('Ciudad de Nacimiento',coerce=str)
     birthdate = DateTimeField('Fecha de Nacimiento',validators=[DataRequired()],format='%d-%m-%Y')
     
     residence_state = SelectField('Provincia de Residencia',coerce=str)
@@ -56,8 +57,8 @@ class UserCreateForm(FlaskForm):
         self.person_number_type.choices = [('0','Sin Opciones')]
         self.gender.choices = [('0','Sin Opciones')]
         self.marital_status.choices = [('0','Sin Opciones')]
-        self.birthplace_state.choices = getStates()
-        self.birthplace_city.choices = [('0','Sin Opciones')]
+        #self.birthplace_state.choices = getStates()
+        #self.birthplace_city.choices = [('0','Sin Opciones')]
         self.residence_state.choices = getStates()
         self.residence_city.choices = [('0','Sin Opciones')]
         self.marital_status.choices = [('0','Sin Opciones')]
