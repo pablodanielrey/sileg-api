@@ -1,0 +1,75 @@
+<html>
+
+<head>
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--Import AJAX -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>Titulo</title>
+</head>
+
+<body class="light-blue lighten-5">
+    <div class="navbar-fixed">
+        <nav>
+            <div class="nav-wrapper blue lighten-1">
+                <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                <ul class="left hide-on-med-and-down">
+                    <li><a href="#" data-target="slide-out" class="sidenav-trigger show-on-large"><i class="material-icons">menu</i></a></li>
+                </ul>
+                <ul class="right">
+                    <a class="right" href="/logout"><i class="material-icons right">lock</i>Nombre Apellido</a>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <div>
+    <br>
+    <br>
+    <br>
+    {% block content %} {% endblock %}
+    </div>
+    <!-- Contenido de Footer -->
+    <footer>
+        
+    </footer>
+    <!-- Contenido de Sidenav-->
+    <ul id="slide-out" class="sidenav">
+        <div class="collection">
+            <a class="waves-effect collection-item green-text text-darken-2" href="{{url_for('users.create')}}">Crear Usuario</a>
+            <a class="waves-effect collection-item green-text text-darken-2" href="{{url_for('users.search')}}">Buscar Usuario</a>
+            <a class="waves-effect collection-item amber-text text-darken-2" href="{{url_for('places.create')}}">Crear Lugar</a>
+            <a class="waves-effect collection-item amber-text text-darken-2" href="{{url_for('places.search')}}">Buscar Lugar</a>
+            <a class="waves-effect collection-item indigo-text text-darken-2" href="{{url_for('places.create')}}">Crear Designación</a>
+            <a class="waves-effect collection-item indigo-text text-darken-2" href="{{url_for('designations.search')}}">Consultas</a>
+            <a class="waves-effect collection-item indigo-text text-darken-2 dropdown-trigger" href="#!" data-target="fastfind">Consultas rápidas</a>
+        </div>
+    </ul>
+    <ul id="fastfind" class="waves-effect dropdown-content">
+        <li><a href="#!">Por departamento</a></li>
+        <li><a href="#!">Por profesor</a></li>
+        <li><a href="#!">Por personal docente</a></li>
+        <li><a href="#!">Por materia</a></li>
+    </ul>
+    
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('.sidenav').sidenav();
+            $(".dropdown-trigger").dropdown();
+        });
+    </script>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <script>M.toast({ html: '{{message}}' })</script>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</body>
+
+</html>

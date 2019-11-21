@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col m1"></div>
+    <div class="col m10">
+        <div class="card-panel grey lighten-5">
+            <div class="center">
+                <h4> Creación de Usuarios </h4>
+            </div>
+            <form action="" method="post">
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <h5>Datos Personales</h5>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <div class="input-field">
+                            {{ form.lastname.label }}
+                            {{ form.lastname }}
+                        </div>
+                    </div>
+                    <div class="col m5">
+                        <div class="input-field">
+                            {{ form.firstname.label }}
+                            {{ form.firstname }}
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m3">
+                        {{ form.person_number_type.label }}
+                        {{ form.person_number_type }}
+                    </div>
+                    <div class="col m4">
+                        <div class="input-field">
+                            {{ form.person_number.label }}
+                            {{ form.person_number }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m3">
+                        {{ form.gender.label }}
+                        {{ form.gender }}
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m3">
+                        {{ form.birthplace_state.label }}
+                        {{ form.birthplace_state }}
+                    </div>
+                    <div class="col m3">
+                        {{ form.birthplace_city.label }}
+                        {{ form.birthplace_city }}
+                    </div>
+                    <div class="col m3">
+                        <div class="input-field">
+                            {{ form.birthdate.label }}
+                            {{ form.birthdate(class="datepicker") }}
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <h5>Domicilio</h5>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m3">
+                        {{ form.residence_state.label }}
+                        {{ form.residence_state }}
+                    </div>
+                    <div class="col m3">
+                        {{ form.residence_city.label }}
+                        {{ form.residence_city }}
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m6">
+                        <div class="input-field">
+                            {{ form.address.label }}
+                            {{ form.address }}
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <h5>Contacto</h5>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <div class="input-field">
+                            {{ form.work_email.label }}
+                            {{ form.work_email }}
+                        </div>
+                    </div>
+                    <div class="col m5">
+                        <div class="input-field">
+                            {{ form.personal_email.label }}
+                            {{ form.personal_email }}
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        <div class="input-field">
+                            {{ form.land_line.label }}
+                            {{ form.land_line }}
+                        </div>
+                    </div>
+                    <div class="col m4">
+                        <div class="input-field">
+                            {{ form.mobile_number.label }}
+                            {{ form.mobile_number }}
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <h5>Datos Laborales</h5>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m3">
+                        <div class="input-field">
+                            {{ form.ingress_date.label }}
+                            {{ form.ingress_date(class="datepicker") }}
+                        </div>
+                    </div>
+                    <div class="col m3">
+                        <div class="input-field">
+                            {{ form.laboral_number.label }}
+                            {{ form.laboral_number }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m3">
+                        {{ form.marital_status.label }}
+                        {{ form.marital_status }}
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m3">
+                        <div class="input-field">
+                            {{ form.retirement_date.label }}
+                            {{ form.retirement_date(class="datepicker") }}      
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="row">
+                    <div class="col m3"></div>
+                    <div class="col m1">
+                        <button class="btn red lighten-2" type="reset">Limpiar</button>
+                    </div>
+                    <div class="col m3"></div>
+                    <div class="col m2">
+                        <button class="btn light-blue darken-3">Crear Usuario</button>
+                    </div>
+                    <div class="col m3"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col m1"></div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('.sidenav').sidenav();
+        $('select').formSelect();
+        $('.datepicker').datepicker({
+            format: 'dd-mmmm-yyyy',
+            minDate: new Date(1900, 1, 1),
+            maxDate: new Date(),
+            i18n: {
+                months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                monthsShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                weekdays: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+                weekdaysAbbrev: ["D", "L", "M", "M", "J", "V", "S"],
+                today: 'Hoy',
+                clear: 'Limpiar',
+                done: 'Aceptar',
+                cancel: 'Cancelar',
+            }
+        });
+    });
+</script>
+{% endblock %}
