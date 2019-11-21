@@ -53,11 +53,7 @@
             },
             "args": [
                 "run",
-<<<<<<< HEAD
-                "--no-reload",
-=======
                 "--reload",
->>>>>>> issue/7_migue_CrearModuloUsuarios
                 "--host=0.0.0.0",
                 "--port=10202"
             ]

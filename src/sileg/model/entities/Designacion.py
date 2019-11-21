@@ -11,11 +11,8 @@ categoria_designacion_table = Table('categoria_designacion', Base.metadata,
 )
 
 class Caracter(Base):
-
     __tablename__ = 'caracter'
-
     nombre = Column(String, unique=True)
-
     old_id = Column(String)
 
 class Designacion(Base):
