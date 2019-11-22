@@ -69,3 +69,9 @@ class UserCreateForm(FlaskForm):
         #if UsersModel.getUser(person_number.data):
         #    raise ValidationError('Atencion existente un usuario con ese DNI')
         pass
+
+
+class UserSearchForm(FlaskForm):
+    query = StringField('Buscar usuarios por apellido o número de documento')
+    class Meta:
+        csrf = False

@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect,request, Markup, url_for
 
-from .forms import UserCreateForm
+from .forms import UserCreateForm, UserSearchForm
 
 from . import bp
 
@@ -33,5 +33,7 @@ def search():
         'firstname':'Leonardo',
         'lastname':'Consolini'
     }]
-    return render_template('searchUsers.html', users=users)
+    form = UserSearchForm()
+    query = request.args.get('query','',str)
+    return render_template('searchUsers.html', users=users, form=form)
     
