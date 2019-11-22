@@ -11,12 +11,10 @@ class UserCreateForm(FlaskForm):
     person_number_type = SelectField('Tipo de Documento', coerce=str)
     person_number = StringField('Nro. de Documento', validators=[DataRequired()])
     gender = SelectField('Genero', coerce=str)
-    birthplace_state = SelectField('Provincia de Nacimiento',coerce=str)
-    birthplace_city = SelectField('Ciudad de Nacimiento',coerce=str)
+    birthplace = StringField('Ciudad de Nacimiento',validators=[DataRequired()])
     birthdate = DateTimeField('Fecha de Nacimiento',validators=[DataRequired()],format='%d-%m-%Y')
     
-    residence_state = SelectField('Provincia de Residencia',coerce=str)
-    residence_city = SelectField('Ciudad de Recidencia',coerce=str)
+    residence = StringField('Ciudad de Residencia',validators=[DataRequired()])
     address = StringField('Dirección', validators=[DataRequired()])
     
     work_email = EmailField('Correo de Trabajo', validators=[DataRequired(), Email(message='Formato de correo erroneo.')])
@@ -25,6 +23,11 @@ class UserCreateForm(FlaskForm):
     land_line = StringField('Telefono Fijo', validators=[])
     mobile_number =StringField('Telefono Movil', validators=[])
 
+    ingress_date = DateTimeField('Fecha de ingreo a la FCE')
+    laboral_number = StringField('CUIL')
+    marital_status = SelectField('Estado Civil', coerce=str)
+    retirement_date = DateTimeField('Fecha de Jubilación')
+    
     #seniority_to_date = DateTimeField('Antigüedad al Día')
     #seniority_rented_internal = DateTimeField('Antigüedad Rentada Interna')
     #seniority_rented_external = DateTimeField('Antigüedad Rentada Externa')
@@ -35,15 +38,10 @@ class UserCreateForm(FlaskForm):
     #seniority_ad_honorem = BooleanField('¿Antigüedad Ad-Honorem Computable?	')
     #seniority_observations = StringField('Observaciones')
 
-    ingress_date = DateTimeField('Fecha de ingreo a la FCE')
-    laboral_number = StringField('CUIL')
-    marital_status = SelectField('Estado Civil', coerce=str)
     #prepaid_medicine = SelectField('Obra Social', coerce=str)
     #life_insurance = SelectField('Seguro de Vida', coerce=str)
     #life_insurance_account = StringField('Cuenta Nro.')
     #bank_branch = SelectField('Cobra en Banco/Sucursal', coerce=str)
-    retirement_date = DateTimeField('Fecha de Jubilación')
-
     #life_insurance_mandatary = BooleanField('Obligatorio')
     #life_insurance_bank = SelectField('Banco', coerce=str)
     #life_insurance_policy_number1 = StringField('Poliza Número 1')
@@ -53,17 +51,9 @@ class UserCreateForm(FlaskForm):
         
     def __init__(self):
         super(UserCreateForm,self).__init__()
-        self.person_number_type.choices = [('0','Sin Opciones')]
-        self.gender.choices = [('0','Sin Opciones')]
-        self.marital_status.choices = [('0','Sin Opciones')]
-        self.birthplace_state.choices = getStates()
-        self.birthplace_city.choices = [('0','Sin Opciones')]
-        self.residence_state.choices = getStates()
-        self.residence_city.choices = [('0','Sin Opciones')]
-        self.marital_status.choices = [('0','Sin Opciones')]
-        #self.prepaid_medicine.choices = [('0','Sin Opciones')]
-        #self.life_insurance.choices = [('0','Sin Opciones')]
-        #self.bank_branch.choices = [('0','Sin Opciones')]
+        self.person_number_type.choices = [('0','Seleccione una opción...'),('0','LC'),('0','LE'),('0','DNI'),('0','PASAPORTE')]
+        self.gender.choices = [('0','Seleccione una opción...'),('0','Femenino'),('0','Masculino'),('0','Otro')]
+        self.marital_status.choices = [('0','Seleccione una opción...'),('0','Casado/a'),('0','Soltero/a'),('0','Conviviente'),('0','Divorciado/a'),]
 
     def validate_person_number(self, person_number):
         #if UsersModel.getUser(person_number.data):
