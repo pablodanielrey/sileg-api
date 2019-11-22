@@ -3,32 +3,41 @@ from wtforms import StringField, BooleanField, DateTimeField, SelectField
 from wtforms.validators import ValidationError, DataRequired, EqualTo
 
 class ExtendDesignationForm(FlaskForm):
-    lastname = StringField('Apellidos', validators=[DataRequired()])
-    firstname = StringField('Nombres', validators=[DataRequired()])
-    person_number_type = SelectField('Tipo de Documento', coerce=str)
-    person_number = StringField('Nro. de Documento', validators=[DataRequired()])
-    gender = SelectField('Genero', coerce=str)
-    birthplace = StringField('Ciudad de Nacimiento',validators=[DataRequired()])
-    birthdate = DateTimeField('Fecha de Nacimiento',validators=[DataRequired()],format='%d-%m-%Y')
+    newDedication = SelectField('Nueva Dedicación', coerce=str)
+    dedicationFrom = DateTimeField('Fecha Desde', validators=[DataRequired()])
+    dedicationTo = DateTimeField('Fecha Hasta', validators=[DataRequired()])
+    resolutionNumber = StringField('Número de resolución')
+    recordNumber = StringField('Expediente')
+    relatedNumber = StringField('Corresponde')
+    positionEndType = SelectField('Tipo Fin Cargo',coerce=str)
     
-    residence = StringField('Ciudad de Residencia',validators=[DataRequired()])
-    address = StringField('Dirección', validators=[DataRequired()])
+    department = SelectField('Departamento')
+    departmentArea = SelectField('Materia',coerce=str)
+    chair = SelectField('Cátedra',coerce=str)
+    commission = StringField('Comisión')
+    workArea = SelectField('Area',coerce=str)
+    workPlace = SelectField('Lugar de Trabajo',coerce=str)
+    function = SelectField('Función',coerce=str)
     
-    land_line = StringField('Telefono Fijo', validators=[])
-    mobile_number =StringField('Telefono Movil', validators=[])
+    dischargeType = SelectField('Tipo de baja', coerce=str) 
+    dischargeDate = DateTimeField('Fecha de baja', validators=[DataRequired()])
 
-    ingress_date = DateTimeField('Fecha de ingreo a la FCE')
-    laboral_number = StringField('CUIL')
-    marital_status = SelectField('Estado Civil', coerce=str)
-    retirement_date = DateTimeField('Fecha de Jubilación')
-    
-    
-        
+    dischargeResolution = StringField('Número de resolución')
+    dischargeRecordNumber = StringField('Expediente')
+    dischargeRelatedNumber = StringField('Corresponde')
+
     def __init__(self):
         super(ExtendDesignationForm,self).__init__()
-        self.person_number_type.choices = [('0','Seleccione una opción...'),('0','LC'),('0','LE'),('0','DNI'),('0','PASAPORTE')]
-        self.gender.choices = [('0','Seleccione una opción...'),('0','Femenino'),('0','Masculino'),('0','Otro')]
-        self.marital_status.choices = [('0','Seleccione una opción...'),('0','Casado/a'),('0','Soltero/a'),('0','Conviviente'),('0','Divorciado/a'),]
+        self.newDedication.choices = [('0','Seleccione una opción...')]
+        self.positionEndType.choices = [('0','Seleccione una opción...')]
+        self.department.choices = [('0','Seleccione una opción...')]
+        self.departmentArea.choices = [('0','Seleccione una opción...')]
+        self.chair.choices = [('0','Seleccione una opción...')]
+        self.commission.choices = [('0','Seleccione una opción...')]
+        self.workArea.choices = [('0','Seleccione una opción...')]
+        self.workPlace.choices = [('0','Seleccione una opción...')]
+        self.function.choices = [('0','Seleccione una opción...')]        
+        self.dischargeType.choices = [('0','Seleccione una opción...')]
 
     def validate_person_number(self, person_number):
         #if UsersModel.getUser(person_number.data):
