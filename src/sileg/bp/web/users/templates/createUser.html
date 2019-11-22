@@ -75,22 +75,16 @@
                 </div>
                 <div class="row center">
                     <div class="col m1"></div>
-                    <div class="col m3">
-                        {{ form.residence_state.label }}
-                        {{ form.residence_state }}
-                    </div>
-                    <div class="col m3">
-                        {{ form.residence_city.label }}
-                        {{ form.residence_city }}
-                    </div>
-                    <div class="col m1"></div>
-                </div>
-                <div class="row center">
-                    <div class="col m1"></div>
                     <div class="col m6">
                         <div class="input-field">
                             {{ form.address.label }}
                             {{ form.address }}
+                        </div>
+                    </div>
+                    <div class="col m4">
+                        <div class="input-field">
+                            {{ form.residence.label }}
+                            {{ form.residence(class="form-control autocomplete") }}
                         </div>
                     </div>
                     <div class="col m1"></div>
@@ -107,7 +101,7 @@
                     <div class="col m5">
                         <div class="input-field">
                             {{ form.work_email.label }}
-                            {{ form.work_email }}
+                            {{ form.work_email(placeholder="nombre.apellido@econo.unlp.edu.ar") }}
                         </div>
                     </div>
                     <div class="col m5">
@@ -194,7 +188,7 @@
     $(document).ready(function () {
         $('input.autocomplete').autocomplete({
             data: {},
-            minLength: 3
+            minLength: 4
         });
         $("#birthplace").keyup(function () {
             var query = $(this).val();
@@ -214,13 +208,31 @@
                     }
                 });
             } else {
-                $("#birthplace").autocomplete("updateData",{})
+                $("#birthplace").autocomplete({data:{}})
             }
         });
-    });
-    $("#birthplace").on("click", function () {
-        $('#birthplace').val($(this).text());
-    });
+        $("#residence").keyup(function () {
+            var query = $(this).val();
+            if ((query != '') && (query.length > 3)) {
+                $.ajax({
+                    dataType: "json",
+                    url: "http://localhost:10202/api/v0.1/ciudades/buscar",
+                    xhrFields: { withCredentials: true },
+                    method: "GET",
+                    data: { query: query },
+                    success: function (data) {
+                        let options = {};
+                        for (d in data) {
+                            options[data[d]["name"]] = null;
+                        }
+                        $("#residence").autocomplete("updateData",options);
+                    }
+                });
+            } else {
+                $("#residence").autocomplete({data:{}})
+            }
+        });
+    });    
 
     $(function () {
         $('.sidenav').sidenav();

@@ -17,7 +17,7 @@ def searchCity(search=None):
         if r.ok:
             js = r.json()
             options = [{'name': f'{j["nombre"]}, {j["provincia"]["nombre"]}'} for j in js['localidades']]
-            return options[0:5]
+            return options[0:10]
         else:
             return [{'error':'API Error'}]
     else:
