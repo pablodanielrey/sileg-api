@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect,request, Markup, url_for
 
-from .forms import ExtendDesignationForm, RenewForm
+from .forms import ExtendDesignationForm, RenewForm, DesignationCreateForm
 
 from . import bp
 
@@ -9,7 +9,13 @@ def create():
     """
     Pagina de creacion de designacion
     """
-    return render_template('createDesignations.html')
+    form = DesignationCreateForm()
+    user = {
+        'dni': '12345678',
+        'firstname': 'Pablo',
+        'lastname': 'Rey'
+    }
+    return render_template('createDesignations.html', user=user, form=form)
 
 @bp.route('/buscar')
 def search():
