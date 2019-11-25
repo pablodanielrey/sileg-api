@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col m1"></div>
+    <div class="col m10">
+        <div class="card-panel grey lighten-5">
+            <div class="row">
+                <div class="col m1"></div>
+                <div class="col m8">
+                    <h4> Extensión de Designacion </h4>
+                </div>
+                <div class="col m3">
+                    <p>Nombre: Nombre Nombre</p>
+                    <p>Apellido: Apellido</p>
+                    <p>DNI: 123456789</p>
+                </div>
+            </div>
+            <form action="" method="post">
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <h5>Designación a Extender</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <p>Tipo de Cargo: Ayudante Diplomado</p>
+                        <p>Caracter: Interino</p>
+                        <p>Lugar de Trabajo: Lugar de prueba</p>
+                    </div>
+                    <div class="col m5">
+                        <p>Dedicacion: Exclusiva desde 01/02/2020 hasta 31/12/2020</p>
+                        <p>Area: Area de prueba</p>
+                        <p>Funcion: Funcion de prueba</p>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <h5>Datos de Extensión</h5>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        {{form.newDedication.label}}
+                        {{form.newDedication}}
+                    </div>
+                    <div class="col m3">
+                        {{ form.dedicationFrom.label }}
+                        {{ form.dedicationFrom(class="datepicker") }}
+                    </div>
+                    <div class="col m3">
+                        {{ form.dedicationTo.label }}
+                        {{ form.dedicationTo(class="datepicker") }}
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        {{ form.resolutionNumber.label }}
+                        {{ form.resolutionNumber }}
+                    </div>
+                    <div class="col m3">
+                        {{ form.recordNumber.label }}
+                        {{ form.recordNumber }}
+                    </div>
+                    <div class="col m3">
+                        {{ form.relatedNumber.label }}
+                        {{ form.relatedNumber }}
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        {{ form.positionEndType.label }}
+                        {{ form.positionEndType }}
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <h5>Asignación de Funciones</h5>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        {{form.department.label}}
+                        {{form.department}}
+                    </div>
+                    <div class="col m3">
+                        {{ form.departmentArea.label }}
+                        {{ form.departmentArea }}
+                    </div>
+                    <div class="col m3">
+                        {{ form.chair.label }}
+                        {{ form.chair }}
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        {{ form.commission.label }}
+                        {{ form.commission }}
+                    </div>
+                    <div class="col m3">
+                        {{ form.workArea.label }}
+                        {{ form.workArea }}
+                    </div>
+                    <div class="col m3">
+                        {{ form.workPlace.label }}
+                        {{ form.workPlace }}
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        {{ form.function.label }}
+                        {{ form.function }}
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <h5>Datos de Baja</h5>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        {{form.dischargeType.label}}
+                        {{ form.dischargeType }}
+                    </div>
+                    <div class="col m3">
+                        {{ form.dischargeDate.label }}
+                        {{ form.dischargeDate(class="datepicker") }}
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <h5>Resolución de Baja</h5>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        {{form.dischargeResolution.label}}
+                        {{ form.dischargeResolution }}
+                    </div>
+                    <div class="col m3">
+                        {{ form.dischargeRecordNumber.label }}
+                        {{ form.dischargeRecordNumber }}
+                    </div>
+                    <div class="col m3">
+                        {{ form.dischargeRelatedNumber.label }}
+                        {{ form.dischargeRelatedNumber }}
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="divider"></div>
+                <br>
+                <div class="row">
+                    <div class="col m3"></div>
+                    <div class="col m1">
+                        <button class="btn red lighten-2" type="reset">Limpiar</button>
+                    </div>
+                    <div class="col m3"></div>
+                    <div class="col m2">
+                        <button class="btn light-blue darken-3">Crear Extension</button>
+                    </div>
+                    <div class="col m3"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col m1"></div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('select').formSelect();
+        $('.datepicker').datepicker({
+            format: 'dd-mmmm-yyyy',
+            minDate: new Date(1900, 1, 1),
+            i18n: {
+                months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                monthsShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                weekdays: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+                weekdaysAbbrev: ["D", "L", "M", "M", "J", "V", "S"],
+                today: 'Hoy',
+                clear: 'Limpiar',
+                done: 'Aceptar',
+                cancel: 'Cancelar',
+            }
+        });
+    });
+</script>
+{% endblock %}
