@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect,request, Markup, url_for
 
-from .forms import ExtendDesignationForm
+from .forms import ExtendDesignationForm, RenewForm
 
 from . import bp
 
@@ -25,3 +25,11 @@ def extend():
     """
     form = ExtendDesignationForm()
     return render_template('createExtension.html',form=form)
+
+@bp.route('/prorroga/crear')
+def renew():
+    """
+    Pagina de creacion de prorroga
+    """
+    form = RenewForm()
+    return render_template('createRenew.html',form=form)
