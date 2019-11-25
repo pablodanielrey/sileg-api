@@ -1,3 +1,296 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="row">
+    <div class="col m1"></div>
+    <div class="col m10">
+        <div class="card-panel grey lighten-5">
+            <div class="row">
+                <div class="col m8">
+                    <h4>Designación</h4>
+                </div>
+                <div class="col m3">
+                        <p>Nombre: {{user.firstname}}</p>
+                        <p>Apellido: {{user.lastname}}</p>
+                        <p>DNI: {{user.dni}}</p>
+                    </div>
+            </div>
+            <div class="divider"></div>
+            <form action="" method="post">
+                <div class="row">
+                    <div class="col m5">
+                        <h5 class="grey-text text-darken-2">Datos del cargo</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        {{ form.positionType.label }}
+                        {{ form.positionType }}
+                    </div>
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        {{ form.dedication.label }}
+                        {{ form.dedication }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        {{ form.character.label }}
+                        {{ form.character }}
+                    </div>
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        {{ form.extraordinary.label }}
+                        {{ form.extraordinary }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m2 input-field">
+                        {{ form.designationFrom.label }}
+                        {{ form.designationFrom(class="datepicker") }}
+                    </div>
+                    <div class="col m1"></div>
+                    <div class="col m2 input-field">
+                        {{ form.designationTo.label }}
+                        {{ form.designationTo(class="datepicker") }}
+                    </div>
+                    <div class="col m1"></div>
+                    <div class="col m3 input-field">
+                        {{ form.validatedBySuperiorCouncil.label }}
+                        {{ form.validatedBySuperiorCouncil(class="datepicker") }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m2 input-field">
+                        {{ form.resolutionNumber.label }}
+                        {{ form.resolutionNumber }}
+                    </div>
+                    <div class="col m1"></div>
+                    <div class="col m3 input-field">
+                        {{ form.recordNumber.label }}
+                        {{ form.recordNumber }}
+                    </div>
+                    <div class="col m3 input-field">
+                        {{ form.relatedNumber.label }}
+                        {{ form.relatedNumber }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        {{ form.positionEndType.label }}
+                        {{ form.positionEndType }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m6 input-field">
+                        {{ form.observations.label }}
+                        {{ form.observations(class="materialize-textarea") }}
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m5">
+                        <h5 class="grey-text text-darken-2">Cargo docente</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        {{ form.place.label }}
+                        {{ form.place }}
+                    </div>
+                    <div class="col m5">
+                        {{ form.subject.label }}
+                        {{ form.subject }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m3">
+                        {{ form.chair.label }}
+                        {{ form.chair }}
+                    </div>
+                    <div class="col m2"></div>
+                    <div class="col m4 input-field">
+                        {{ form.commission.label }}
+                        {{ form.commission }}
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m5">
+                        <h5 class="grey-text text-darken-2">Cargo de planta</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        {{ form.workArea.label }}
+                        {{ form.workArea }}
+                    </div>
+                    <div class="col m5">
+                        {{ form.workPlace.label }}
+                        {{ form.workPlace }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        {{ form.function.label }}
+                        {{ form.function }}
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m5">
+                        <h5 class="grey-text text-darken-2">Suplente</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        {{ form.replace.label }}
+                        {{ form.replace }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m3">
+                        <p>Comisión: una comisión</p>
+                    </div>
+                    <div class="col m1"></div>
+                    <div class="col m2">
+                        <p>Expediente: 12345/00
+                    </div>
+                    <div class="col m1"></div>
+                    <div class="col m2">
+                        <p>Corresponde: </p>
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m5">
+                        <h5 class="grey-text text-darken-2">Ordenanza 174</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m3">
+                        <label>{{ form.adjusted(class="filled-in") }}<span>Está ajustada</span></label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m2 input-field">
+                        {{ form.ordResolutionNumber.label }}
+                        {{ form.ordResolutionNumber }}
+                    </div>
+                    <div class="col m1"></div>
+                    <div class="col m3 input-field">
+                        {{ form.ordRecordNumber.label }}
+                        {{ form.ordRecordNumber }}
+                    </div>
+                    <div class="col m3 input-field">
+                        {{ form.ordRelatedNumber.label }}
+                        {{ form.ordRelatedNumber }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m2 input-field">
+                        {{ form.ordFrom.label }}
+                        {{ form.ordFrom(class="datepicker") }}
+                    </div>
+                    <div class="col m1"></div>
+                    <div class="col m2 input-field">
+                        {{ form.ordTo.label }}
+                        {{ form.ordTo(class="datepicker") }}
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m5">
+                        <h5 class="grey-text text-darken-2">Datos de baja</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        {{ form.dischargeType.label }}
+                        {{ form.dischargeType }}
+                    </div>
+                    <div class="col m1"></div>
+                    <div class="col m3 input-field">
+                        {{ form.dischargeDate.label }}
+                        {{ form.dischargeDate(class="datepicker") }}
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m5">
+                        <h5 class="grey-text text-darken-2">Resolución baja</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m2 input-field">
+                        {{ form.dischargeResolutionNumber.label }}
+                        {{ form.dischargeResolutionNumber }}
+                    </div>
+                    <div class="col m1"></div>
+                    <div class="col m3 input-field">
+                        {{ form.dischargeRecordNumber.label }}
+                        {{ form.dischargeRecordNumber }}
+                    </div>
+                    <div class="col m3 input-field">
+                        {{ form.dischargeRelatedNumber.label }}
+                        {{ form.dischargeRelatedNumber }}
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <br>
+                <br>
+                <div class="row">
+                    <div class="col m3"></div>
+                    <div class="col m1">
+                        <button class="btn red lighten-2" type="reset">Limpiar</button>
+                    </div>
+                    <div class="col m3"></div>
+                    <div class="col m3">
+                        <button class="btn light-blue darken-3">crear designacion</button>
+                    </div>
+                    <div class="col m3"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col m1"></div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('select').formSelect();
+        $('.datepicker').datepicker({
+            format: 'dd-mmmm-yyyy',
+            minDate: new Date(1900, 1, 1),
+            showClearBtn: true,
+            autoClose: true,
+            i18n: {
+                months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                monthsShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                weekdays: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+                weekdaysAbbrev: ["D", "L", "M", "M", "J", "V", "S"],
+                today: 'Hoy',
+                clear: 'Limpiar',
+                done: 'Aceptar',
+                cancel: 'Cancelar',
+            },
+        });
+    });
+</script>
 {% endblock %}
