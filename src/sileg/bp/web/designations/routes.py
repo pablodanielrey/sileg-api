@@ -44,7 +44,7 @@ def search():
             'character': 'SUP',
         },
         {
-            'firstname':'Miguel',
+            'firstname':'Miguel Angel Jesús',
             'lastname':'Macagno',
             'subject':'Administración I',
             'chair':'B',
