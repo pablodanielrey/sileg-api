@@ -26,7 +26,7 @@ def search():
         'lastname':'Pais',
     },
     {
-        'firstname':'Miguel',
+        'firstname':'Miguel Angel Jesús',
         'lastname':'Macagno',
     },
     {
