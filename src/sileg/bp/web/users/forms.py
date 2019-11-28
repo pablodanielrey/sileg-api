@@ -23,7 +23,7 @@ class UserCreateForm(FlaskForm):
     land_line = StringField('Telefono Fijo', validators=[])
     mobile_number =StringField('Telefono Movil', validators=[])
 
-    ingress_date = DateTimeField('Fecha de ingreo a la FCE')
+    ingress_date = DateTimeField('Fecha de ingreso a la FCE')
     laboral_number = StringField('CUIL')
     marital_status = SelectField('Estado Civil', coerce=str)
     retirement_date = DateTimeField('Fecha de Jubilación')
