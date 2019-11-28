@@ -6,7 +6,7 @@
     <div class="col m10">
         <div class="card-panel grey lighten-5">
             <div class="center">
-                <h4> Búsqueda de Usuarios </h4>
+                <h4> Búsqueda de Personas </h4>
             </div>
             <div class="divider"></div>
             <br>
@@ -29,24 +29,37 @@
                 <table class="responsive-table highlight">
                     <thead>
                         <tr>
-                            <th>Apellido y nombre del usuario</th>
+                            <th>Apellido y Nombre</th>
                             <th class="center">Títulos</th>
                             <th class="center">Familiares a cargo</th>
-                            <th class="center">Modificar</th>
+                            <th class="center">Acciones</th>
                             <th class="center">Eliminar</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for u in users %}
                         <tr>
-                            <td><a class="blue-text darken-4" href="#userId">{{ u['lastname'] }}, {{ u['firstname'] }}</a></td>
-                            <td class="center"><a class="blue-text darken-4" href="#grado">GRADO</a> | <a class="blue-text darken-4" href="#postgrado">POSTGRADO</a></td>                            <td class="center"><a class="btn-floating waves-effect waves-light teal" href="#familiares"><i class="material-icons">open_in_new</i></a></td>
-                            <td class="center"><a class="btn-floating waves-effect waves-light yellow darken-3" href="#modificar"><i class="material-icons">edit</i></a></td>
-                            <td class="center"><a class="btn-floating waves-effect waves-light red" href="#eliminar"><i class="material-icons">delete</i></a></td>
+                            <td><a class="blue-text darken-4" href="#userId">{{ u['lastname'] }},
+                                    {{ u['firstname'] }}</a></td>
+                            <td class="center"><a class="blue-text darken-4" href="#grado">GRADO</a> | <a
+                                    class="blue-text darken-4" href="#postgrado">POSTGRADO</a></td>
+                            <td class="center"><a class="btn-floating waves-effect waves-light teal"
+                                    href="#familiares"><i class="material-icons">open_in_new</i></a></td>
+                            <td class="center"><a
+                                    class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3"
+                                    href="#" data-target="dropdown1"><i class="material-icons">edit</i></a>
+                            </td>
+                            <td class="center"><a class="btn-floating waves-effect waves-light red" href="#eliminar"><i
+                                        class="material-icons">delete</i></a></td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
+                <ul id='dropdown1' class='dropdown-content'>
+                    <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
+                    <li class="divider" tabindex="-1"></li>
+                    <li><a class="blue-text darken-4" href="#!">Licencias</a></li>
+                </ul>
             </div>
             <br>
             <div class="center">

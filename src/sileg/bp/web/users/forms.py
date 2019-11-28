@@ -62,6 +62,6 @@ class UserCreateForm(FlaskForm):
 
 
 class UserSearchForm(FlaskForm):
-    query = StringField('Buscar usuarios por apellido o número de documento')
+    query = StringField('Buscar persona por apellido o número de documento')
     class Meta:
         csrf = False

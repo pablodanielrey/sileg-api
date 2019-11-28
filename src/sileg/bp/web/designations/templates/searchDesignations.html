@@ -1,3 +1,86 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="row">
+    <div class="col m1"></div>
+    <div class="col m10">
+        <div class="card-panel grey lighten-5">
+            <div class="center">
+                <h4> Búsqueda de Designaciones </h4>
+            </div>
+            <div class="divider"></div>
+            <br>
+            <div class="col m2"></div>
+            <form>
+                <div class="row">
+                    <div class="input-field col m6">
+                        <i class="material-icons prefix">search</i>
+                        {{ form.query }}
+                        {{ form.query.label }}
+                    </div>
+                    <div class="input-field col m2">
+                        <button class="btn waves-effect waves-light light-blue darken-3" type="submit">buscar</button>
+                    </div>
+                </div>
+            </form>
+            <div class="divider"></div>
+            <br>
+            <div>
+                <table class="responsive-table highlight">
+                    <thead>
+                        <tr>
+                            <th>Apellido y Nombre del Docente</th>
+                            <th class="center">Cargo Docente</th>
+                            <th class="center">Cargo de Planta</th>
+                            <th class="center">Observaciones</th>
+                            <th class="center">Cargo</th>
+                            <th class="center">Carácter</th>
+                            <th class="center">Acciones</th>
+                            <th class="center">Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in designations %}
+                        <tr>
+                            <td><a class="blue-text darken-4" href="#userId">{{ d['lastname'] }},
+                                    {{ d['firstname'] }}</a></td>
+                            <td class="center"><a class="blue-text darken-4" href="#cargodocente">{{ d['subject'] }},
+                                    {{d['chair']}}</a></td>
+                            <td class="center"><a class="blue-text darken-4" href="#cargopplanta">{{ d['workArea'] }},
+                                    {{d['workPlace']}}</a></td>
+                            <td class="center"><a class="blue-text darken-4" href="#observaciones">-</a></td>
+                            <td class="center"><a class="blue-text darken-4" href="#cargo">{{ d['positionType'] }}</a>
+                            </td>
+                            <td class="center"><a class="blue-text darken-4" href="#caracter">{{ d['character'] }}</a>
+                            </td>
+                            <td class="center"><a class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3"
+                                    href="#" data-target='dropdown1'><i class="material-icons">edit</i></a></td>
+                            <td class="center"><a class="btn-floating waves-effect waves-light red" href="#eliminar"><i
+                                        class="material-icons">delete</i></a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <ul id='dropdown1' class='dropdown-content'>
+                    <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
+                    <li class="divider" tabindex="-1"></li>
+                    <li><a class="blue-text darken-4" href="{{url_for('designations.extend')}}">Extender</a></li>
+                    <li><a class="blue-text darken-4" href="{{url_for('designations.renew')}}">Prorrogar</a></li>
+                    <li><a class="blue-text darken-4" href="#!">Baja</a></li>
+                </ul>
+            </div>
+            <br>
+            <div class="center">
+                <ul class="pagination">
+                    <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+                    <li class="active teal"><a href="#!">1</a></li>
+                    <li class="waves-effect"><a href="#!">2</a></li>
+                    <li class="waves-effect"><a href="#!">3</a></li>
+                    <li class="waves-effect"><a href="#!">4</a></li>
+                    <li class="waves-effect"><a href="#!">5</a></li>
+                    <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
