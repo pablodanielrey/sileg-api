@@ -21,6 +21,4 @@ COPY scripts /scripts
 
 WORKDIR /src
 
-EXPOSE 5000
-
 ENTRYPOINT ["/entrypoint.sh"]
