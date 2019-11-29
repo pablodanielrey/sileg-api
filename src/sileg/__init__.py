@@ -34,10 +34,3 @@ app.register_blueprint(bp_web_designations,url_prefix='/designaciones')
 ## Registro bueprint api ciudades
 from .bp.rest.api.cities import bp as bp_api_cities
 app.register_blueprint(bp_api_cities,url_prefix='/api/v0.1/ciudades')
-
-
-def main():
-    app.run(host='0.0.0.0', port=10202, debug=False)
-
-if __name__ == '__main__':
-    main()

@@ -37,7 +37,7 @@ setup(name='sileg-api',
                           ],
           entry_points={
             'console_scripts': [
-                'rest=sileg.api.rest.main:main'
+                'flask=sileg:__main__'
             ]
           }
 
