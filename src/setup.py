@@ -27,6 +27,7 @@ setup(name='sileg-api',
           ],
           packages=find_packages(exclude=['contrib', 'docs', 'test*']),
           install_requires=[
+                            'gunicorn',
                             'requests',
                             'Flask',
                             'flask-wtf',
