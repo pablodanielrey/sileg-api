@@ -37,9 +37,6 @@ setup(name='sileg-api',
                             #'microservices_common>=2.0.7a1'
                           ],
           entry_points={
-            'console_scripts': [
-                'flask=sileg:main'
-            ]
           }
 
       )
