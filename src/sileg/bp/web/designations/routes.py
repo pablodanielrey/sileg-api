@@ -84,3 +84,54 @@ def renew():
     """
     form = RenewForm()
     return render_template('createRenew.html',form=form)
+
+@bp.route('/listado')
+def personDesignations():
+    """
+    Pagina de lisata de designaciones de una persona
+    Recibe como parametro uid de la persona
+    """
+    person = {
+        'firstname':'Pablo',
+        'lastname':'Rey',
+        'person_number': '12345678',
+        'birthdate': '02/12/1979',
+        'address': 'Calle 6 Nº 667, La Plata, Buenos Aires.'
+    }
+    designations = [{
+            'subject':'Ingles I',
+            'chair':'Original',
+            'workArea': '-',
+            'workPlace': '-',
+            'observations': '-',
+            'positionType': 'A/D',
+            'character': 'INT',
+        },{
+            'subject':'Contabilidad III',
+            'chair':'Original',
+            'workArea': '-',
+            'workPlace': '-',
+            'observations': '-',
+            'positionType': 'ADJ',
+            'character': 'SUP',
+        },
+        {
+            'subject':'Administración I',
+            'chair':'B',
+            'workArea': '-',
+            'workPlace': '-',
+            'observations': '-',
+            'positionType': 'JAD',
+            'character': 'INT',
+        },
+        {
+            'subject':'Administración I',
+            'chair':'A',
+            'workArea': '-',
+            'workPlace': '-',
+            'observations': '-',
+            'positionType': 'TIT',
+            'character': 'INT',
+        }
+    ]
+    return render_template('listPersonDesignations.html',designations=designations,person=person)
