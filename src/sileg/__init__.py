@@ -22,9 +22,9 @@ app.config.from_object(Config)
 ## Registro bueprint web base
 from .bp.web.index import bp as bp_web_index
 app.register_blueprint(bp_web_index)
-## Registro bueprint usuarios
-from .bp.web.users import bp as bp_web_users
-app.register_blueprint(bp_web_users,url_prefix='/usuarios')
+## Registro bueprint personas
+from .bp.web.persons import bp as bp_web_persons
+app.register_blueprint(bp_web_persons,url_prefix='/personas')
 ## Registro bueprint web lugares
 from .bp.web.places import bp as bp_web_places
 app.register_blueprint(bp_web_places,url_prefix='/lugares')
