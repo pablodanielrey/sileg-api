@@ -5,7 +5,7 @@ from wtforms.validators import ValidationError, DataRequired, EqualTo, Email
 
 from sileg.helpers.apiHandler import getStates
 
-class UserCreateForm(FlaskForm):
+class PersonCreateForm(FlaskForm):
     lastname = StringField('Apellidos', validators=[DataRequired()])
     firstname = StringField('Nombres', validators=[DataRequired()])
     person_number_type = SelectField('Tipo de Documento', coerce=str)
@@ -50,7 +50,7 @@ class UserCreateForm(FlaskForm):
        
         
     def __init__(self):
-        super(UserCreateForm,self).__init__()
+        super(PersonCreateForm,self).__init__()
         self.person_number_type.choices = [('0','Seleccione una opción...'),('0','LC'),('0','LE'),('0','DNI'),('0','PASAPORTE')]
         self.gender.choices = [('0','Seleccione una opción...'),('0','Femenino'),('0','Masculino'),('0','Otro')]
         self.marital_status.choices = [('0','Seleccione una opción...'),('0','Casado/a'),('0','Soltero/a'),('0','Conviviente'),('0','Divorciado/a'),]
@@ -61,7 +61,7 @@ class UserCreateForm(FlaskForm):
         pass
 
 
-class UserSearchForm(FlaskForm):
+class PersonSearchForm(FlaskForm):
     query = StringField('Buscar persona por apellido o número de documento')
     class Meta:
         csrf = False
