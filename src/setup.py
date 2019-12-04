@@ -26,29 +26,17 @@ setup(name='sileg-api',
             'Programming Language :: Python :: 3.6'
           ],
           packages=find_packages(exclude=['contrib', 'docs', 'test*']),
-          install_requires=['psycopg2-binary',
-                            'dateutils>=0.6.6',
-                            'requests',
-                            'redis==2.10.6',
-                            'pymongo',
-                            'Flask',
-                            'flask_jsontools',
-                            'Flask-OIDC',
-                            'flask-cors',
-                            'SQLAlchemy',
-                            'google-api-python-client',
-                            'httplib2',
-                            'pyjwt',
-                            'microservices_common>=2.0.7a1',
-                            'warden-api',
+          install_requires=[
                             'gunicorn',
-                            'ptvsd',
-                            'py-vapid',
-                            'pywebpush'],
+                            'requests',
+                            'Flask',
+                            'flask-wtf',
+                            'flask_jsontools',
+                            'flask-cors',
+                            'SQLAlchemy'
+                            #'microservices_common>=2.0.7a1'
+                          ],
           entry_points={
-            'console_scripts': [
-                'rest=sileg.api.rest.main:main'
-            ]
           }
 
       )
