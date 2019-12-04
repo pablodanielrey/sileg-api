@@ -20,18 +20,22 @@ def search():
     persons = [{
         'firstname':'Pablo',
         'lastname':'Rey',
+        'person_number': '12345678'
     },
     {
         'firstname':'Emanuel',
         'lastname':'Pais',
+        'person_number': '12345678'
     },
     {
         'firstname':'Miguel Angel Jesús',
         'lastname':'Macagno',
+        'person_number': '12345678'
     },
     {
         'firstname':'Leonardo',
-        'lastname':'Consolini'
+        'lastname':'Consolini',
+        'person_number': '12345678'
     }]
     form = PersonSearchForm()
     query = request.args.get('query','',str)
