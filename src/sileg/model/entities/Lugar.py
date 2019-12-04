@@ -1,43 +1,32 @@
 from sqlalchemy import Column, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, backref
-from model_utils import Base, generateId
+from . import Base
 
 
-class Lugar(Base):
-    __tablename__ = 'lugar'
+class Place(Base):
+    __tablename__ = 'place'
 
-    nombre = Column(String)
-    tipo = Column(String)
-    descripcion = Column(String)
-    numero = Column(String)
-    telefono = Column(String)
-    correo = Column(String)
-    eliminado = Column('eliminado', DateTime)
+    name = Column(String)
+    type = Column(String)
+    description = Column(String)
 
-    padre_id = Column(String, ForeignKey('lugar.id'))
-    hijos = relationship("Lugar",  foreign_keys=[padre_id], backref=backref('padre', remote_side="Lugar.id"))
+    number = Column(String)
+    telephone = Column(String)
+    email = Column(String)
+    deleted = Column('eliminado', DateTime)
 
-    cambio_id = Column(String, ForeignKey('lugar.id'))
-    cambios = relationship("Lugar",  foreign_keys=[cambio_id], backref=backref('cambio', remote_side="Lugar.id"))
-
-    old_id = Column(String)
+    parent_id = Column(String, ForeignKey('lugar.id'))
+    children = relationship("Lugar",  foreign_keys=[parent_id], backref=backref('parent_id', remote_side="Place.id"))
 
     __mapper_args__ = {
-        'polymorphic_on':tipo,
-        'polymorphic_identity':'lugar'
+        'polymorphic_on':type,
+        'polymorphic_identity':'place'
     }
 
-    def __init__(self, id=None, nombre=None):
+    def __init__(self, id=None, name=None):
         if id: self.id = id
-        if nombre: self.nombre = nombre
+        if name: self.name = name
 
-    @property
-    def getNombre(self):
-        return self.nombre
-
-    @classmethod
-    def find(cls, session):
-        return session.query(cls)
 
 
 class Catedra(Lugar):
