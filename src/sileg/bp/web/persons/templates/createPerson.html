@@ -19,13 +19,23 @@
                     <div class="col m5">
                         <div class="input-field">
                             {{ form.lastname.label }}
-                            {{ form.lastname }}
+                            {% if form.lastname.errors %}
+                            {{ form.lastname(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.lastname.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.lastname(class="validate") }}
+                            {% endif %}
                         </div>
                     </div>
                     <div class="col m5">
                         <div class="input-field">
                             {{ form.firstname.label }}
-                            {{ form.firstname }}
+                            {% if form.firstname.errors %}
+                            {{ form.firstname(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.firstname.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.firstname(class="validate") }}
+                            {% endif %}
                         </div>
                     </div>
                     <div class="col m1"></div>
@@ -33,13 +43,23 @@
                 <div class="row center">
                     <div class="col m1"></div>
                     <div class="col m3">
-                        {{ form.person_number_type.label }}
-                        {{ form.person_number_type }}
+                            {{ form.person_number_type.label }}
+                            {% if form.person_number_type.errors %}
+                            {{ form.person_number_type(class="validate invalid") }}
+                            <span class="helper-text red-text">Debe seleccionar una opción</span>
+                            {% else %}
+                            {{ form.person_number_type(class="validate") }}
+                            {% endif %}
                     </div>
                     <div class="col m4">
                         <div class="input-field">
                             {{ form.person_number.label }}
-                            {{ form.person_number }}
+                            {% if form.person_number.errors %}
+                            {{ form.person_number(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.person_number.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.person_number(class="validate") }}
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -47,11 +67,21 @@
                     <div class="col m1"></div>
                     <div class="col m3">
                         {{ form.gender.label }}
-                        {{ form.gender }}
+                        {% if form.gender.errors %}
+                        {{ form.gender(class="validate invalid") }}
+                        <span class="helper-text" data-error="{{form.gender.errors[0]}}"></span>
+                        {% else %}
+                        {{ form.gender(class="validate") }}
+                        {% endif %}
                     </div>
                     <div class="col m3">
                         {{ form.marital_status.label }}
-                        {{ form.marital_status }}
+                        {% if form.marital_status.errors %}
+                        {{ form.marital_status(class="validate invalid") }}
+                        <span class="helper-text" data-error="{{form.marital_status.errors[0]}}"></span>
+                        {% else %}
+                        {{ form.marital_status(class="validate") }}
+                        {% endif %}
                     </div>
                 </div>
                 <div class="row center">
@@ -59,13 +89,24 @@
                     <div class="col m3">
                         <div class="input-field">
                             {{ form.birthplace.label }}
-                            {{ form.birthplace(class="form-control autocomplete") }}
+                            {% if form.birthplace.errors %}
+                            {{ form.birthplace(class="validate invalid form-control autocomplete") }}
+                            <span class="helper-text" data-error="{{form.birthplace.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.birthplace(class="validate form-control autocomplete") }}
+                            {% endif %}
                         </div>
                     </div>
                     <div class="col m3">
                         <div class="input-field">
                             {{ form.birthdate.label }}
-                            {{ form.birthdate(class="datepicker") }}
+                            {% if form.birthdate.errors %}
+                            {{ form.birthdate(class="validate invalid datepicker") }}
+                            <span class="helper-text" data-error="{{form.birthdate.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.birthdate(class="validate datepicker") }}
+                            {% endif %}
+
                         </div>
                     </div>
                     <div class="col m1"></div>
@@ -81,13 +122,23 @@
                     <div class="col m6">
                         <div class="input-field">
                             {{ form.address.label }}
-                            {{ form.address }}
+                            {% if form.address.errors %}
+                            {{ form.address(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.address.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.address(class="validate") }}
+                            {% endif %}
                         </div>
                     </div>
                     <div class="col m4">
                         <div class="input-field">
                             {{ form.residence.label }}
-                            {{ form.residence(class="form-control autocomplete") }}
+                            {% if form.residence.errors %}
+                            {{ form.residence(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.residence.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.residence(class="validate") }}
+                            {% endif %}
                         </div>
                     </div>
                     <div class="col m1"></div>
@@ -103,13 +154,24 @@
                     <div class="col m5">
                         <div class="input-field">
                             {{ form.work_email.label }}
-                            {{ form.work_email(placeholder="nombre.apellido@econo.unlp.edu.ar") }}
+                            {% if form.work_email.errors %}
+                            {{ form.work_email(class="validate invalid", placeholder="nombre.apellido@econo.unlp.edu.ar") }}
+                            <span class="helper-text" data-error="{{form.work_email.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.work_email(class="validate", placeholder="nombre.apellido@econo.unlp.edu.ar") }}
+                            {% endif %}
+
                         </div>
                     </div>
                     <div class="col m5">
                         <div class="input-field">
                             {{ form.personal_email.label }}
-                            {{ form.personal_email }}
+                            {% if form.personal_email.errors %}
+                            {{ form.personal_email(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.personal_email.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.personal_email(class="validate") }}
+                            {% endif %}
                         </div>
                     </div>
                     <div class="col m1"></div>
@@ -119,17 +181,109 @@
                     <div class="col m4">
                         <div class="input-field">
                             {{ form.land_line.label }}
-                            {{ form.land_line }}
+                            {% if form.land_line.errors %}
+                            {{ form.land_line(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.land_line.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.land_line(class="validate") }}
+                            {% endif %}
                         </div>
                     </div>
                     <div class="col m4">
                         <div class="input-field">
                             {{ form.mobile_number.label }}
-                            {{ form.mobile_number }}
+                            {% if form.mobile_number.errors %}
+                            {{ form.mobile_number(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.mobile_number.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.mobile_number(class="validate") }}
+                            {% endif %}
                         </div>
                     </div>
                     <div class="col m1"></div>
                 </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m5">
+                        <h5>Datos Laborales</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <h6>Antigüedad Externa</h6>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m2">
+                        <div class="input-field">
+                            {{ form.seniority_external_years.label }}
+                            {% if form.seniority_external_years.errors %}
+                            {{ form.seniority_external_years(class="validate invalid", type="number") }}
+                            <span class="helper-text" data-error="{{form.seniority_external_years.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.seniority_external_years(class="validate", type="number") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m2">
+                        <div class="input-field">
+                            {{ form.seniority_external_months.label }}
+                            {% if form.seniority_external_months.errors %}
+                            {{ form.seniority_external_months(class="validate invalid", type="number") }}
+                            <span class="helper-text" data-error="{{form.seniority_external_months.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.seniority_external_months(class="validate", type="number") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m2">
+                        <div class="input-field">
+                            {{ form.seniority_external_days.label }}
+                            {% if form.seniority_external_days.errors %}
+                            {{ form.seniority_external_days(class="validate invalid", type="number") }}
+                            <span class="helper-text" data-error="{{form.seniority_external_days.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.seniority_external_days(class="validate", type="number") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m5">
+                        <h5>Archivos</h5>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        <div class="file-field input-field">
+                            <div class="btn">
+                                <span>DNI</span>
+                                {{ form.person_numberFile(class="validate") }}
+                            </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Adjuntar DNI">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col m4">
+                        <div class="file-field input-field">
+                            <div class="btn">
+                                <span>CUIL</span>
+                                {{ form.laboral_numberFile(class="validate") }}
+                            </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Adjuntar CUIL">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <br>
                 <div class="row">
                     <div class="col m3"></div>
                     <div class="col m1">

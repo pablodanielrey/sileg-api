@@ -34,11 +34,35 @@ class PersonCreateForm(FlaskForm):
 
     def validate_person_number_type(self, person_number_type):
         if self.person_number_type.data == '0':
-            raise ValidationError('Debe seleccionar una opción')
+            raise ValidationError('Debe seleccionar una opción')   
+
+    def validate_seniority_external_years(self,seniority_external_years):
+        if self.seniority_external_years.data:
+            try:
+                number = int(self.seniority_external_years.data)
+            except:
+                raise ValidationError('La antiguedad debe ser un número')
+            if number < 0:
+                raise ValidationError('El número debe ser mayor a 0')
     
-    def validate_lastname(self,lastname):
-        if self.lastname.data == 'algo':
-            raise ValidationError('Debe seleccionar una opción')
+    def validate_seniority_external_months(self,seniority_external_months):
+        if self.seniority_external_months.data:
+            try:
+                number = int(self.seniority_external_months.data)
+            except:
+                raise ValidationError('La antiguedad debe ser un número')
+            if number < 0:
+                raise ValidationError('El número debe ser mayor a 0')
+    
+    def validate_seniority_external_days(self,seniority_external_days):
+        if self.seniority_external_days.data:
+            try:
+                number = int(self.seniority_external_days.data)
+            except:
+                raise ValidationError('La antiguedad debe ser un número')
+            if number < 0:
+                raise ValidationError('El número debe ser mayor a 0')
+
 class TitleAssignForm(FlaskForm):
     titleType = SelectField('Tipo de Título')
     titleDate = StringField('Fecha de Obtención')
