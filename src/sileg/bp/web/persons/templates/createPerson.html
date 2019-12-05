@@ -8,6 +8,7 @@
                 <h4> Creación de Personas </h4>
             </div>
             <form action="" method="post">
+                {{ form.hidden_tag() }}
                 <div class="row">
                     <div class="col m5">
                         <h5>Datos Personales</h5>
@@ -47,6 +48,10 @@
                     <div class="col m3">
                         {{ form.gender.label }}
                         {{ form.gender }}
+                    </div>
+                    <div class="col m3">
+                        {{ form.marital_status.label }}
+                        {{ form.marital_status }}
                     </div>
                 </div>
                 <div class="row center">
@@ -125,45 +130,6 @@
                     </div>
                     <div class="col m1"></div>
                 </div>
-                <div class="divider"></div>
-                <div class="row">
-                    <div class="col m5">
-                        <h5>Datos Laborales</h5>
-                    </div>
-                </div>
-                <div class="row center">
-                    <div class="col m1"></div>
-                    <div class="col m3">
-                        <div class="input-field">
-                            {{ form.ingress_date.label }}
-                            {{ form.ingress_date(class="datepicker") }}
-                        </div>
-                    </div>
-                    <div class="col m3">
-                        <div class="input-field">
-                            {{ form.laboral_number.label }}
-                            {{ form.laboral_number }}
-                        </div>
-                    </div>
-                </div>
-                <div class="row center">
-                    <div class="col m1"></div>
-                    <div class="col m3">
-                        {{ form.marital_status.label }}
-                        {{ form.marital_status }}
-                    </div>
-                    <div class="col m1"></div>
-                </div>
-                <div class="row center">
-                    <div class="col m1"></div>
-                    <div class="col m3">
-                        <div class="input-field">
-                            {{ form.retirement_date.label }}
-                            {{ form.retirement_date(class="datepicker") }}
-                        </div>
-                    </div>
-                    <div class="col m1"></div>
-                </div>
                 <div class="row">
                     <div class="col m3"></div>
                     <div class="col m1">
@@ -200,11 +166,11 @@
                         for (d in data) {
                             options[data[d]["name"]] = null;
                         }
-                        $("#birthplace").autocomplete("updateData",options);
+                        $("#birthplace").autocomplete("updateData", options);
                     }
                 });
             } else {
-                $("#birthplace").autocomplete({data:{}})
+                $("#birthplace").autocomplete({ data: {} })
             }
         });
         $("#residence").keyup(function () {
@@ -221,19 +187,19 @@
                         for (d in data) {
                             options[data[d]["name"]] = null;
                         }
-                        $("#residence").autocomplete("updateData",options);
+                        $("#residence").autocomplete("updateData", options);
                     }
                 });
             } else {
-                $("#residence").autocomplete({data:{}})
+                $("#residence").autocomplete({ data: {} })
             }
         });
-    });    
+    });
 
     $(function () {
         $('select').formSelect();
         $('.datepicker').datepicker({
-            format: 'dd-mmmm-yyyy',
+            format: 'd-m-yyyy',
             minDate: new Date(1900, 1, 1),
             maxDate: new Date(),
             showClearBtn: true,
