@@ -16,7 +16,7 @@ class Place(Base):
     deleted = Column('eliminado', DateTime)
 
     parent_id = Column(String, ForeignKey('lugar.id'))
-    children = relationship("Lugar",  foreign_keys=[parent_id], backref=backref('parent_id', remote_side="Place.id"))
+    children = relationship("Place",  foreign_keys=[parent_id], backref=backref('parent_id', remote_side="Place.id"))
 
     __mapper_args__ = {
         'polymorphic_on':type,
