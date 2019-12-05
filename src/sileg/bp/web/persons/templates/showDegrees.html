@@ -6,8 +6,7 @@
     <div class="col m10">
         <div class="card-panel grey lighten-5">
             <div class="row">
-                <div class="col m2"></div>
-                <div class="col m7">
+                <div class="col m8">
                     <h4>Títulos</h4>
                 </div>
                 <div class="col m3">
@@ -28,21 +27,46 @@
                     <div class="col m1"></div>
                     <div class="col m2">
                         {{ form.titleType.label }}
-                        {{ form.titleType }}
+                        {% if form.titleType.errors %}
+                        {{ form.titleType(class="validate invalid") }}
+                        <span class="helper-text" data-error="{{form.titleType.errors[0]}}"></span>
+                        {% else %}
+                        {{ form.titleType(class="validate") }}
+                        {% endif %}
+                    </div>
+                    <div class="col m3">
+                        {{ form.titleName.label }}
+                        {% if form.titleName.errors %}
+                        {{ form.titleName(class="validate invalid") }}
+                        <span class="helper-text" data-error="{{form.titleName.errors[0]}}"></span>
+                        {% else %}
+                        {{ form.titleName(class="validate") }}
+                        {% endif %}
                     </div>
                     <div class="col m2">
                         {{ form.titleDate.label }}
-                        {{ form.titleDate }}
-                    </div>
-                    <div class="col m2">
-                        {{ form.titleName.label }}
-                        {{ form.titleName }}
+                        {% if form.titleDate.errors %}
+                        {{ form.titleDate(class="validate invalid datepicker") }}
+                        <span class="helper-text" data-error="{{form.titleDate.errors[0]}}"></span>
+                        {% else %}
+                        {{ form.titleDate(class="validate datepicker") }}
+                        {% endif %}
                     </div>
                     <div class="col m3">
-                        {{ form.titleFile.label }}
-                        {{ form.titleFile }}
+                        <div class="file-field input-field">
+                            <div class="btn blue darken-2">
+                                <span>Título</span>
+                                {{ form.titleFile(class="validate") }}
+                            </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Adjuntar Título">
+                            </div>
+                        </div>
                     </div>
-                    <div class="col m2">
+                    <div class="col m1"></div>
+                </div>    
+                <div class="row">
+                    <div class="col m12 center">
                         <button class="btn waves-effect waves-light light-blue darken-3" type="submit">Cargar</button>
                     </div>
                 </div>
@@ -50,41 +74,67 @@
             <div class="divider"></div>
             <br>
             <div>
+                {% if titles %}
                 <table class="responsive-table highlight">
                     <thead>
                         <tr>
-                            <th>Tipo de Título</th>
+                            <th class="center">Tipo de Título</th>
                             <th class="center">Título</th>
                             <th class="center">Fecha</th>
                             <th class="center">Descargar</th>
+                            <th class="center">Eliminar</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for p in persons %}
+                        {% for t in titles %}
                         <tr>
-                            <td><a class="blue-text darken-4" href="#userId">{{ p['lastname'] }},
-                                    {{ p['firstname'] }}</a></td>
-                            <td class="center"><a class="blue-text darken-4" href="#grado">ULTIMO TITULO</a></td>
-                            <td class="center"><a
-                                    class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3"
-                                    href="#" data-target="dropdown1"><i class="material-icons">edit</i></a>
-                            </td>
+                            <td class="center blue-text darken-4">{{t['titleType']}}</td>
+                            <td class="center blue-text darken-4">{{t['titleName']}}</td>
+                            <td class="center blue-text darken-4">{{t['titleDate']}}</td>
+                            {% if t['titleFile'] %}
+                            <td class="center blue-text darken-4"><a href="#"><i
+                                        class="material-icons">cloud_download</i></a></td>
+                            {% else %}
+                            <td class="center blue-text darken-4"></td>
+                            {% endif %}
                             <td class="center"><a class="btn-floating waves-effect waves-light red" href="#eliminar"><i
                                         class="material-icons">delete</i></a></td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-                <ul id='dropdown1' class='dropdown-content'>
-                    <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
-                    <li class="divider" tabindex="-1"></li>
-                    <li><a class="blue-text darken-4"
-                            href="{{url_for('designations.personDesignations')}}">Designaciones</a></li>
-                    <li><a class="blue-text darken-4" href="#">Titulos</a></li>
-                    <li><a class="blue-text darken-4" href="#!">Licencia</a></li>
-                </ul>
+                {% else %}
+                <div class="row">
+                    <div class="col m12 center">
+                        <h4>No se encontraron títulos</h4>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
 </div>
+<script>
+    $(function () {
+        $('select').formSelect();
+        $('.datepicker').datepicker({
+            format: 'd-m-yyyy',
+            minDate: new Date(1900, 1, 1),
+            maxDate: new Date(),
+            showClearBtn: true,
+            autoClose: true,
+            i18n: {
+                months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                monthsShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                weekdays: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+                weekdaysAbbrev: ["D", "L", "M", "M", "J", "V", "S"],
+                today: 'Hoy',
+                clear: 'Limpiar',
+                done: 'Aceptar',
+                cancel: 'Cancelar',
+            }
+        });
+    });
+</script>
 {% endblock %}
