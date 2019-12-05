@@ -34,11 +34,10 @@
                 <table class="responsive-table highlight">
                     <thead>
                         <tr>
-                            <th class="center">Cargo Docente</th>
-                            <th class="center">Cargo de Planta</th>
-                            <th class="center">Observaciones</th>
+                            <th class="center">Lugar</th>
                             <th class="center">Cargo</th>
                             <th class="center">Carácter</th>
+                            <th class="center">Dedicacion</th>
                             <th class="center">Acciones</th>
                             <th class="center">Eliminar</th>
                         </tr>
@@ -48,13 +47,11 @@
                         <tr>
                             <td class="center"><a class="blue-text darken-4" href="#cargodocente">{{ d['subject'] }},
                                     {{d['chair']}}</a></td>
-                            <td class="center"><a class="blue-text darken-4" href="#cargopplanta">{{ d['workArea'] }},
-                                    {{d['workPlace']}}</a></td>
-                            <td class="center"><a class="blue-text darken-4" href="#observaciones">-</a></td>
                             <td class="center"><a class="blue-text darken-4" href="#cargo">{{ d['positionType'] }}</a>
                             </td>
                             <td class="center"><a class="blue-text darken-4" href="#caracter">{{ d['character'] }}</a>
                             </td>
+                            <td class="center"><a class="blue-text darken-4" href="#cargopplanta">{{ d['dedication'] }}</a></td>
                             <td class="center"><a class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3"
                                     href="#" data-target='dropdown1'><i class="material-icons">edit</i></a></td>
                             <td class="center"><a class="btn-floating waves-effect waves-light red" href="#eliminar"><i
