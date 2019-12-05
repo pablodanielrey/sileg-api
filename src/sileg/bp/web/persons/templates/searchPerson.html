@@ -31,7 +31,6 @@
                         <tr>
                             <th>Apellido y Nombre</th>
                             <th class="center">Títulos</th>
-                            <th class="center">Familiares a cargo</th>
                             <th class="center">Acciones</th>
                             <th class="center">Eliminar</th>
                         </tr>
@@ -41,10 +40,7 @@
                         <tr>
                             <td><a class="blue-text darken-4" href="#userId">{{ p['lastname'] }},
                                     {{ p['firstname'] }}</a></td>
-                            <td class="center"><a class="blue-text darken-4" href="#grado">GRADO</a> | <a
-                                    class="blue-text darken-4" href="#postgrado">POSTGRADO</a></td>
-                            <td class="center"><a class="btn-floating waves-effect waves-light teal"
-                                    href="#familiares"><i class="material-icons">open_in_new</i></a></td>
+                            <td class="center"><a class="blue-text darken-4" href="#grado">ULTIMO TITULO</a></td>
                             <td class="center"><a
                                     class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3"
                                     href="#" data-target="dropdown1"><i class="material-icons">edit</i></a>
@@ -58,7 +54,9 @@
                 <ul id='dropdown1' class='dropdown-content'>                        
                     <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
                     <li class="divider" tabindex="-1"></li>
-                    <li><a class="blue-text darken-4" href="{{url_for('designations.personDesignations')}}">Designar</a></li>
+                    <li><a class="blue-text darken-4" href="{{url_for('designations.personDesignations')}}">Designaciones</a></li>
+                    <li><a class="blue-text darken-4" href="#">Titulos</a></li>
+                    <li><a class="blue-text darken-4" href="#!">Licencia</a></li>
                 </ul>
             </div>
             <br>
