@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col m1"></div>
+    <div class="col m10">
+        <div class="card-panel grey lighten-5">
+            <div class="row">
+                <div class="col m2"></div>
+                <div class="col m7">
+                    <h4>Títulos</h4>
+                </div>
+                <div class="col m3">
+                    <p>Nombre: {{person.firstname}}</p>
+                    <p>Apellido: {{person.lastname}}</p>
+                    <p>DNI: {{person.dni}}</p>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <br>
+            <form>
+                <div class="row">
+                    <div class="col m12 center">
+                        <h4>Cargar Nuevo Título</h4>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m2">
+                        {{ form.titleType.label }}
+                        {{ form.titleType }}
+                    </div>
+                    <div class="col m2">
+                        {{ form.titleDate.label }}
+                        {{ form.titleDate }}
+                    </div>
+                    <div class="col m2">
+                        {{ form.titleName.label }}
+                        {{ form.titleName }}
+                    </div>
+                    <div class="col m3">
+                        {{ form.titleFile.label }}
+                        {{ form.titleFile }}
+                    </div>
+                    <div class="col m2">
+                        <button class="btn waves-effect waves-light light-blue darken-3" type="submit">Cargar</button>
+                    </div>
+                </div>
+            </form>
+            <div class="divider"></div>
+            <br>
+            <div>
+                <table class="responsive-table highlight">
+                    <thead>
+                        <tr>
+                            <th>Tipo de Título</th>
+                            <th class="center">Título</th>
+                            <th class="center">Fecha</th>
+                            <th class="center">Descargar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in persons %}
+                        <tr>
+                            <td><a class="blue-text darken-4" href="#userId">{{ p['lastname'] }},
+                                    {{ p['firstname'] }}</a></td>
+                            <td class="center"><a class="blue-text darken-4" href="#grado">ULTIMO TITULO</a></td>
+                            <td class="center"><a
+                                    class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3"
+                                    href="#" data-target="dropdown1"><i class="material-icons">edit</i></a>
+                            </td>
+                            <td class="center"><a class="btn-floating waves-effect waves-light red" href="#eliminar"><i
+                                        class="material-icons">delete</i></a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <ul id='dropdown1' class='dropdown-content'>
+                    <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
+                    <li class="divider" tabindex="-1"></li>
+                    <li><a class="blue-text darken-4"
+                            href="{{url_for('designations.personDesignations')}}">Designaciones</a></li>
+                    <li><a class="blue-text darken-4" href="#">Titulos</a></li>
+                    <li><a class="blue-text darken-4" href="#!">Licencia</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

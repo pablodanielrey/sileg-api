@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect,request, Markup, url_for
 
-from .forms import PersonCreateForm, PersonSearchForm
+from .forms import PersonCreateForm, PersonSearchForm, TitleAssignForm
 
 from . import bp
 
@@ -64,4 +64,35 @@ def search():
     form = PersonSearchForm()
     query = request.args.get('query','',str)
     return render_template('searchPerson.html', persons=persons, form=form)
+
+@bp.route('<uid>/titulos')
+def degrees(uid):
+    """
+    Pagina de Listado de Títulos de persona
+    """
+    person = {
+        'dni': '12345678',
+        'firstname': 'Pablo',
+        'lastname': 'Rey'
+    }
+    titles = [{
+        'titleType' : 'Grado',
+        'titleDate' : '1998-12-15',
+        'titleName' : 'Secundario',
+        'titleFile' : 'fileId.pdf'
+    },
+    {
+        'titleType' : 'Grado',
+        'titleDate' : '2020-12-15',
+        'titleName' : 'Licenciado en Sistemas',
+        'titleFile' : 'fileId.pdf'
+    },
+    {
+        'titleType' : 'Posgrado',
+        'titleDate' : '2025-12-15',
+        'titleName' : 'Doctorado en Ciencias Informáticas',
+        'titleFile' : 'fileId.pdf'
+    }]
+    form = TitleAssignForm()
+    return render_template('showDegrees.html', person=person,titles=titles, form=form)
     
