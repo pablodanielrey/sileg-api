@@ -97,16 +97,14 @@ def personDesignations():
     designations = [{
             'subject':'Ingles I',
             'chair':'Original',
-            'workArea': '-',
-            'workPlace': '-',
+            'dedication': 'Exclusiva',
             'observations': '-',
             'positionType': 'A/D',
             'character': 'INT',
         },{
             'subject':'Contabilidad III',
             'chair':'Original',
-            'workArea': '-',
-            'workPlace': '-',
+            'dedication': 'Exclusiva',
             'observations': '-',
             'positionType': 'ADJ',
             'character': 'SUP',
@@ -114,8 +112,7 @@ def personDesignations():
         {
             'subject':'Administración I',
             'chair':'B',
-            'workArea': '-',
-            'workPlace': '-',
+            'dedication': 'Exclusiva',
             'observations': '-',
             'positionType': 'JAD',
             'character': 'INT',
@@ -123,8 +120,7 @@ def personDesignations():
         {
             'subject':'Administración I',
             'chair':'A',
-            'workArea': '-',
-            'workPlace': '-',
+            'dedication': 'Exclusiva',
             'observations': '-',
             'positionType': 'TIT',
             'character': 'INT',
