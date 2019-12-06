@@ -32,8 +32,7 @@ def create():
             'seniority_external_months'  : form.seniority_external_months.data,
             'seniority_external_days' : form.seniority_external_days.data,
         }
-        print(data)  
-    print(form.errors)  
+        print(data)    
     return render_template('createPerson.html',form=form)
 
 @bp.route('/buscar')
