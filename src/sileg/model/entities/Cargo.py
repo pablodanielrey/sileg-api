@@ -1,10 +1,15 @@
 from sqlalchemy import Column, String, Numeric, ForeignKey
 from sqlalchemy.orm import relationship
-from model_utils import Base
+
+from sileg.model.entities import Base
 
 class Cargo(Base):
 
     __tablename__ = 'cargo'
+
+    id = Column(String(), primary_key=True, default=None)
+    created = Column(DateTime())
+    modified = Column(DateTime())
 
     nombre = Column(String)
     tipo = Column(String)
@@ -39,6 +44,35 @@ class Cargo(Base):
 
 
 """
+
+
+q = session.query(Docente).all() -- select * from cargo where tipo = 'Docente'
+q = session.query(Cargo).joined(Tipo).where(Cargo.tipo.equals('Docente'))
+
+q = session.query(Cargo, Tipo).leftouterjoin(Cargo, Cargo.tipo_id == Tipo.id)
+
+q = session.query(Usua)
+
+
+with obtener_sesion() as session:
+    designaciones = session.query(Designacion).filter(Designacion.lugar.nombre == 'Contabilidad')
+    for d in designaciones:
+        cargos = [ {nombre: d.persona.nombre, cargo: d.cargo.nombre}]
+
+retrun cargons
+
+{
+    'contabilidad': {
+        'cargos': [
+            { nombre: '', cargo: ''},
+            { nombre: '', cargo: ''},
+            { nombre: '', cargo: ''},
+            { nombre: '', cargo: ''},
+        ]
+    }
+}
+
+
 class Docente(Cargo):
 
     __mapper_args__ = {
