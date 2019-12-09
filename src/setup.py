@@ -33,6 +33,7 @@ setup(name='sileg-api',
                             'flask-wtf',
                             'flask_jsontools',
                             'flask-cors',
+                            'Flask-OIDC',
                             'SQLAlchemy'
                             #'microservices_common>=2.0.7a1'
                           ],
