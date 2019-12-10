@@ -2,6 +2,8 @@ from flask import render_template, flash, redirect,request, Markup, url_for
 
 from .forms import PersonCreateForm, PersonSearchForm, TitleAssignForm
 
+from sileg.auth import oidc
+
 from . import bp
 
 @bp.route('/crear',methods=['GET','POST'])
@@ -33,7 +35,10 @@ def create():
             'seniority_external_days' : form.seniority_external_days.data,
         }
         print(data)    
-    return render_template('createPerson.html',form=form)
+
+    user = oidc.user_getinfo(['given_name', 'family_name', 'preferred_username', 'email_verified', 'email', 'sub']) 
+    
+    return render_template('createPerson.html', form=form, user=user)
 
 @bp.route('/buscar')
 def search():
@@ -62,7 +67,10 @@ def search():
     }]
     form = PersonSearchForm()
     query = request.args.get('query','',str)
-    return render_template('searchPerson.html', persons=persons, form=form)
+
+    user = oidc.user_getinfo(['given_name', 'family_name', 'preferred_username', 'email_verified', 'email', 'sub'])
+
+    return render_template('searchPerson.html', persons=persons, form=form, user=user)
 
 @bp.route('<uid>/titulos')
 def degrees(uid):
@@ -93,5 +101,8 @@ def degrees(uid):
         'titleFile' : 'fileId.pdf'
     }]
     form = TitleAssignForm()
-    return render_template('showDegrees.html', person=person,titles=titles, form=form)
+
+    user = oidc.user_getinfo(['given_name', 'family_name', 'preferred_username', 'email_verified', 'email', 'sub'])
+
+    return render_template('showDegrees.html', person=person, titles=titles, form=form, user=user)
     
