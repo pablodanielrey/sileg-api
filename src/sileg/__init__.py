@@ -4,7 +4,12 @@ from .config import Config
 """
     Instancia de aplicacion
 """
+
+#ver el tema de ssl termination y el proxyFix
+from werkzeug.contrib.fixers import ProxyFix
+
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app)
 app.config.from_object(Config)
 
 """
