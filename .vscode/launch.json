@@ -27,8 +27,9 @@
             "type": "python",
             "request": "launch",
             "module": "flask",
+            "justMyCode": false,
             "env": {
-                "FLASK_APP": "sileg.api.rest.main",
+                "FLASK_APP": "sileg:app",
                 "LC_ALL": "es_AR.utf-8",
                 "LANG": "es_AR.utf-8"
             },
@@ -37,7 +38,7 @@
                 "--no-debugger",
                 "--no-reload",
                 "--host=0.0.0.0",
-                "--port=10202"
+                "--port=10203"
             ]
         },
         {

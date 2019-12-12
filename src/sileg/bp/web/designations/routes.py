@@ -25,45 +25,56 @@ def search():
     designations = [{
             'firstname':'Pablo',
             'lastname':'Rey',
-            'subject':'Ingles I',
-            'chair':'Original',
-            'workArea': '-',
-            'workPlace': '-',
+            'place':'Ingles I',
+            'placetype':'Original',
+            'dedication': 'Exclusiva',
             'observations': '-',
             'positionType': 'A/D',
             'character': 'INT',
-        },{
+            'relatedTo': None
+        },
+        {
+            'firstname':'Pablo',
+            'lastname':'Rey',
+            'place':'Seminario de Ingles',
+            'placetype':'Original',
+            'dedication': 'Exclusiva',
+            'positionType': 'Cumpliendo funcion',
+            'character': 'INT',
+            'relatedTo': True
+        },
+        {
             'firstname':'Emanuel',
             'lastname':'Pais',
-            'subject':'Contabilidad III',
-            'chair':'Original',
-            'workArea': '-',
-            'workPlace': '-',
+            'place':'Contabilidad III',
+            'placetype':'Original',
+            'dedication': 'Semi-dedicación',
             'observations': '-',
             'positionType': 'ADJ',
             'character': 'SUP',
+            'relatedTo': None
         },
         {
             'firstname':'Miguel Angel Jesús',
             'lastname':'Macagno',
-            'subject':'Administración I',
-            'chair':'B',
-            'workArea': '-',
-            'workPlace': '-',
+            'place':'Administración I',
+            'placetype':'B',
+            'dedication': 'Exclusiva',
             'observations': '-',
             'positionType': 'JAD',
             'character': 'INT',
+            'relatedTo': None
         },
         {
             'firstname':'Leonardo',
             'lastname':'Consolini',
-            'subject':'Administración I',
-            'chair':'A',
-            'workArea': '-',
-            'workPlace': '-',
+            'place':'Administración I',
+            'placetype':'A',
+            'dedication': 'Exclusiva',
             'observations': '-',
             'positionType': 'TIT',
             'character': 'INT',
+            'relatedTo': None
         }
     ]
     form = DesignationSearchForm()
@@ -99,39 +110,44 @@ def personDesignations():
         'address': 'Calle 6 Nº 667, La Plata, Buenos Aires.'
     }
     designations = [{
-            'subject':'Ingles I',
-            'chair':'Original',
-            'workArea': '-',
-            'workPlace': '-',
-            'observations': '-',
+            'place':'Ingles I',
+            'placetype':'Original',
+            'dedication': 'Exclusiva',
             'positionType': 'A/D',
             'character': 'INT',
-        },{
-            'subject':'Contabilidad III',
-            'chair':'Original',
-            'workArea': '-',
-            'workPlace': '-',
-            'observations': '-',
+            'relatedTo': None
+        },
+        {
+            'place':'Seminario de Ingles',
+            'placetype':'Original',
+            'dedication': 'Exclusiva',
+            'positionType': 'Cumpliendo funcion',
+            'character': 'INT',
+            'relatedTo': True
+        },
+        {
+            'place':'Contabilidad III',
+            'placetype':'Original',
+            'dedication': 'Exclusiva',
             'positionType': 'ADJ',
             'character': 'SUP',
+            'relatedTo': None
         },
         {
-            'subject':'Administración I',
-            'chair':'B',
-            'workArea': '-',
-            'workPlace': '-',
-            'observations': '-',
+            'place':'Administración I',
+            'placetype':'B',
+            'dedication': 'Exclusiva',
             'positionType': 'JAD',
             'character': 'INT',
+            'relatedTo': None
         },
         {
-            'subject':'Administración I',
-            'chair':'A',
-            'workArea': '-',
-            'workPlace': '-',
-            'observations': '-',
+            'place':'Administración I',
+            'placetype':'A',
+            'dedication': 'Exclusiva',
             'positionType': 'TIT',
             'character': 'INT',
+            'relatedTo': None
         }
     ]
     return render_template('listPersonDesignations.html',designations=designations,person=person)

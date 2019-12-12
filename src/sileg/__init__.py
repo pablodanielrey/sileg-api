@@ -4,7 +4,12 @@ from .config import Config
 """
     Instancia de aplicacion
 """
+
+#ver el tema de ssl termination y el proxyFix
+from werkzeug.contrib.fixers import ProxyFix
+
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app)
 app.config.from_object(Config)
 
 """
@@ -31,6 +36,10 @@ app.register_blueprint(bp_web_places,url_prefix='/lugares')
 ## Registro bueprint web designaciones
 from .bp.web.designations import bp as bp_web_designations
 app.register_blueprint(bp_web_designations,url_prefix='/designaciones')
+## Registro bueprint web licencias
+from .bp.web.leavelicense import bp as bp_web_leavelicense
+app.register_blueprint(bp_web_leavelicense,url_prefix='/licencias')
 ## Registro bueprint api ciudades
 from .bp.rest.api.cities import bp as bp_api_cities
 app.register_blueprint(bp_api_cities,url_prefix='/api/v0.1/ciudades')
+
