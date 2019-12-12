@@ -35,7 +35,8 @@ setup(name='sileg-api',
                             'flask-cors',
                             'Flask-OIDC',
                             'SQLAlchemy',
-                            'sileg-model'
+                            'sileg-model',
+                            'users-model'
                             #'microservices_common>=2.0.7a1'
                           ],
           entry_points={
