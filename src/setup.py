@@ -12,8 +12,8 @@
 from setuptools import setup, find_packages
 
 setup(name='sileg-api',
-          version='0.2.0.a1',
-          description='proyecto de las designaciones de docentes/no-docentes de la facultad',
+          version='0.2.1.0',
+          description='api del proyecto de las designaciones de docentes/no-docentes de la facultad',
           url='https://github.com/pablodanielrey/sileg-api',
           author='Desarrollo DiTeSi, FCE',
           author_email='ditesi@econo.unlp.edu.ar',
@@ -34,7 +34,8 @@ setup(name='sileg-api',
                             'flask_jsontools',
                             'flask-cors',
                             'Flask-OIDC',
-                            'SQLAlchemy'
+                            'SQLAlchemy',
+                            'sileg-model'
                             #'microservices_common>=2.0.7a1'
                           ],
           entry_points={
