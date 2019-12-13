@@ -28,6 +28,7 @@
             "request": "launch",
             "module": "flask",
             "justMyCode": false,
+            "jinja": true,
             "env": {
                 "FLASK_APP": "sileg:app",
                 "LC_ALL": "es_AR.utf-8",

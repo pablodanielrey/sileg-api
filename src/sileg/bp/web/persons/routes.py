@@ -2,7 +2,11 @@ from flask import render_template, flash, redirect,request, Markup, url_for
 
 from .forms import PersonCreateForm, PersonSearchForm, TitleAssignForm
 
+import users.model
+
 from sileg.auth import oidc
+from sileg.models import usersModel
+
 
 from . import bp
 
@@ -65,10 +69,17 @@ def search():
         'lastname':'Consolini',
         'person_number': '12345678'
     }]
+
+    user = oidc.user_getinfo(['given_name', 'family_name', 'preferred_username', 'email_verified', 'email', 'sub'])
+
     form = PersonSearchForm()
     query = request.args.get('query','',str)
 
-    user = oidc.user_getinfo(['given_name', 'family_name', 'preferred_username', 'email_verified', 'email', 'sub'])
+    persons = []
+    if query:
+        with users.model.open_session() as session:
+            uids = usersModel.search_user(session, query)
+            persons = usersModel.get_users(session, uids)
 
     return render_template('searchPerson.html', persons=persons, form=form, user=user)
 
