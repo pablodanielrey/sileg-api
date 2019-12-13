@@ -1,24 +1,27 @@
 from flask import render_template, flash, redirect,request, Markup, url_for
+from . import bp
 
 from .forms import ExtendDesignationForm, RenewForm, DesignationCreateForm, DesignationSearchForm
 
-from . import bp
+from sileg.auth import require_user
 
 @bp.route('/crear')
-def create():
+@require_user
+def create(user):
     """
     Pagina de creacion de designacion
     """
     form = DesignationCreateForm()
-    user = {
+    person = {
         'dni': '12345678',
         'firstname': 'Pablo',
         'lastname': 'Rey'
     }
-    return render_template('createDesignations.html', user=user, form=form)
+    return render_template('createDesignations.html', user=user, person=person,form=form)
 
 @bp.route('/buscar')
-def search():
+@require_user
+def search(user):
     """
     Pagina de busqueda de desiganaciones
     """
@@ -78,26 +81,29 @@ def search():
         }
     ]
     form = DesignationSearchForm()
-    return render_template('searchDesignations.html',designations=designations,form=form)
+    return render_template('searchDesignations.html',user=user,designations=designations,form=form)
 
 @bp.route('/extension/crear')
+@require_user
 def extend():
     """
     Pagina de creacion de extension
     """
     form = ExtendDesignationForm()
-    return render_template('createExtension.html',form=form)
+    return render_template('createExtension.html',user=user,form=form)
 
 @bp.route('/prorroga/crear')
+@require_user
 def renew():
     """
     Pagina de creacion de prorroga
     """
     form = RenewForm()
-    return render_template('createRenew.html',form=form)
+    return render_template('createRenew.html',user=user,form=form)
 
 @bp.route('/listado')
-def personDesignations():
+@require_user
+def personDesignations(user):
     """
     Pagina de lisata de designaciones de una persona
     Recibe como parametro uid de la persona
@@ -150,4 +156,4 @@ def personDesignations():
             'relatedTo': None
         }
     ]
-    return render_template('listPersonDesignations.html',designations=designations,person=person)
+    return render_template('listPersonDesignations.html',user=user,designations=designations,person=person)

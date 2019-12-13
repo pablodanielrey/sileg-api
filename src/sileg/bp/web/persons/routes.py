@@ -1,17 +1,16 @@
 from flask import render_template, flash, redirect,request, Markup, url_for
+from . import bp
 
 from .forms import PersonCreateForm, PersonSearchForm, TitleAssignForm
 
-import users.model
+from sileg.auth import require_user
 
 from sileg.auth import oidc
-from sileg.models import usersModel
-
-
-from . import bp
+from sileg.models import usersModel, open_users_session
 
 @bp.route('/crear',methods=['GET','POST'])
-def create():
+@require_user
+def create(user):
     """
     Pagina principal de personas
     """
@@ -38,53 +37,27 @@ def create():
             'seniority_external_months'  : form.seniority_external_months.data,
             'seniority_external_days' : form.seniority_external_days.data,
         }
-        print(data)    
-
-    user = oidc.user_getinfo(['given_name', 'family_name', 'preferred_username', 'email_verified', 'email', 'sub']) 
-    
-    return render_template('createPerson.html', form=form, user=user)
+        print(data)
+    return render_template('createPerson.html', user=user, form=form)
 
 @bp.route('/buscar')
-def search():
+@require_user
+def search(user):
     """
     Pagina principal de personas
     """
-    persons = [{
-        'firstname':'Pablo',
-        'lastname':'Rey',
-        'person_number': '12345678'
-    },
-    {
-        'firstname':'Emanuel',
-        'lastname':'Pais',
-        'person_number': '12345678'
-    },
-    {
-        'firstname':'Miguel Angel Jesús',
-        'lastname':'Macagno',
-        'person_number': '12345678'
-    },
-    {
-        'firstname':'Leonardo',
-        'lastname':'Consolini',
-        'person_number': '12345678'
-    }]
-
-    user = oidc.user_getinfo(['given_name', 'family_name', 'preferred_username', 'email_verified', 'email', 'sub'])
-
     form = PersonSearchForm()
     query = request.args.get('query','',str)
-
     persons = []
     if query:
-        with users.model.open_session() as session:
+        with open_users_session() as session:
             uids = usersModel.search_user(session, query)
             persons = usersModel.get_users(session, uids)
-
-    return render_template('searchPerson.html', persons=persons, form=form, user=user)
+    return render_template('searchPerson.html', user=user, persons=persons, form=form)
 
 @bp.route('<uid>/titulos')
-def degrees(uid):
+@require_user
+def degrees(user,uid):
     """
     Pagina de Listado de Títulos de persona
     """
@@ -112,8 +85,5 @@ def degrees(uid):
         'titleFile' : 'fileId.pdf'
     }]
     form = TitleAssignForm()
-
-    user = oidc.user_getinfo(['given_name', 'family_name', 'preferred_username', 'email_verified', 'email', 'sub'])
-
-    return render_template('showDegrees.html', person=person, titles=titles, form=form, user=user)
+    return render_template('showDegrees.html', user=user,person=person, titles=titles, form=form)
     

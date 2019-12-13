@@ -1,10 +1,7 @@
-
 from functools import wraps
 
 from sileg import app
-from flask import render_template
 from flask_oidc import OpenIDConnect
-
 
 class MyOpenIDConnect(OpenIDConnect):
     """
@@ -24,8 +21,6 @@ class MyOpenIDConnect(OpenIDConnect):
 
         return True    
 
-
-
 oidc = MyOpenIDConnect(app)
 
 def require_user(fn):
@@ -37,3 +32,17 @@ def require_user(fn):
         return fn(*args, **kwargs)
     return insert_user
 
+"""
+TODO insertar el usar automaticamente dentro del context para no tener que pasarlo al render_template
+"""
+#def render_templateOICDV2(*args, **kwargs):
+#    bp = kwars['blueprint']
+#    @bp.context_processor
+#    def additional_context(fn):
+#        #if request.endpoint.split('.')[1] != fn.__name__:
+#        #    return {} 
+#        user = oidc.user_getinfo(['given_name', 'family_name', 'preferred_username', 'email_verified', 'email', 'sub'])
+#        return {
+#            'user': user,
+#        }
+#    return fn
