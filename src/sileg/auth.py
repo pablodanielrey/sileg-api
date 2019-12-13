@@ -1,7 +1,10 @@
 
+from functools import wraps
+
 from sileg import app
 from flask import render_template
 from flask_oidc import OpenIDConnect
+
 
 class MyOpenIDConnect(OpenIDConnect):
     """
@@ -25,9 +28,12 @@ class MyOpenIDConnect(OpenIDConnect):
 
 oidc = MyOpenIDConnect(app)
 
-def render_templateOICDV1(tmpl_name, *args):
-    user = oidc.user_getinfo(['given_name', 'family_name', 'preferred_username', 'email_verified', 'email', 'sub'])
-    data = []
-    for ar in args:
-        data.append(ar)
-    return render_template(tmpl_name, user=user, data=data)
+def require_user(fn):
+    @wraps(fn)
+    @oidc.require_login
+    def insert_user(*args, **kwargs):
+        user = oidc.user_getinfo(['given_name', 'family_name', 'preferred_username', 'email_verified', 'email', 'sub'])    
+        kwargs['user'] = user
+        return fn(*args, **kwargs)
+    return insert_user
+

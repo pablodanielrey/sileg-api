@@ -1,21 +1,21 @@
 from flask import render_template, flash, redirect,request, Markup, url_for
 
-from sileg.auth import oidc, render_templateOICDV1
+from sileg.auth import require_user
 from . import bp
 
 
 @bp.route('/login')
-@oidc.require_login
-def login():
-    return oidc.user_getfield('email')
+@require_user
+def login(user):
+    return user['email']
 
 @bp.route('/')
-def index():
+@require_user
+def index(user):
     """
     Pagina principal del sistema
     """
-    if oidc.user_loggedin:
-        user = oidc.user_getinfo(['given_name', 'family_name', 'preferred_username', 'email_verified', 'email', 'sub'])
+    if user:
         return render_template('index.html', user=user)
     else:
         return "no logueado"
@@ -30,25 +30,28 @@ def indexv1():
     else:
         return "no logueado"
 
-def render_templateOICDV2(fn):
+def render_templateOICDV2(*args, **kwargs):
+    bp = kwars['blueprint']
     @bp.context_processor
-    def additional_context():
-        if request.endpoint.split('.')[1] != fn.__name__:
-            return {} 
+    def additional_context(fn):
+        #if request.endpoint.split('.')[1] != fn.__name__:
+        #    return {} 
         user = oidc.user_getinfo(['given_name', 'family_name', 'preferred_username', 'email_verified', 'email', 'sub'])
         return {
             'user': user,
         }
     return fn
 
+
+
 @bp.route('/v2')
-@render_templateOICDV2
-def indexv2():
+@require_user
+def indexv2(user):
     """
     Pagina principal del sistema
     """
-    if oidc.user_loggedin:
+    if user:
         data = 'algo'
-        return render_template('index.html', data=data)
+        return render_template('index.html', data=data, user=user)
     else:
         return "no logueado"
