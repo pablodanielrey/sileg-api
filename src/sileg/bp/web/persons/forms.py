@@ -5,6 +5,8 @@ from wtforms.validators import ValidationError, DataRequired, EqualTo, Email
 
 from sileg.helpers.apiHandler import getStates
 
+from sileg.models import usersModel, open_users_session
+
 class PersonCreateForm(FlaskForm):
     lastname = StringField('Apellidos', validators=[DataRequired()])
     firstname = StringField('Nombres', validators=[DataRequired()])
@@ -62,6 +64,33 @@ class PersonCreateForm(FlaskForm):
                 raise ValidationError('La antiguedad debe ser un número')
             if number < 0:
                 raise ValidationError('El número debe ser mayor a 0')
+
+    def save(self):
+        """
+        Persistencia de datos en DB
+        """
+        data = {
+        'lastname' : self.lastname.data,
+        'firstname' : self.firstname.data,
+        'person_number_type' : self.person_number_type.data,
+        'person_number' : self.person_number.data,
+        'gender' : self.gender.data,
+        'marital_status' : self.marital_status.data,
+        'birthplace' : self.birthplace.data,
+        'birthdate' : self.birthdate.data,
+        'residence' : self.residence.data,
+        'address' : self.address.data,
+        'work_email' : self.work_email.data,
+        'personal_email' : self.personal_email.data,
+        'land_line' : self.land_line.data,
+        'mobile_number' : self.mobile_number.data,
+        'person_numberFile' : self.person_numberFile.data,
+        'laboral_numberFile' : self.laboral_numberFile.data,
+        'seniority_external_years' : self.seniority_external_years.data,
+        'seniority_external_months'  : self.seniority_external_months.data,
+        'seniority_external_days' : self.seniority_external_days.data
+        }
+        print(data)
 
 class TitleAssignForm(FlaskForm):
     titleType = SelectField('Tipo de Título')
