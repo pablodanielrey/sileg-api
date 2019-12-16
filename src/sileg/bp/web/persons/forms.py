@@ -5,7 +5,7 @@ from wtforms.validators import ValidationError, DataRequired, EqualTo, Email
 
 from sileg.helpers.apiHandler import getStates
 
-from sileg.models import usersModel, open_users_session
+from sileg.models import usersModel, open_users_session, userEntity
 
 class PersonCreateForm(FlaskForm):
     lastname = StringField('Apellidos', validators=[DataRequired()])
@@ -69,28 +69,33 @@ class PersonCreateForm(FlaskForm):
         """
         Persistencia de datos en DB
         """
-        data = {
-        'lastname' : self.lastname.data,
-        'firstname' : self.firstname.data,
-        'person_number_type' : self.person_number_type.data,
-        'person_number' : self.person_number.data,
-        'gender' : self.gender.data,
-        'marital_status' : self.marital_status.data,
-        'birthplace' : self.birthplace.data,
-        'birthdate' : self.birthdate.data,
-        'residence' : self.residence.data,
-        'address' : self.address.data,
-        'work_email' : self.work_email.data,
-        'personal_email' : self.personal_email.data,
-        'land_line' : self.land_line.data,
-        'mobile_number' : self.mobile_number.data,
-        'person_numberFile' : self.person_numberFile.data,
-        'laboral_numberFile' : self.laboral_numberFile.data,
-        'seniority_external_years' : self.seniority_external_years.data,
-        'seniority_external_months'  : self.seniority_external_months.data,
-        'seniority_external_days' : self.seniority_external_days.data
+        newUser = userEntity()
+        newUser.apellido = self.lastname.data
+        newUser.nombre = self.firstname.data
+        newUser. = self.person_number_type.data,
+        newUser.dni = self.person_number.data,
+        newUser.genero = self.gender.data,
+        newUser. = self.marital_status.data,
+        newUser. = self.birthplace.data,
+        newUser. = self.birthdate.data,
+        newUser. = self.residence.data,
+        newUser. = self.address.data,
+        newUser. = self.work_email.data,
+        newUser. = self.personal_email.data,
+        newUser. = self.land_line.data,
+        newUser. = self.mobile_number.data,
+        newUser. = self.person_numberFile.data,
+        newUser. = self.laboral_numberFile.data,
+        
+        newSeniority = {
+            'seniority_external_years' : self.seniority_external_years.data,
+            'seniority_external_months'  : self.seniority_external_months.data,
+            'seniority_external_days' : self.seniority_external_days.data
         }
-        print(data)
+        print(newSeniority)
+        with open_users_session() as session:
+            usersModel.create_user(newUser,session)
+
 
 class TitleAssignForm(FlaskForm):
     titleType = SelectField('Tipo de Título')
