@@ -11,13 +11,13 @@
             <div class="row">
                 <div class="col m2"></div>
                 <div class="col m4">
-                    <p>Nombre: {{person['firstname']}}</p>
-                    <p>Apellido: {{person['lastname']}}</p>
-                    <p>DNI: {{person['person_number']}}</p>
+                    <p>Nombre: {{person.firstname}}</p>
+                    <p>Apellido: {{person.lastname}}</p>
+                    <p>DNI: {{person.person_number}}</p>
                 </div>
                 <div class="col m4">
-                    <p>Fecha de Nacimiento: {{person['birthdate']}}</p>
-                    <p>Direccion: {{person['address']}}</p>
+                    <p>Fecha de Nacimiento: {{person.birthdate}}</p>
+                    <p>Direccion: {{person.address}}</p>
                 </div>
                 <div class="col m2"></div>
             </div>
@@ -25,7 +25,7 @@
             <br>
             <div class="row">
                 <div class="col m12 center">
-                    <a class="btn waves-effect blue lighten-1" href="{{url_for('designations.create')}}">Nueva Designación</a>
+                    <a class="btn waves-effect blue lighten-1" href="{{url_for('designations.create_get', uid=person.id)}}">Nueva Designación</a>
                 </div>
             </div>
             <div class="divider"></div>

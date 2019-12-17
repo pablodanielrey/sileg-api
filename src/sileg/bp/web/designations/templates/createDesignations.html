@@ -16,6 +16,7 @@
             </div>
             <div class="divider"></div>
             <form action="" method="post">
+                {{ form.csrf_token }}
                 <div class="row">
                     <div class="col m5">
                         <h5 class="grey-text text-darken-2">Datos del cargo</h5>
@@ -23,38 +24,14 @@
                 </div>
                 <div class="row">
                     <div class="col m1"></div>
-                    <div class="col m4">
-                        {{ form.positionType.label }}
-                        {{ form.positionType }}
-                    </div>
-                    <div class="col m1"></div>
-                    <div class="col m4">
-                        {{ form.dedication.label }}
-                        {{ form.dedication }}
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col m1"></div>
-                    <div class="col m4">
-                        {{ form.character.label }}
-                        {{ form.character }}
-                    </div>
-                    <div class="col m1"></div>
-                    <div class="col m4">
-                        {{ form.extraordinary.label }}
-                        {{ form.extraordinary }}
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col m1"></div>
                     <div class="col m2 input-field">
-                        {{ form.designationFrom.label }}
-                        {{ form.designationFrom(class="datepicker") }}
+                        {{ form.start.label }}
+                        {{ form.start(class="datepicker") }}
                     </div>
                     <div class="col m1"></div>
                     <div class="col m2 input-field">
-                        {{ form.designationTo.label }}
-                        {{ form.designationTo(class="datepicker") }}
+                        {{ form.end.label }}
+                        {{ form.end(class="datepicker") }}
                     </div>
                     <div class="col m1"></div>
                     <div class="col m3 input-field">
@@ -65,24 +42,24 @@
                 <div class="row">
                     <div class="col m1"></div>
                     <div class="col m2 input-field">
-                        {{ form.resolutionNumber.label }}
-                        {{ form.resolutionNumber }}
+                        {{ form.res.label }}
+                        {{ form.res }}
                     </div>
                     <div class="col m1"></div>
                     <div class="col m3 input-field">
-                        {{ form.recordNumber.label }}
-                        {{ form.recordNumber }}
+                        {{ form.exp.label }}
+                        {{ form.exp }}
                     </div>
                     <div class="col m3 input-field">
-                        {{ form.relatedNumber.label }}
-                        {{ form.relatedNumber }}
+                        {{ form.cor.label }}
+                        {{ form.cor }}
                     </div>
                 </div>
                 <div class="row">
                     <div class="col m1"></div>
                     <div class="col m4">
-                        {{ form.positionEndType.label }}
-                        {{ form.positionEndType }}
+                        {{ form.functionEndType.label }}
+                        {{ form.functionEndType }}
                     </div>
                 </div>
                 <div class="row">
@@ -104,38 +81,11 @@
                         {{ form.place.label }}
                         {{ form.place }}
                     </div>
-                    <div class="col m5">
-                        {{ form.subject.label }}
-                        {{ form.subject }}
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col m1"></div>
-                    <div class="col m3">
-                        {{ form.chair.label }}
-                        {{ form.chair }}
-                    </div>
-                    <div class="col m2"></div>
-                    <div class="col m4 input-field">
-                        {{ form.commission.label }}
-                        {{ form.commission }}
-                    </div>
                 </div>
                 <div class="divider"></div>
                 <div class="row">
                     <div class="col m5">
                         <h5 class="grey-text text-darken-2">Cargo de planta</h5>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col m1"></div>
-                    <div class="col m4">
-                        {{ form.workArea.label }}
-                        {{ form.workArea }}
-                    </div>
-                    <div class="col m5">
-                        {{ form.workPlace.label }}
-                        {{ form.workPlace }}
                     </div>
                 </div>
                 <div class="row">
@@ -148,108 +98,13 @@
                 <div class="divider"></div>
                 <div class="row">
                     <div class="col m5">
-                        <h5 class="grey-text text-darken-2">Suplente</h5>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col m1"></div>
-                    <div class="col m5">
-                        {{ form.replace.label }}
-                        {{ form.replace }}
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col m1"></div>
-                    <div class="col m3">
-                        <p>Comisión: una comisión</p>
-                    </div>
-                    <div class="col m1"></div>
-                    <div class="col m2">
-                        <p>Expediente: 12345/00
-                    </div>
-                    <div class="col m1"></div>
-                    <div class="col m2">
-                        <p>Corresponde: </p>
-                    </div>
-                </div>
-                <div class="divider"></div>
-                <div class="row">
-                    <div class="col m5">
                         <h5 class="grey-text text-darken-2">Ordenanza 174</h5>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col m1"></div>
                     <div class="col m3">
-                        <label>{{ form.adjusted(class="filled-in") }}<span>Está ajustada</span></label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col m1"></div>
-                    <div class="col m2 input-field">
-                        {{ form.ordResolutionNumber.label }}
-                        {{ form.ordResolutionNumber }}
-                    </div>
-                    <div class="col m1"></div>
-                    <div class="col m3 input-field">
-                        {{ form.ordRecordNumber.label }}
-                        {{ form.ordRecordNumber }}
-                    </div>
-                    <div class="col m3 input-field">
-                        {{ form.ordRelatedNumber.label }}
-                        {{ form.ordRelatedNumber }}
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col m1"></div>
-                    <div class="col m2 input-field">
-                        {{ form.ordFrom.label }}
-                        {{ form.ordFrom(class="datepicker") }}
-                    </div>
-                    <div class="col m1"></div>
-                    <div class="col m2 input-field">
-                        {{ form.ordTo.label }}
-                        {{ form.ordTo(class="datepicker") }}
-                    </div>
-                </div>
-                <div class="divider"></div>
-                <div class="row">
-                    <div class="col m5">
-                        <h5 class="grey-text text-darken-2">Datos de baja</h5>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col m1"></div>
-                    <div class="col m4">
-                        {{ form.dischargeType.label }}
-                        {{ form.dischargeType }}
-                    </div>
-                    <div class="col m1"></div>
-                    <div class="col m3 input-field">
-                        {{ form.dischargeDate.label }}
-                        {{ form.dischargeDate(class="datepicker") }}
-                    </div>
-                </div>
-                <div class="divider"></div>
-                <div class="row">
-                    <div class="col m5">
-                        <h5 class="grey-text text-darken-2">Resolución baja</h5>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col m1"></div>
-                    <div class="col m2 input-field">
-                        {{ form.dischargeResolutionNumber.label }}
-                        {{ form.dischargeResolutionNumber }}
-                    </div>
-                    <div class="col m1"></div>
-                    <div class="col m3 input-field">
-                        {{ form.dischargeRecordNumber.label }}
-                        {{ form.dischargeRecordNumber }}
-                    </div>
-                    <div class="col m3 input-field">
-                        {{ form.dischargeRelatedNumber.label }}
-                        {{ form.dischargeRelatedNumber }}
+                        <label>{{ form.adjusted174(class="filled-in") }}<span>Está ajustada</span></label>
                     </div>
                 </div>
                 <div class="divider"></div>

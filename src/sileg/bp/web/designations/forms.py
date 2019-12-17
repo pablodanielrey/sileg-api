@@ -30,11 +30,12 @@ class DesignationCreateForm(FlaskForm):
     # Ordenanza 174
     adjusted174 = BooleanField('Ajustada a 174')
 
-    def __init__(self):
+    def __init__(self, session, silegModel):
         super().__init__()
+        self._load_values(session, silegModel)
 
     def _load_values(self, session, silegModel: SilegModel):
-        self.functions.choices = [ (f.id, f.name) for f in silegModel.get_functions() ]
+        self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session) ]
         self.functionEndType.choices = [
             ('0','Indeterminado..'),
             ('0','Fecha de Finalización'),

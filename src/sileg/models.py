@@ -8,5 +8,5 @@ import sileg_model.model
 usersModel = UsersModel
 open_users_session = users.model.open_session
 
-silegModel = SilegModel
+silegModel = SilegModel()
 open_sileg_session = sileg_model.model.open_session

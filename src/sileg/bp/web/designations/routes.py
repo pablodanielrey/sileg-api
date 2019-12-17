@@ -7,7 +7,7 @@ from . import bp
 from .forms import ExtendDesignationForm, RenewForm, DesignationCreateForm, DesignationSearchForm
 
 
-@bp.route('/crear/{uid}', methods=['GET'])
+@bp.route('/crear/<uid>')
 @require_user
 def create_get(user, uid):
     """
@@ -18,13 +18,13 @@ def create_get(user, uid):
     with open_users_session() as session:
         person = usersModel.get_users(session, uids=[uid])[0]
 
-    form = DesignationCreateForm()
     with open_sileg_session() as session:
-        form._load_values(session, silegModel)
+        form = DesignationCreateForm(session, silegModel)
+        #form._load_values(session, silegModel)
  
     return render_template('createDesignations.html', user=user, person=person, form=form)
 
-@bp.route('/crear/{uid}', methods=['POST'])
+@bp.route('/crear/<uid>', methods=['POST'])
 @require_user
 def create_post(user, uid):
     """
@@ -35,10 +35,13 @@ def create_post(user, uid):
     with open_users_session() as session:
         person = usersModel.get_users(session, uids=[uid])[0]
 
-    form = DesignationCreateForm()
+    with open_sileg_session() as session:
+        form = DesignationCreateForm(session, silegModel)
+
     if form.validate_on_submit():
         return 
     else:
+        print(form.errors)
         abort(404)
 
     return render_template('createDesignations.html', user=user, person=person, form=form)
@@ -126,20 +129,16 @@ def renew(user):
     form = RenewForm()
     return render_template('createRenew.html', user=user, form=form)
 
-@bp.route('/listado')
+@bp.route('/listado/<uid>')
 @require_user
-def personDesignations(user):
+def personDesignations(user, uid):
     """
     Pagina de lisata de designaciones de una persona
     Recibe como parametro uid de la persona
     """
-    person = {
-        'firstname':'Pablo',
-        'lastname':'Rey',
-        'person_number': '12345678',
-        'birthdate': '02/12/1979',
-        'address': 'Calle 6 Nº 667, La Plata, Buenos Aires.'
-    }
+    with open_users_session() as session:
+        person = usersModel.get_users(session, [uid])[0]
+
     designations = [{
             'place':'Ingles I',
             'placetype':'Original',
