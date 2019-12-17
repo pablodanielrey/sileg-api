@@ -18,6 +18,22 @@
             <form action="" method="post">
                 {{ form.csrf_token }}
                 <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m2 input-field">
+                        {{ form.res.label }}
+                        {{ form.res }}
+                    </div>
+                    <div class="col m1"></div>
+                    <div class="col m3 input-field">
+                        {{ form.exp.label }}
+                        {{ form.exp }}
+                    </div>
+                    <div class="col m3 input-field">
+                        {{ form.cor.label }}
+                        {{ form.cor }}
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col m5">
                         <h5 class="grey-text text-darken-2">Cargo</h5>
                     </div>
@@ -40,28 +56,8 @@
                         {{ form.end.label }}
                         {{ form.end(class="datepicker") }}
                     </div>
-                    <div class="col m1"></div>
-                    <div class="col m3 input-field">
-                        {{ form.validatedBySuperiorCouncil.label }}
-                        {{ form.validatedBySuperiorCouncil(class="datepicker") }}
-                    </div>
                 </div>
-                <div class="row">
-                    <div class="col m1"></div>
-                    <div class="col m2 input-field">
-                        {{ form.res.label }}
-                        {{ form.res }}
-                    </div>
-                    <div class="col m1"></div>
-                    <div class="col m3 input-field">
-                        {{ form.exp.label }}
-                        {{ form.exp }}
-                    </div>
-                    <div class="col m3 input-field">
-                        {{ form.cor.label }}
-                        {{ form.cor }}
-                    </div>
-                </div>
+
                 <div class="row">
                     <div class="col m1"></div>
                     <div class="col m4">

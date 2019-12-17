@@ -6,6 +6,23 @@ from sileg.models import silegModel, open_sileg_session, usersModel, open_users_
 from . import bp
 from .forms import ExtendDesignationForm, RenewForm, DesignationCreateForm, DesignationSearchForm
 
+@bp.route('/listado/<uid>')
+@require_user
+def personDesignations(user, uid):
+    """
+    Pagina de lisata de designaciones de una persona
+    Recibe como parametro uid de la persona
+    """
+    assert uid is not None
+
+    with open_users_session() as session:
+        person = usersModel.get_users(session, [uid])[0]
+
+    with open_sileg_session() as session:
+        dids = silegModel.get_designations_by_uuid(session, uid)
+        designations = silegModel.get_designations(session, dids)
+
+        return render_template('listPersonDesignations.html', user=user, designations=designations, person=person)
 
 @bp.route('/crear/<uid>')
 @require_user
@@ -32,19 +49,22 @@ def create_post(user, uid):
     """
     assert uid is not None
 
+    """
     with open_users_session() as session:
         person = usersModel.get_users(session, uids=[uid])[0]
+    """
 
     with open_sileg_session() as session:
         form = DesignationCreateForm(session, silegModel)
 
-    if form.validate_on_submit():
-        return 
-    else:
-        print(form.errors)
-        abort(404)
+        if not form.is_submitted():
+            print(form.errors)
+            abort(404)
 
-    return render_template('createDesignations.html', user=user, person=person, form=form)
+        form.save(session, silegModel, uid)
+        session.commit()
+
+    return redirect(url_for('designations.personDesignations', uid=uid))
 
 
 @bp.route('/buscar')
@@ -128,56 +148,3 @@ def renew(user):
     """
     form = RenewForm()
     return render_template('createRenew.html', user=user, form=form)
-
-@bp.route('/listado/<uid>')
-@require_user
-def personDesignations(user, uid):
-    """
-    Pagina de lisata de designaciones de una persona
-    Recibe como parametro uid de la persona
-    """
-    with open_users_session() as session:
-        person = usersModel.get_users(session, [uid])[0]
-
-    designations = [{
-            'place':'Ingles I',
-            'placetype':'Original',
-            'dedication': 'Exclusiva',
-            'positionType': 'A/D',
-            'character': 'INT',
-            'relatedTo': None
-        },
-        {
-            'place':'Seminario de Ingles',
-            'placetype':'Original',
-            'dedication': 'Exclusiva',
-            'positionType': 'Cumpliendo funcion',
-            'character': 'INT',
-            'relatedTo': True
-        },
-        {
-            'place':'Contabilidad III',
-            'placetype':'Original',
-            'dedication': 'Exclusiva',
-            'positionType': 'ADJ',
-            'character': 'SUP',
-            'relatedTo': None
-        },
-        {
-            'place':'Administración I',
-            'placetype':'B',
-            'dedication': 'Exclusiva',
-            'positionType': 'JAD',
-            'character': 'INT',
-            'relatedTo': None
-        },
-        {
-            'place':'Administración I',
-            'placetype':'A',
-            'dedication': 'Exclusiva',
-            'positionType': 'TIT',
-            'character': 'INT',
-            'relatedTo': None
-        }
-    ]
-    return render_template('listPersonDesignations.html', user=user, designations=designations, person=person)

@@ -49,10 +49,10 @@
                         {% else %}
                         <tr>
                         {% endif %}
-                            <td class="center"><a class="blue-text darken-4" href="#place">{{ d['place'] }}, {{d['placetype']}}</a></td>
-                            <td class="center"><a class="blue-text darken-4" href="#cargo">{{ d['positionType'] }}</a></td>
-                            <td class="center"><a class="blue-text darken-4" href="#caracter">{{ d['character'] }}</a></td>
-                            <td class="center"><a class="blue-text darken-4" href="#cargopplanta">{{ d['dedication'] }}</a></td>
+                            <td class="center"><a class="blue-text darken-4" href="#place">{{ d.place.name }}, ({{d.place.type.value}})</a></td>
+                            <td class="center"><a class="blue-text darken-4" href="#cargo">{{ d.function.name.split('-')[0] }}</a></td>
+                            <td class="center"><a class="blue-text darken-4" href="#caracter">{{ d.function.name.split('-')[1] }}</a></td>
+                            <td class="center"><a class="blue-text darken-4" href="#cargopplanta">{{ d.function.name.split('-')[2] }}</a></td>
                             <td class="center"><a class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3" href="#" data-target='dropdown1'><i class="material-icons">edit</i></a></td>
                             <td class="center"><a class="btn-floating waves-effect waves-light red" href="#eliminar"><i class="material-icons">delete</i></a></td>
                         </tr>
@@ -62,6 +62,7 @@
                 <ul id='dropdown1' class='dropdown-content'>
                     <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
                     <li class="divider" tabindex="-1"></li>
+                    <li><a class="blue-text darken-4" href="#!">Convalidar Por Consejo</a></li>
                     <li><a class="blue-text darken-4" href="{{url_for('designations.extend')}}">Extender</a></li>
                     <li><a class="blue-text darken-4" href="{{url_for('designations.renew')}}">Prorrogar</a></li>
                     <li><a class="blue-text darken-4" href="#!">Baja</a></li>

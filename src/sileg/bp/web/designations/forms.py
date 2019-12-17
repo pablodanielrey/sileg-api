@@ -4,13 +4,15 @@ from wtforms.widgets import TextArea
 from wtforms.validators import ValidationError, DataRequired, EqualTo
 
 from sileg_model.model.SilegModel import SilegModel
+from sileg_model.model.entities.Designation import Designation
 
 class DesignationCreateForm(FlaskForm):
     # Datos del cargo
     function = SelectField('Cargo', coerce=str)
     functionEndType = SelectField('Finaliza', coerce=str)
 
-    start = DateTimeField('Fecha Desde', validators=[DataRequired()])
+    #start = DateTimeField('Fecha Desde', validators=[DataRequired()])
+    start = DateTimeField('Fecha Desde')
     end = DateTimeField('Fecha Hasta')
 
     res = StringField('Número de resolución')
@@ -18,8 +20,6 @@ class DesignationCreateForm(FlaskForm):
     cor = StringField('Corresponde')
 
     place = SelectField('Ubicación',coerce=str)
-
-    validatedBySuperiorCouncil = DateTimeField('Convalidado por Consejo Superior')
 
     observations = StringField('Observaciones', widget=TextArea())
 
@@ -36,6 +36,7 @@ class DesignationCreateForm(FlaskForm):
 
     def _load_values(self, session, silegModel: SilegModel):
         self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session) ]
+        self.place.choices = [ (p.id, p.name) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session)) ]
         self.functionEndType.choices = [
             ('0','Indeterminado..'),
             ('0','Fecha de Finalización'),
@@ -44,8 +45,18 @@ class DesignationCreateForm(FlaskForm):
             ('0','Hasta nuevo llamado'),
             ('0','Fin de Suplencia')
         ]
-        self.place.choices = [('0','buscar los lugares en el modelo...')]
-
+        
+    def save(self, session, silegModel, uid):
+        d = Designation()
+        d.start = self.start.data
+        d.end = self.end.data
+        d.function_id = self.function.data
+        d.place_id = self.place.data
+        d.user_id = uid
+        d.exp = self.exp.data
+        d.res = self.res.data
+        d.cor = self.cor.data
+        session.add(d)
 
 
 class ExtendDesignationForm(FlaskForm):
