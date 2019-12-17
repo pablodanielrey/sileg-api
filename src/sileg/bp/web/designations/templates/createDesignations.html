@@ -19,9 +19,16 @@
                 {{ form.csrf_token }}
                 <div class="row">
                     <div class="col m5">
-                        <h5 class="grey-text text-darken-2">Datos del cargo</h5>
+                        <h5 class="grey-text text-darken-2">Cargo</h5>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        {{ form.function.label }}
+                        {{ form.function }}
+                    </div>
+                </div>                
                 <div class="row">
                     <div class="col m1"></div>
                     <div class="col m2 input-field">
@@ -72,7 +79,7 @@
                 <div class="divider"></div>
                 <div class="row">
                     <div class="col m5">
-                        <h5 class="grey-text text-darken-2">Cargo docente</h5>
+                        <h5 class="grey-text text-darken-2">Ubicación</h5>
                     </div>
                 </div>
                 <div class="row">
@@ -82,19 +89,7 @@
                         {{ form.place }}
                     </div>
                 </div>
-                <div class="divider"></div>
-                <div class="row">
-                    <div class="col m5">
-                        <h5 class="grey-text text-darken-2">Cargo de planta</h5>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col m1"></div>
-                    <div class="col m5">
-                        {{ form.function.label }}
-                        {{ form.function }}
-                    </div>
-                </div>
+
                 <div class="divider"></div>
                 <div class="row">
                     <div class="col m5">
