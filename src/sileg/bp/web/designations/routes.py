@@ -1,23 +1,48 @@
-from flask import render_template, flash, redirect,request, Markup, url_for
-from . import bp
-
-from .forms import ExtendDesignationForm, RenewForm, DesignationCreateForm, DesignationSearchForm
+from flask import render_template, flash, redirect,request, Markup, url_for, abort
 
 from sileg.auth import require_user
+from sileg.models import silegModel, open_sileg_session, usersModel, open_users_session
 
-@bp.route('/crear')
+from . import bp
+from .forms import ExtendDesignationForm, RenewForm, DesignationCreateForm, DesignationSearchForm
+
+
+@bp.route('/crear/{uid}', methods=['GET'])
 @require_user
-def create(user):
+def create_get(user, uid):
     """
-    Pagina de creacion de designacion
+        Pagina de creacion de designacion
     """
+    assert uid is not None
+
+    with open_users_session() as session:
+        person = usersModel.get_users(session, uids=[uid])[0]
+
     form = DesignationCreateForm()
-    person = {
-        'dni': '12345678',
-        'firstname': 'Pablo',
-        'lastname': 'Rey'
-    }
-    return render_template('createDesignations.html', user=user, person=person,form=form)
+    with open_sileg_session() as session:
+        form._load_values(session, silegModel)
+ 
+    return render_template('createDesignations.html', user=user, person=person, form=form)
+
+@bp.route('/crear/{uid}', methods=['POST'])
+@require_user
+def create_post(user, uid):
+    """
+        Pagina de creacion de designacion
+    """
+    assert uid is not None
+
+    with open_users_session() as session:
+        person = usersModel.get_users(session, uids=[uid])[0]
+
+    form = DesignationCreateForm()
+    if form.validate_on_submit():
+        return 
+    else:
+        abort(404)
+
+    return render_template('createDesignations.html', user=user, person=person, form=form)
+
 
 @bp.route('/buscar')
 @require_user
@@ -85,21 +110,21 @@ def search(user):
 
 @bp.route('/extension/crear')
 @require_user
-def extend():
+def extend(user):
     """
     Pagina de creacion de extension
     """
     form = ExtendDesignationForm()
-    return render_template('createExtension.html',user=user,form=form)
+    return render_template('createExtension.html', user=user, form=form)
 
 @bp.route('/prorroga/crear')
 @require_user
-def renew():
+def renew(user):
     """
     Pagina de creacion de prorroga
     """
     form = RenewForm()
-    return render_template('createRenew.html',user=user,form=form)
+    return render_template('createRenew.html', user=user, form=form)
 
 @bp.route('/listado')
 @require_user
@@ -156,4 +181,4 @@ def personDesignations(user):
             'relatedTo': None
         }
     ]
-    return render_template('listPersonDesignations.html',user=user,designations=designations,person=person)
+    return render_template('listPersonDesignations.html', user=user, designations=designations, person=person)
