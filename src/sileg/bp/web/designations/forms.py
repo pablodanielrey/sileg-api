@@ -120,3 +120,8 @@ class DesignationSearchForm(FlaskForm):
     query = StringField('Buscar designaciones por nombre, apellido o número de documento')
     class Meta:
         csrf = False
+
+class PersonSearchForm(FlaskForm):
+    query = StringField('Buscar persona por apellido o número de documento')
+    class Meta:
+        csrf = False        

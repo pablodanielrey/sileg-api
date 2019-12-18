@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col m1"></div>
+    <div class="col m10">
+        <div class="card-panel grey lighten-5">
+            <div class="row">
+                <div class="col m8">
+                    <div class="col m3">
+                            <h5>Original</h5>
+                            <p>Nombre: {{person.firstname}}</p>
+                            <p>Apellido: {{person.lastname}}</p>
+                            <p>DNI: {{person.person_number}}</p>
+                    </div>
+                    <div class="col m3">
+                            <h5>Designación</h5>
+                            <p>Cargo: {{designation.function.name}}</p>
+                            <p>Ubicación: {{designation.place.name}}</p>
+                    </div>
+                </div>
+
+                <div class="col m3">
+                    <h5>Suplente</h5>
+                    <p>Nombre: {{replacement.firstname}}</p>
+                    <p>Apellido: {{replacement.lastname}}</p>
+                    <p>DNI: {{replacement.person_number}}</p>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <form action="" method="post">
+                {{ form.csrf_token }}
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m2 input-field">
+                        {{ form.res.label }}
+                        {{ form.res }}
+                    </div>
+                    <div class="col m1"></div>
+                    <div class="col m3 input-field">
+                        {{ form.exp.label }}
+                        {{ form.exp }}
+                    </div>
+                    <div class="col m3 input-field">
+                        {{ form.cor.label }}
+                        {{ form.cor }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m5">
+                        <h5 class="grey-text text-darken-2">Cargo</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        {{ form.function.label }}
+                        {{ form.function }}
+                    </div>
+                </div>                
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m2 input-field">
+                        {{ form.start.label }}
+                        {{ form.start(class="datepicker") }}
+                    </div>
+                    <div class="col m1"></div>
+                    <div class="col m2 input-field">
+                        {{ form.end.label }}
+                        {{ form.end(class="datepicker") }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        {{ form.functionEndType.label }}
+                        {{ form.functionEndType }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m6 input-field">
+                        {{ form.observations.label }}
+                        {{ form.observations(class="materialize-textarea") }}
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m5">
+                        <h5 class="grey-text text-darken-2">Ubicación</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        {{ form.place.label }}
+                        {{ form.place }}
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m5">
+                        <h5 class="grey-text text-darken-2">Ordenanza 174</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m3">
+                        <label>{{ form.adjusted174(class="filled-in") }}<span>Está ajustada</span></label>
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <br>
+                <div class="row">
+                    <div class="col m3"></div>
+                    <div class="col m3">
+                        <button class="btn light-blue darken-3">crear suplencia</button>
+                    </div>
+                    <div class="col m3"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col m1"></div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('select').formSelect();
+        $('.datepicker').datepicker({
+            format: 'dd-mmmm-yyyy',
+            minDate: new Date(1900, 1, 1),
+            showClearBtn: true,
+            autoClose: true,
+            i18n: {
+                months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                monthsShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                weekdays: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+                weekdaysAbbrev: ["D", "L", "M", "M", "J", "V", "S"],
+                today: 'Hoy',
+                clear: 'Limpiar',
+                done: 'Aceptar',
+                cancel: 'Cancelar',
+            },
+        });
+    });
+</script>
+{% endblock %}

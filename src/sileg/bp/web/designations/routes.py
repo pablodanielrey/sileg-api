@@ -4,7 +4,49 @@ from sileg.auth import require_user
 from sileg.models import silegModel, open_sileg_session, usersModel, open_users_session
 
 from . import bp
-from .forms import ExtendDesignationForm, RenewForm, DesignationCreateForm, DesignationSearchForm
+from .forms import ExtendDesignationForm, RenewForm, DesignationCreateForm, DesignationSearchForm, PersonSearchForm
+
+@bp.route('/replacement_select_person/<did>')
+@require_user
+def replacement_select_person(user, did):
+    """
+        Paso 1 de generación de una suplencia.
+        se selecciona la persona de reemplazo
+    """
+    assert did is not None
+
+    form = PersonSearchForm()
+    query = request.args.get('query','',str)
+    persons = []
+    if query:
+        with open_users_session() as session:
+            uids = usersModel.search_user(session, query)
+            persons = usersModel.get_users(session, uids)
+    return render_template('generateReplacement1.html', user=user, persons=persons, did=did, form=form)
+
+@bp.route('/replacement_create/<did>/<uid>')
+@require_user
+def replacement_create_designation(user, did, uid):
+    """
+        Paso 2 de generación de una suplencia.
+        genero la designacion como suplencia.
+    """
+    assert did is not None
+    assert uid is not None
+
+    with open_sileg_session() as session:
+        form = DesignationCreateForm(session, silegModel)
+        designation = silegModel.get_designations(session, [did])[0]
+
+        original_uid = designation.user_id
+
+        with open_users_session() as session:
+            person = usersModel.get_users(session, uids=[original_uid])[0]
+            replacement = usersModel.get_users(session, uids=[uid])[0]
+
+        return render_template('generateReplacement2.html', user=user, person=person, replacement=replacement, designation=designation, form=form)
+
+
 
 @bp.route('/listado/<uid>')
 @require_user

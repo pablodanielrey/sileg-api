@@ -32,7 +32,8 @@
             "env": {
                 "FLASK_APP": "sileg:app",
                 "LC_ALL": "es_AR.utf-8",
-                "LANG": "es_AR.utf-8"
+                "LANG": "es_AR.utf-8",
+                "DEBUG": "false"
             },
             "args": [
                 "run",
