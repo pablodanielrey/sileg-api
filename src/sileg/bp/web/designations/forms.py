@@ -162,63 +162,109 @@ class ConvalidateDesignationForm(FlaskForm):
         session.add(d)
 
 
+class PromoteDesignationForm(FlaskForm):
+    # Datos del cargo
+    function = SelectField('Cargo', coerce=str)
+    functionEndType = SelectField('Finaliza', coerce=str)
+
+    #start = DateTimeField('Fecha Desde', validators=[DataRequired()])
+    start = DateTimeField('Fecha Desde')
+    end = DateTimeField('Fecha Hasta')
+
+    res = StringField('Número de resolución')
+    exp = StringField('Expediente')
+    cor = StringField('Corresponde')
+
+    place = SelectField('Ubicación',coerce=str)
+
+    observations = StringField('Observaciones', widget=TextArea())
+
+    # Ordenanza 174
+    adjusted174 = BooleanField('Ajustada a 174')
+
+    def __init__(self, session, silegModel):
+        super().__init__()
+        self._load_values(session, silegModel)
+
+    def _load_values(self, session, silegModel: SilegModel):
+        self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session) ]
+        self.place.choices = [ (p.id, p.name) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session)) ]
+        self.functionEndType.choices = [
+            ('0','Indeterminado..'),
+            ('0','Fecha de Finalización'),
+            ('0','Hasta concurso'),
+            ('0','Hasta nuevo llamado')
+        ]
+        
+    def save(self, session, designation: Designation):
+        d = Designation()
+        d.type = DesignationTypes.PROMOTION
+        d.designation_id = designation.id
+        d.user_id = designation.user_id
+        
+        d.start = self.start.data
+        d.end = self.end.data
+        d.function_id = self.function.data
+        d.exp = self.exp.data
+        d.res = self.res.data
+        d.cor = self.cor.data
+        d.place_id = self.place.data
+        session.add(d)
+
 
 class ExtendDesignationForm(FlaskForm):
-    newDedication = SelectField('Nueva Dedicación', coerce=str)
-    dedicationFrom = DateTimeField('Fecha Desde', validators=[DataRequired()])
-    dedicationTo = DateTimeField('Fecha Hasta', validators=[DataRequired()])
-    resolutionNumber = StringField('Número de resolución')
-    recordNumber = StringField('Expediente')
-    relatedNumber = StringField('Corresponde')
-    positionEndType = SelectField('Tipo Fin Cargo',coerce=str) 
-    department = SelectField('Departamento')
-    departmentArea = SelectField('Materia',coerce=str)
-    chair = SelectField('Cátedra',coerce=str)
-    commission = StringField('Comisión')
-    workArea = SelectField('Area',coerce=str)
-    workPlace = SelectField('Lugar de Trabajo',coerce=str)
-    function = SelectField('Función',coerce=str)
-    
-    dischargeType = SelectField('Tipo de baja', coerce=str) 
-    dischargeDate = DateTimeField('Fecha de baja', validators=[DataRequired()])
+    # Datos del cargo
+    function = SelectField('Cargo', coerce=str)
+    functionEndType = SelectField('Finaliza', coerce=str)
 
-    dischargeResolution = StringField('Número de resolución')
-    dischargeRecordNumber = StringField('Expediente')
-    dischargeRelatedNumber = StringField('Corresponde')
+    #start = DateTimeField('Fecha Desde', validators=[DataRequired()])
+    start = DateTimeField('Fecha Desde')
+    end = DateTimeField('Fecha Hasta')
 
-    def __init__(self):
-        super(ExtendDesignationForm,self).__init__()
-        self.newDedication.choices = [('0','Seleccione una opción...'),('0','A-H'),('0','Exclusiva'),('0','Semidedicacion'),('0','Semiexclusiva'),('0','Simple'),('0','Tiempo Completo')]
-        self.positionEndType.choices = [('0','Seleccione una opción...'),('0','Hasta Concurso...'),('0','Hasta Convalid. Consejo Superior'),('0','Hasta nuevo llamado')]
-        self.department.choices = [('0','Seleccione una opción...')]
-        self.departmentArea.choices = [('0','Seleccione una opción...')]
-        self.chair.choices = [('0','Seleccione una opción...')]
-        self.commission.choices = [('0','Seleccione una opción...')]
-        self.workArea.choices = [('0','Seleccione una opción...')]
-        self.workPlace.choices = [('0','Seleccione una opción...')]
-        self.function.choices = [('0','Seleccione una opción...')]        
-        self.dischargeType.choices = [('0','Seleccione una opción...'),('0','Cambio de Cátedra'),('0','Cambio de Licencia'),('0','Fallecimiento'),('0','Jubilación'),('0','Limitación de Cargo'),('0','Limitación de Funciones'),('0','Reintegro de Licencia'),('0','Renuncia'),('0','Término de Designación'),('0','Término de Extensión'),('0','Término de Licencia')]
+    res = StringField('Número de resolución')
+    exp = StringField('Expediente')
+    cor = StringField('Corresponde')
 
-class RenewForm(FlaskForm):
-    acquisitionDate = DateTimeField('Fecha de Obtención', validators=[DataRequired()])
-    dedicationFrom = DateTimeField('Fecha Desde', validators=[DataRequired()])
-    dedicationTo = DateTimeField('Fecha Hasta', validators=[DataRequired()])
-    resolutionNumber = StringField('Número de resolución')
-    recordNumber = StringField('Expediente')
-    relatedNumber = StringField('Corresponde')
-    positionEndType = SelectField('Tipo Fin Cargo',coerce=str)
-    
-    dischargeType = SelectField('Tipo de baja', coerce=str) 
-    dischargeDate = DateTimeField('Fecha de baja', validators=[DataRequired()])
+    place = SelectField('Ubicación',coerce=str)
 
-    dischargeResolution = StringField('Número de resolución')
-    dischargeRecordNumber = StringField('Expediente')
-    dischargeRelatedNumber = StringField('Corresponde')
+    observations = StringField('Observaciones', widget=TextArea())
 
-    def __init__(self):
-        super(RenewForm,self).__init__()
-        self.positionEndType.choices = [('0','Seleccione una opción...'),('0','Hasta Concurso...'),('0','Hasta Convalid. Consejo Superior'),('0','Hasta nuevo llamado')]
-        self.dischargeType.choices = [('0','Seleccione una opción...'),('0','Cambio de Cátedra'),('0','Cambio de Licencia'),('0','Fallecimiento'),('0','Jubilación'),('0','Limitación de Cargo'),('0','Limitación de Funciones'),('0','Reintegro de Licencia'),('0','Renuncia'),('0','Término de Designación'),('0','Término de Extensión'),('0','Término de Licencia')]
+    # Ordenanza 174
+    adjusted174 = BooleanField('Ajustada a 174')
+
+    def __init__(self, session, silegModel):
+        super().__init__()
+        self._load_values(session, silegModel)
+
+    def _load_values(self, session, silegModel: SilegModel):
+        self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session) ]
+        self.place.choices = [ (p.id, p.name) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session)) ]
+        self.functionEndType.choices = [
+            ('0','Indeterminado..'),
+            ('0','Fecha de Finalización'),
+            ('0','Hasta concurso'),
+            ('0','Hasta nuevo llamado')
+        ]
+        
+    def save(self, session, designation: Designation):
+        d = Designation()
+        d.type = DesignationTypes.EXTENSION
+        d.designation_id = designation.id
+        d.user_id = designation.user_id
+        d.place_id = designation.place_id
+        d.function_id = designation.function_id
+
+        d.start = self.start.data
+        d.end = self.end.data
+        d.exp = self.exp.data
+        d.res = self.res.data
+        d.cor = self.cor.data
+
+        session.add(d)
+
+
+
+
 
 class DesignationSearchForm(FlaskForm):
     query = StringField('Buscar designaciones por nombre, apellido o número de documento')
