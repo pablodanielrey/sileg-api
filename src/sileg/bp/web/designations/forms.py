@@ -1,3 +1,5 @@
+import datetime
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, DateTimeField, SelectField
 from wtforms.widgets import TextArea
@@ -59,6 +61,7 @@ class DesignationCreateForm(FlaskForm):
         d.cor = self.cor.data
         session.add(d)
 
+
 class ReplacementDesignationCreateForm(FlaskForm):
     # Datos del cargo
     function = SelectField('Cargo', coerce=str)
@@ -100,6 +103,59 @@ class ReplacementDesignationCreateForm(FlaskForm):
         d.function_id = self.function.data
         d.place_id = self.place.data
         d.user_id = uid
+        d.exp = self.exp.data
+        d.res = self.res.data
+        d.cor = self.cor.data
+        session.add(d)
+
+
+class ConvalidateDesignationForm(FlaskForm):
+    # Datos del cargo
+    function = SelectField('Cargo', coerce=str)
+    functionEndType = SelectField('Finaliza', coerce=str)
+
+    #start = DateTimeField('Fecha Desde', validators=[DataRequired()])
+    start = DateTimeField('Fecha Desde')
+    end = DateTimeField('Fecha Hasta')
+
+    res = StringField('Número de resolución')
+    exp = StringField('Expediente')
+    cor = StringField('Corresponde')
+
+    place = SelectField('Ubicación',coerce=str)
+
+    observations = StringField('Observaciones', widget=TextArea())
+
+    # Ordenanza 174
+    adjusted174 = BooleanField('Ajustada a 174')
+
+    def __init__(self, session, silegModel):
+        super().__init__()
+        self._load_values(session, silegModel)
+
+    def _load_values(self, session, silegModel: SilegModel):
+        self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session) ]
+        self.place.choices = [ (p.id, p.name) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session)) ]
+        self.functionEndType.choices = [
+            ('0','Indeterminado..'),
+            ('0','Fecha de Finalización'),
+            ('0','Hasta concurso'),
+            ('0','Hasta nuevo llamado')
+        ]
+        
+    def save(self, session, replaced_designation: Designation):
+        replaced_designation.deleted = datetime.datetime.now()
+        replaced_designation.historic = True
+
+        d = Designation()
+        d.type = DesignationTypes.ORIGINAL
+        d.designation_id = replaced_designation.id
+        d.user_id = replaced_designation.user_id
+        d.place_id = replaced_designation.place_id
+        
+        d.start = self.start.data
+        d.end = self.end.data
+        d.function_id = self.function.data
         d.exp = self.exp.data
         d.res = self.res.data
         d.cor = self.cor.data

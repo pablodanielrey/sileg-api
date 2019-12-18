@@ -8,6 +8,7 @@ from .forms import ExtendDesignationForm, \
                 RenewForm, \
                 DesignationCreateForm, \
                 ReplacementDesignationCreateForm, \
+                ConvalidateDesignationForm, \
                 DesignationSearchForm, \
                 PersonSearchForm 
 
@@ -84,6 +85,52 @@ def replacement_create_designation_post(user, did, uid):
 
 """
     ##################################################
+    ############ Convalidación por consejo ###########
+    ##################################################
+"""
+
+@bp.route('/convalidate/<did>')
+@require_user
+def convalidate(user, did):
+    """
+        Paso 1 de generación de una convalidación
+        genero la designacion nueva
+    """
+    assert did is not None
+
+    with open_sileg_session() as session:
+        form = ConvalidateDesignationForm(session, silegModel)
+        designation = silegModel.get_designations(session, [did])[0]
+        original_uid = designation.user_id
+
+        with open_users_session() as session:
+            person = usersModel.get_users(session, uids=[original_uid])[0]
+
+        return render_template('convalidateDesignation.html', user=user, person=person, designation=designation, form=form)
+
+    
+
+@bp.route('/convalidate/<did>', methods=['POST'])
+@require_user
+def convalidate_post(user, did):
+    assert user is not None
+    assert did is not None
+
+    with open_sileg_session() as session:
+        form = ConvalidateDesignationForm(session, silegModel)
+        original_designation = silegModel.get_designations(session, [did])[0]
+        uid = original_designation.user_id
+
+        if not form.is_submitted():
+            print(form.errors)
+            abort(404)
+
+        form.save(session, original_designation)
+        session.commit()
+
+    return redirect(url_for('designations.personDesignations', uid=uid))
+
+"""
     ##################################################
 """
 

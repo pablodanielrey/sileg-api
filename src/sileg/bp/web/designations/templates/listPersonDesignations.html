@@ -59,7 +59,7 @@
                         <ul id='dropdown1' class='dropdown-content'>
                                 <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
                                 <li class="divider" tabindex="-1"></li>
-                                <li><a class="blue-text darken-4" href="#!">Convalidar Por Consejo</a></li>
+                                <li><a class="blue-text darken-4" href="{{url_for('designations.convalidate', did=d.id)}}">Convalidar Por Consejo</a></li>
                                 <li><a class="blue-text darken-4" href="{{url_for('designations.replacement_select_person', did=d.id)}}">Generar Suplencia</a></li>
                                 <li><a class="blue-text darken-4" href="{{url_for('designations.extend')}}">Extender</a></li>
                                 <li><a class="blue-text darken-4" href="{{url_for('designations.renew')}}">Prorrogar</a></li>
