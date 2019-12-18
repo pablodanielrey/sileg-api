@@ -6,6 +6,13 @@ from sileg.models import silegModel, open_sileg_session, usersModel, open_users_
 from . import bp
 from .forms import ExtendDesignationForm, RenewForm, DesignationCreateForm, DesignationSearchForm, PersonSearchForm
 
+"""
+    ############################################
+    ####################### SUPLENCIAS ##########################
+    ############################################
+"""
+
+
 @bp.route('/replacement_select_person/<did>')
 @require_user
 def replacement_select_person(user, did):
@@ -46,6 +53,34 @@ def replacement_create_designation(user, did, uid):
 
         return render_template('generateReplacement2.html', user=user, person=person, replacement=replacement, designation=designation, form=form)
 
+@bp.route('/replacement_create/<did>/<uid>', methods=['POST'])
+@require_user
+def replacement_create_designation_post(user, did, uid):
+    """
+        post del formulario con los datos completos para generar la suplencia.
+    """
+    assert did is not None
+    assert uid is not None
+
+    with open_sileg_session() as session:
+        form = DesignationCreateForm(session, silegModel)
+        original_designation = silegModel.get_designations(session, [did])[0]
+        original_uid = original_designation.user_id
+
+        if not form.is_submitted():
+            print(form.errors)
+            abort(404)
+
+        form.save(session, silegModel, uid)
+        session.commit()
+
+    return redirect(url_for('designations.personDesignations', uid=original_uid))
+    
+
+"""
+    ##################################################
+    ##################################################
+"""
 
 
 @bp.route('/listado/<uid>')
