@@ -5,7 +5,8 @@ from wtforms.validators import ValidationError, DataRequired, EqualTo, Email
 
 from sileg.helpers.apiHandler import getStates
 
-from sileg.models import usersModel, open_users_session, userEntity
+from sileg.models import usersModel, open_users_session
+from users.model.entities.User import User, Mail, Phone, UserFiles, MailTypes, PhoneTypes, UserFileTypes
 
 class PersonCreateForm(FlaskForm):
     lastname = StringField('Apellidos', validators=[DataRequired()])
@@ -19,7 +20,7 @@ class PersonCreateForm(FlaskForm):
     residence = StringField('Ciudad de Residencia')
     address = StringField('Dirección')
     work_email = EmailField('Correo de Trabajo')
-    personal_email = EmailField('Correo Personal')
+    personal_email = EmailField('Correo Personal',validators=[DataRequired()])
     land_line = StringField('Telefono Fijo')
     mobile_number =StringField('Telefono Movil')
     person_numberFile = FileField('Adjuntar DNI')
@@ -69,33 +70,72 @@ class PersonCreateForm(FlaskForm):
         """
         Persistencia de datos en DB
         """
-        newUser = userEntity()
-        newUser.apellido = self.lastname.data
-        newUser.nombre = self.firstname.data
-        newUser. = self.person_number_type.data,
-        newUser.dni = self.person_number.data,
-        newUser.genero = self.gender.data,
-        newUser. = self.marital_status.data,
-        newUser. = self.birthplace.data,
-        newUser. = self.birthdate.data,
-        newUser. = self.residence.data,
-        newUser. = self.address.data,
-        newUser. = self.work_email.data,
-        newUser. = self.personal_email.data,
-        newUser. = self.land_line.data,
-        newUser. = self.mobile_number.data,
-        newUser. = self.person_numberFile.data,
-        newUser. = self.laboral_numberFile.data,
-        
+        #TODO Chequear si el dni existe para otra persona
+        with open_users_session() as session:
+            newUser = User()
+            newUser.lastname = self.lastname.data
+            newUser.firstname = self.firstname.data
+            newUser.person_number_type = self.person_number_type.data
+            newUser.person_number = self.person_number.data
+            newUser.gender = self.gender.data
+            newUser.marital_status = self.marital_status.data
+            newUser.birthplace = self.birthplace.data
+            newUser.birthdate = self.birthdate.data
+            newUser.residence = self.residence.data
+            newUser.address = self.address.data
+
+            session.add(newUser)
+            if self.work_email.data:
+                newWorkEmail = Mail()
+                newWorkEmail.email = self.work_email.data
+                newWorkEmail.type = MailTypes.INSTITUTIONAL
+                newWorkEmail.user_id = newUser.id
+                session.add(newWorkEmail)
+            
+            if self.personal_email.data:
+                newPersonalMail = Mail()
+                newPersonalMail.data = self.personal_email.data
+                newPersonalMail.type = MailTypes.NOTIFICATION
+                newPersonalMail.user_id = newUser.id
+                session.add(newPersonalMail)
+            
+            if self.land_line.data:
+                landLinePhone = Phone()
+                landLinePhone.phone_type = PhoneTypes.LANDLINE
+                landLinePhone.number = self.land_line.data
+                landLinePhone.user_id = newUser.id
+                session.add(landLinePhone)
+            
+            if self.mobile_number.data:
+                mobileNumber = Phone()
+                mobileNumber.phone_type = PhoneTypes.CELLPHONE
+                mobileNumber.number = self.mobile_number.data
+                mobileNumber.user_id = newUser.id
+                session.add(mobileNumber)
+            
+            if self.person_numberFile.data:
+                personNumberFile = UserFiles()
+                personNumberFile.mimetype = None
+                personNumberFile.type = UserFileTypes.PERSONNUMBER
+                personNumberFile.content = None
+                session.add(personNumberFile)
+            
+            if self.laboral_numberFile.data:
+                laboralNumberFile = UserFiles()
+                laboralNumberFile.mimetype = None
+                laboralNumberFile.type = UserFileTypes.LABORALNUMBER
+                laboralNumberFile.content = None
+                session.add(laboralNumberFile)
+            
+            #session.commit()
+
+        #TODO Sileg model
         newSeniority = {
             'seniority_external_years' : self.seniority_external_years.data,
             'seniority_external_months'  : self.seniority_external_months.data,
             'seniority_external_days' : self.seniority_external_days.data
         }
-        print(newSeniority)
-        with open_users_session() as session:
-            usersModel.create_user(newUser,session)
-
+        #TODO Guardar datos modificados en tabla separada JSON
 
 class TitleAssignForm(FlaskForm):
     titleType = SelectField('Tipo de Título')

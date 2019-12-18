@@ -1,10 +1,9 @@
 
 from users.model.UsersModel import UsersModel
-from users.model.entities import Usuario
+from users.model.entities import User, Mail, Phone, UserFiles, MailTypes, PhoneTypes, UserFileTypes
 import users.model
 
 usersModel = UsersModel
-userEntity = Usuario
 
 open_users_session = users.model.open_session
 
