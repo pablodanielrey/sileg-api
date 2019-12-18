@@ -4,7 +4,7 @@ from wtforms.widgets import TextArea
 from wtforms.validators import ValidationError, DataRequired, EqualTo
 
 from sileg_model.model.SilegModel import SilegModel
-from sileg_model.model.entities.Designation import Designation
+from sileg_model.model.entities.Designation import Designation, DesignationTypes
 
 class DesignationCreateForm(FlaskForm):
     # Datos del cargo
@@ -48,6 +48,7 @@ class DesignationCreateForm(FlaskForm):
         
     def save(self, session, silegModel, uid):
         d = Designation()
+        d.type = DesignationTypes.ORIGINAL
         d.start = self.start.data
         d.end = self.end.data
         d.function_id = self.function.data
@@ -57,6 +58,53 @@ class DesignationCreateForm(FlaskForm):
         d.res = self.res.data
         d.cor = self.cor.data
         session.add(d)
+
+class ReplacementDesignationCreateForm(FlaskForm):
+    # Datos del cargo
+    function = SelectField('Cargo', coerce=str)
+    functionEndType = SelectField('Finaliza', coerce=str)
+
+    #start = DateTimeField('Fecha Desde', validators=[DataRequired()])
+    start = DateTimeField('Fecha Desde')
+    end = DateTimeField('Fecha Hasta')
+
+    res = StringField('Número de resolución')
+    exp = StringField('Expediente')
+    cor = StringField('Corresponde')
+
+    place = SelectField('Ubicación',coerce=str)
+
+    observations = StringField('Observaciones', widget=TextArea())
+
+    # Ordenanza 174
+    adjusted174 = BooleanField('Ajustada a 174')
+
+    def __init__(self, session, silegModel):
+        super().__init__()
+        self._load_values(session, silegModel)
+
+    def _load_values(self, session, silegModel: SilegModel):
+        self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session) ]
+        self.place.choices = [ (p.id, p.name) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session)) ]
+        self.functionEndType.choices = [
+            ('0','Fin de Suplencia')
+        ]
+        
+    def save(self, session, silegModel, uid, replaced_did):
+        d = Designation()
+        d.type = DesignationTypes.REPLACEMENT
+        d.designation_id = replaced_did
+        
+        d.start = self.start.data
+        d.end = self.end.data
+        d.function_id = self.function.data
+        d.place_id = self.place.data
+        d.user_id = uid
+        d.exp = self.exp.data
+        d.res = self.res.data
+        d.cor = self.cor.data
+        session.add(d)
+
 
 
 class ExtendDesignationForm(FlaskForm):

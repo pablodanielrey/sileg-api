@@ -4,7 +4,12 @@ from sileg.auth import require_user
 from sileg.models import silegModel, open_sileg_session, usersModel, open_users_session
 
 from . import bp
-from .forms import ExtendDesignationForm, RenewForm, DesignationCreateForm, DesignationSearchForm, PersonSearchForm
+from .forms import ExtendDesignationForm, \
+                RenewForm, \
+                DesignationCreateForm, \
+                ReplacementDesignationCreateForm, \
+                DesignationSearchForm, \
+                PersonSearchForm 
 
 """
     ############################################
@@ -42,7 +47,7 @@ def replacement_create_designation(user, did, uid):
     assert uid is not None
 
     with open_sileg_session() as session:
-        form = DesignationCreateForm(session, silegModel)
+        form = ReplacementDesignationCreateForm(session, silegModel)
         designation = silegModel.get_designations(session, [did])[0]
 
         original_uid = designation.user_id
@@ -63,7 +68,7 @@ def replacement_create_designation_post(user, did, uid):
     assert uid is not None
 
     with open_sileg_session() as session:
-        form = DesignationCreateForm(session, silegModel)
+        form = ReplacementDesignationCreateForm(session, silegModel)
         original_designation = silegModel.get_designations(session, [did])[0]
         original_uid = original_designation.user_id
 
@@ -71,7 +76,7 @@ def replacement_create_designation_post(user, did, uid):
             print(form.errors)
             abort(404)
 
-        form.save(session, silegModel, uid)
+        form.save(session, silegModel, uid, did)
         session.commit()
 
     return redirect(url_for('designations.personDesignations', uid=original_uid))
