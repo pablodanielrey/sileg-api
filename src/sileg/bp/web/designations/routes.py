@@ -344,7 +344,7 @@ def create_post(user, uid):
     with open_sileg_session() as session:
         form = DesignationCreateForm(session, silegModel)
 
-        if not form.is_submitted():
+        if not form.validate_on_submit():
             print(form.errors)
             abort(404)
 

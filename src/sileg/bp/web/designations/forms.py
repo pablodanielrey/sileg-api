@@ -1,9 +1,10 @@
 import datetime
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, DateTimeField, SelectField
+from wtforms import StringField, BooleanField, SelectField, DateTimeField
 from wtforms.widgets import TextArea
-from wtforms.validators import ValidationError, DataRequired, EqualTo
+from wtforms.validators import ValidationError, DataRequired, EqualTo, Optional
+#from wtforms.fields.html5 import DateTimeField
 
 from sileg_model.model.SilegModel import SilegModel
 from sileg_model.model.entities.Designation import Designation, DesignationTypes
@@ -13,9 +14,8 @@ class DesignationCreateForm(FlaskForm):
     function = SelectField('Cargo', coerce=str)
     functionEndType = SelectField('Finaliza', coerce=str)
 
-    #start = DateTimeField('Fecha Desde', validators=[DataRequired()])
-    start = DateTimeField('Fecha Desde')
-    end = DateTimeField('Fecha Hasta')
+    start = DateTimeField('Fecha Desde', format='%d-%m-%Y', validators=[DataRequired()])
+    end = DateTimeField('Fecha Hasta', format='%d-%m-%Y', validators=[Optional()])
 
     res = StringField('Número de resolución')
     exp = StringField('Expediente')
@@ -70,9 +70,8 @@ class ReplacementDesignationCreateForm(FlaskForm):
     function = SelectField('Cargo', coerce=str)
     functionEndType = SelectField('Finaliza', coerce=str)
 
-    #start = DateTimeField('Fecha Desde', validators=[DataRequired()])
-    start = DateTimeField('Fecha Desde')
-    end = DateTimeField('Fecha Hasta')
+    start = DateTimeField('Fecha Desde', format='%d-%m-%Y', validators=[DataRequired()])
+    end = DateTimeField('Fecha Hasta', format='%d-%m-%Y', validators=[Optional()])
 
     res = StringField('Número de resolución')
     exp = StringField('Expediente')
@@ -117,9 +116,8 @@ class ConvalidateDesignationForm(FlaskForm):
     function = SelectField('Cargo', coerce=str)
     functionEndType = SelectField('Finaliza', coerce=str)
 
-    #start = DateTimeField('Fecha Desde', validators=[DataRequired()])
-    start = DateTimeField('Fecha Desde')
-    end = DateTimeField('Fecha Hasta')
+    start = DateTimeField('Fecha Desde', format='%d-%m-%Y', validators=[DataRequired()])
+    end = DateTimeField('Fecha Hasta', format='%d-%m-%Y', validators=[Optional()])
 
     res = StringField('Número de resolución')
     exp = StringField('Expediente')
@@ -170,9 +168,8 @@ class PromoteDesignationForm(FlaskForm):
     function = SelectField('Cargo', coerce=str)
     functionEndType = SelectField('Finaliza', coerce=str)
 
-    #start = DateTimeField('Fecha Desde', validators=[DataRequired()])
-    start = DateTimeField('Fecha Desde')
-    end = DateTimeField('Fecha Hasta')
+    start = DateTimeField('Fecha Desde', format='%d-%m-%Y', validators=[DataRequired()])
+    end = DateTimeField('Fecha Hasta', format='%d-%m-%Y',  validators=[Optional()])
 
     res = StringField('Número de resolución')
     exp = StringField('Expediente')
@@ -220,9 +217,8 @@ class ExtendDesignationForm(FlaskForm):
     function = SelectField('Cargo', coerce=str)
     functionEndType = SelectField('Finaliza', coerce=str)
 
-    #start = DateTimeField('Fecha Desde', validators=[DataRequired()])
-    start = DateTimeField('Fecha Desde')
-    end = DateTimeField('Fecha Hasta')
+    start = DateTimeField('Fecha Desde', format='%d-%m-%Y', validators=[DataRequired()])
+    end = DateTimeField('Fecha Hasta', format='%d-%m-%Y', validators=[Optional()])
 
     res = StringField('Número de resolución')
     exp = StringField('Expediente')
