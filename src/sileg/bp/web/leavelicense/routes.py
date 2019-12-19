@@ -2,11 +2,14 @@ from flask import render_template, flash, redirect,request, Markup, url_for, abo
 from . import bp
 
 from .forms import LeaveLicensePersonalCreateForm, DesignationLeaveLicenseCreateForm
+from .forms import lt2s
 
 from sileg.auth import require_user
 from sileg.models import usersModel, open_users_session, silegModel, open_sileg_session
 
 from sileg_model.model.entities.Designation import DesignationTypes
+
+
 
 def dt2s(dt: DesignationTypes):
     if dt == DesignationTypes.ORIGINAL:
@@ -18,6 +21,26 @@ def dt2s(dt: DesignationTypes):
     if dt == DesignationTypes.REPLACEMENT:
         return 'Suplencia'
     return ''
+
+
+@bp.route('<uid>')
+@require_user
+def list_leave_licenses(user, uid):
+    """
+        Pagina de creacion de Licencia Personal
+    """
+    assert uid is not None
+    with open_users_session() as session:
+        person = usersModel.get_users(session, uids=[uid])[0]
+
+    with open_sileg_session() as session:
+        lids = silegModel.get_user_licenses(session, uid)
+        plicenses = silegModel.get_ulicenses(session, lids=lids)
+
+        lids = silegModel.get_user_designation_licenses(session, uid)
+        licenses = silegModel.get_dlicenses(session, lids=lids)
+
+        return render_template('personLicenses.html', user=user, person=person, lt2s=lt2s, plicenses=plicenses, licenses=licenses)
 
 @bp.route('/personal/<uid>')
 @require_user

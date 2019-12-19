@@ -8,6 +8,12 @@ from sileg_model.model.entities.LeaveLicense import PersonalLeaveLicense, Design
 def lt2s(t:LicenseTypes):
     if t == LicenseTypes.INDETERMINATE:
         return 'Indeterminado'
+    if t == LicenseTypes.LIC:
+        return 'Licencia'
+    if t == LicenseTypes.RC:
+        return 'Retención Cargo'
+    if t == LicenseTypes.RS:
+        return 'Renta Suspendida'
     return ''
 
 def et2s(t:LicenseEndTypes):
