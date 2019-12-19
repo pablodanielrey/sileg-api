@@ -7,7 +7,19 @@ from wtforms.validators import ValidationError, DataRequired, EqualTo, Optional
 #from wtforms.fields.html5 import DateTimeField
 
 from sileg_model.model.SilegModel import SilegModel
-from sileg_model.model.entities.Designation import Designation, DesignationTypes
+from sileg_model.model.entities.Designation import Designation, DesignationTypes, DesignationEndTypes
+
+def det2s(d: DesignationEndTypes):
+    if d == DesignationEndTypes.INDETERMINATE:
+        return 'Indeterminado'
+    if d == DesignationEndTypes.CONVALIDATION:
+        return 'Hasta Convalidación'
+    if d == DesignationEndTypes.CONTEST:
+        return 'Hasta Concurso'
+    if d == DesignationEndTypes.REPLACEMENT:
+        return 'Hasta Fin de Suplencia'
+    if d == DesignationEndTypes.ENDDATE:
+        return 'Fecha Fin'    
 
 class DesignationCreateForm(FlaskForm):
     # Datos del cargo
@@ -39,14 +51,7 @@ class DesignationCreateForm(FlaskForm):
     def _load_values(self, session, silegModel: SilegModel):
         self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session) ]
         self.place.choices = [ (p.id, p.name) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session)) ]
-        self.functionEndType.choices = [
-            ('0','Indeterminado..'),
-            ('0','Fecha de Finalización'),
-            ('0','Hasta concurso'),
-            ('0','Hasta convalidación Consejo Superior'),
-            ('0','Hasta nuevo llamado'),
-            ('0','Fin de Suplencia')
-        ]
+        self.functionEndType.choices = [ (d.value, det2s(d)) for d in DesignationEndTypes ]
         
     def save(self, session, silegModel, uid):
         d = Designation()
@@ -56,6 +61,7 @@ class DesignationCreateForm(FlaskForm):
         d.start = self.start.data
         d.end = self.end.data
         d.function_id = self.function.data
+        d.end_type = self.functionEndType.data
         d.place_id = self.place.data
         
         d.exp = self.exp.data
@@ -91,9 +97,7 @@ class ReplacementDesignationCreateForm(FlaskForm):
     def _load_values(self, session, silegModel: SilegModel):
         self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session) ]
         self.place.choices = [ (p.id, p.name) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session)) ]
-        self.functionEndType.choices = [
-            ('0','Fin de Suplencia')
-        ]
+        self.functionEndType.choices = [ (d.value, det2s(d)) for d in DesignationEndTypes ]
         
     def save(self, session, silegModel, uid, replaced_did):
         d = Designation()
@@ -103,6 +107,7 @@ class ReplacementDesignationCreateForm(FlaskForm):
         d.start = self.start.data
         d.end = self.end.data
         d.function_id = self.function.data
+        d.end_type = self.functionEndType.data
         d.place_id = self.place.data
         d.user_id = uid
         d.exp = self.exp.data
@@ -137,13 +142,8 @@ class ConvalidateDesignationForm(FlaskForm):
     def _load_values(self, session, silegModel: SilegModel):
         self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session) ]
         self.place.choices = [ (p.id, p.name) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session)) ]
-        self.functionEndType.choices = [
-            ('0','Indeterminado..'),
-            ('0','Fecha de Finalización'),
-            ('0','Hasta concurso'),
-            ('0','Hasta nuevo llamado')
-        ]
-        
+        self.functionEndType.choices = [ (d.value, det2s(d)) for d in DesignationEndTypes ]        
+
     def save(self, session, replaced_designation: Designation):
         replaced_designation.deleted = datetime.datetime.now()
         replaced_designation.historic = True
@@ -157,6 +157,7 @@ class ConvalidateDesignationForm(FlaskForm):
         d.start = self.start.data
         d.end = self.end.data
         d.function_id = self.function.data
+        d.end_type = self.functionEndType.data
         d.exp = self.exp.data
         d.res = self.res.data
         d.cor = self.cor.data
@@ -189,12 +190,7 @@ class PromoteDesignationForm(FlaskForm):
     def _load_values(self, session, silegModel: SilegModel):
         self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session) ]
         self.place.choices = [ (p.id, p.name) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session)) ]
-        self.functionEndType.choices = [
-            ('0','Indeterminado..'),
-            ('0','Fecha de Finalización'),
-            ('0','Hasta concurso'),
-            ('0','Hasta nuevo llamado')
-        ]
+        self.functionEndType.choices = [ (d.value, det2s(d)) for d in DesignationEndTypes ]
         
     def save(self, session, designation: Designation):
         d = Designation()
@@ -204,6 +200,7 @@ class PromoteDesignationForm(FlaskForm):
         
         d.start = self.start.data
         d.end = self.end.data
+        d.end_type = self.functionEndType.data
         d.function_id = self.function.data
         d.exp = self.exp.data
         d.res = self.res.data
@@ -238,12 +235,7 @@ class ExtendDesignationForm(FlaskForm):
     def _load_values(self, session, silegModel: SilegModel):
         self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session) ]
         self.place.choices = [ (p.id, p.name) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session)) ]
-        self.functionEndType.choices = [
-            ('0','Indeterminado..'),
-            ('0','Fecha de Finalización'),
-            ('0','Hasta concurso'),
-            ('0','Hasta nuevo llamado')
-        ]
+        self.functionEndType.choices = [ (d.value, det2s(d)) for d in DesignationEndTypes ]
         
     def save(self, session, designation: Designation):
         d = Designation()
@@ -255,6 +247,7 @@ class ExtendDesignationForm(FlaskForm):
 
         d.start = self.start.data
         d.end = self.end.data
+        d.end_type = self.functionEndType.data
         d.exp = self.exp.data
         d.res = self.res.data
         d.cor = self.cor.data
