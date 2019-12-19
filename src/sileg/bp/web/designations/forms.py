@@ -51,14 +51,17 @@ class DesignationCreateForm(FlaskForm):
     def save(self, session, silegModel, uid):
         d = Designation()
         d.type = DesignationTypes.ORIGINAL
+        d.user_id = uid
+
         d.start = self.start.data
         d.end = self.end.data
         d.function_id = self.function.data
         d.place_id = self.place.data
-        d.user_id = uid
+        
         d.exp = self.exp.data
         d.res = self.res.data
         d.cor = self.cor.data
+        
         session.add(d)
 
 
@@ -263,7 +266,11 @@ class ExtendDesignationForm(FlaskForm):
         session.add(d)
 
 
+class DeleteDesignationForm(FlaskForm):
 
+    def save(self, session, designation: Designation):
+        designation.deleted = datetime.datetime.now()
+        designation.historic = True
 
 
 class DesignationSearchForm(FlaskForm):
@@ -275,3 +282,6 @@ class PersonSearchForm(FlaskForm):
     query = StringField('Buscar persona por apellido o número de documento')
     class Meta:
         csrf = False        
+
+
+    

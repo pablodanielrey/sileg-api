@@ -10,6 +10,7 @@ from .forms import ExtendDesignationForm, \
                 ConvalidateDesignationForm, \
                 PromoteDesignationForm, \
                 ExtendDesignationForm, \
+                DeleteDesignationForm, \
                 DesignationSearchForm, \
                 PersonSearchForm 
 
@@ -229,6 +230,47 @@ def extend_post(user, did):
     return redirect(url_for('designations.personDesignations', uid=uid))
 
 
+@bp.route('/eliminar/<did>')
+@require_user
+def delete(user, did):
+    """
+        Confirmar la eliminación de la designación
+    """
+    assert did is not None
+
+    with open_sileg_session() as session:
+        form = DeleteDesignationForm()
+        designation = silegModel.get_designations(session, [did])[0]
+        original_uid = designation.user_id
+
+        with open_users_session() as session:
+            person = usersModel.get_users(session, uids=[original_uid])[0]
+
+        return render_template('deleteDesignation.html', user=user, person=person, designation=designation, form=form)
+
+@bp.route('/eliminar/<did>', methods=['POST'])
+@require_user
+def delete_post(user, did):
+    """
+        Eliminación de la designación
+    """
+    assert did is not None
+
+    with open_sileg_session() as session:
+        form = DeleteDesignationForm()
+        designation = silegModel.get_designations(session, [did])[0]
+        uid = designation.user_id
+
+        if not form.is_submitted():
+            print(form.errors)
+            abort(404)
+
+        form.save(session, designation)
+        session.commit()
+
+    return redirect(url_for('designations.personDesignations', uid=uid))
+
+
 """
     ########################################
 """
@@ -249,7 +291,10 @@ def personDesignations(user, uid):
         dids = silegModel.get_designations_by_uuid(session, uid)
         designations = silegModel.get_designations(session, dids)
 
-        return render_template('listPersonDesignations.html', user=user, designations=designations, person=person)
+        active = [d for d in designations if d.deleted is None and not d.historic ]
+
+        return render_template('personDesignations.html', user=user, designations=active, person=person)
+
 
 @bp.route('/crear/<uid>')
 @require_user
