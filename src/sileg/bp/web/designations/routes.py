@@ -2,6 +2,7 @@ from flask import render_template, flash, redirect,request, Markup, url_for, abo
 
 from sileg.auth import require_user
 from sileg.models import silegModel, open_sileg_session, usersModel, open_users_session
+from sileg_model.model.entities.Designation import DesignationTypes
 
 from . import bp
 from .forms import ExtendDesignationForm, \
@@ -13,6 +14,20 @@ from .forms import ExtendDesignationForm, \
                 DeleteDesignationForm, \
                 DesignationSearchForm, \
                 PersonSearchForm 
+
+
+
+def dt2s(dt: DesignationTypes):
+    if dt == DesignationTypes.ORIGINAL:
+        return 'Original'
+    if dt == DesignationTypes.EXTENSION:
+        return 'Prorroga'
+    if dt == DesignationTypes.PROMOTION:
+        return 'Extensión'
+    if dt == DesignationTypes.REPLACEMENT:
+        return 'Suplencia'
+    return ''
+
 
 """
     ############################################
@@ -82,7 +97,7 @@ def replacement_create_designation_post(user, did, uid):
         form.save(session, silegModel, uid, did)
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', uid=original_uid))
+    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=original_uid))
     
 
 """
@@ -130,7 +145,7 @@ def convalidate_post(user, did):
         form.save(session, original_designation)
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', uid=uid))
+    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
 
 """
     ##################################################
@@ -178,7 +193,7 @@ def promote_post(user, did):
         form.save(session, designation)
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', uid=uid))
+    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
 
 """
     ########################################
@@ -227,7 +242,7 @@ def extend_post(user, did):
         form.save(session, designation)
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', uid=uid))
+    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
 
 
 @bp.route('/eliminar/<did>')
@@ -268,7 +283,7 @@ def delete_post(user, did):
         form.save(session, designation)
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', uid=uid))
+    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
 
 
 """
@@ -293,7 +308,7 @@ def personDesignations(user, uid):
 
         active = [d for d in designations if d.deleted is None and not d.historic ]
 
-        return render_template('personDesignations.html', user=user, designations=active, person=person)
+        return render_template('personDesignations.html', dt2s=dt2s, user=user, designations=active, person=person)
 
 
 @bp.route('/crear/<uid>')
@@ -336,7 +351,7 @@ def create_post(user, uid):
         form.save(session, silegModel, uid)
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', uid=uid))
+    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
 
 
 @bp.route('/buscar')
