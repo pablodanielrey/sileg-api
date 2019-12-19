@@ -19,7 +19,6 @@ def dt2s(dt: DesignationTypes):
         return 'Suplencia'
     return ''
 
-
 @bp.route('/personal/<uid>')
 @require_user
 def create_personal_leave(user, uid):
