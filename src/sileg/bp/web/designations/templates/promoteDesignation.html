@@ -6,13 +6,18 @@
         <div class="card-panel grey lighten-5">
             <div class="row">
                 <div class="col m8">
-                    <h4>Designación</h4>
+                    <h4>Extensión</h4>
                 </div>
                 <div class="col m3">
                     <p>Nombre: {{person.firstname}}</p>
                     <p>Apellido: {{person.lastname}}</p>
                     <p>DNI: {{person.person_number}}</p>
                 </div>
+                <div class="col m3">
+                    <h5>Designación</h5>
+                    <p>Cargo: {{designation.function.name}}</p>
+                    <p>Ubicación: {{designation.place.name}}</p>
+                </div>                
             </div>
             <div class="divider"></div>
             <form action="" method="post">
@@ -57,7 +62,6 @@
                         {{ form.end(class="datepicker") }}
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col m1"></div>
                     <div class="col m4">
@@ -85,30 +89,12 @@
                         {{ form.place }}
                     </div>
                 </div>
-
                 <div class="divider"></div>
-                <div class="row">
-                    <div class="col m5">
-                        <h5 class="grey-text text-darken-2">Ordenanza 174</h5>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col m1"></div>
-                    <div class="col m3">
-                        <label>{{ form.adjusted174(class="filled-in") }}<span>Está ajustada</span></label>
-                    </div>
-                </div>
-                <div class="divider"></div>
-                <br>
                 <br>
                 <div class="row">
                     <div class="col m3"></div>
-                    <div class="col m1">
-                        <button class="btn red lighten-2" type="reset">Limpiar</button>
-                    </div>
-                    <div class="col m3"></div>
                     <div class="col m3">
-                        <button class="btn light-blue darken-3">crear designacion</button>
+                        <button class="btn light-blue darken-3">Extender</button>
                     </div>
                     <div class="col m3"></div>
                 </div>

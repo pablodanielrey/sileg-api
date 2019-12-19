@@ -6,12 +6,24 @@
         <div class="card-panel grey lighten-5">
             <div class="row">
                 <div class="col m8">
-                    <h4>Designación</h4>
+                    <div class="col m3">
+                            <h5>Original</h5>
+                            <p>Nombre: {{person.firstname}}</p>
+                            <p>Apellido: {{person.lastname}}</p>
+                            <p>DNI: {{person.person_number}}</p>
+                    </div>
+                    <div class="col m3">
+                            <h5>Designación</h5>
+                            <p>Cargo: {{designation.function.name}}</p>
+                            <p>Ubicación: {{designation.place.name}}</p>
+                    </div>
                 </div>
+
                 <div class="col m3">
-                    <p>Nombre: {{person.firstname}}</p>
-                    <p>Apellido: {{person.lastname}}</p>
-                    <p>DNI: {{person.person_number}}</p>
+                    <h5>Suplente</h5>
+                    <p>Nombre: {{replacement.firstname}}</p>
+                    <p>Apellido: {{replacement.lastname}}</p>
+                    <p>DNI: {{replacement.person_number}}</p>
                 </div>
             </div>
             <div class="divider"></div>
@@ -100,15 +112,10 @@
                 </div>
                 <div class="divider"></div>
                 <br>
-                <br>
                 <div class="row">
                     <div class="col m3"></div>
-                    <div class="col m1">
-                        <button class="btn red lighten-2" type="reset">Limpiar</button>
-                    </div>
-                    <div class="col m3"></div>
                     <div class="col m3">
-                        <button class="btn light-blue darken-3">crear designacion</button>
+                        <button class="btn light-blue darken-3">crear suplencia</button>
                     </div>
                     <div class="col m3"></div>
                 </div>

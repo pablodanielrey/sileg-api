@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col m1"></div>
+    <div class="col m10">
+        <div class="card-panel grey lighten-5">
+            <div class="center">
+                <h4> Listado de Designaciones </h4>
+            </div>
+            <div class="divider"></div>
+            <div class="row">
+                <div class="col m2"></div>
+                <div class="col m4">
+                    <p>Nombre: {{person.firstname}}</p>
+                    <p>Apellido: {{person.lastname}}</p>
+                    <p>DNI: {{person.person_number}}</p>
+                </div>
+                <div class="col m4">
+                    <p>Fecha de Nacimiento: {{person.birthdate}}</p>
+                    <p>Direccion: {{person.address}}</p>
+                </div>
+                <div class="col m2"></div>
+            </div>
+            <div class="divider"></div>
+            <br>
+            <div class="row">
+                <div class="col m12 center">
+                    <a class="btn waves-effect blue lighten-1" href="{{url_for('designations.create_get', uid=person.id)}}">Nueva Designación</a>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <br>
+            <div>
+                <table class="responsive-table highlight">
+                    <thead>
+                        <tr>
+                            <th class="center">Tipo</th>
+                            <th class="center">Lugar</th>
+                            <th class="center">Cargo</th>
+                            <th class="center">Carácter</th>
+                            <th class="center">Dedicacion</th>
+                            <th class="center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in designations %}
+                        {% if d['relatedTo'] %}
+                        <tr class="blue-grey lighten-3">
+                        {% else %}
+                        <tr>
+                        {% endif %}
+                            <td class="center"><a class="blue-text darken-4" href="#type">{{ dt2s(d.type) }}</a></td>
+                            <td class="center"><a class="blue-text darken-4" href="#place">{{ d.place.name }}, ({{d.place.type.value}})</a></td>
+                            <td class="center"><a class="blue-text darken-4" href="#cargo">{{ d.function.name.split('-')[0] }}</a></td>
+                            <td class="center"><a class="blue-text darken-4" href="#caracter">{{ d.function.name.split('-')[2] }}</a></td>
+                            <td class="center"><a class="blue-text darken-4" href="#cargopplanta">{{ d.function.name.split('-')[1] }}</a></td>
+                            <td class="center"><a class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3" href="#" data-target='dropdown1'><i class="material-icons">edit</i></a></td>
+                        </tr>
+                        <ul id='dropdown1' class='dropdown-content'>
+                                <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
+                                <li class="divider" tabindex="-1"></li>
+                                <li><a class="blue-text darken-4" href="{{url_for('designations.promote', did=d.id)}}">Extender</a></li>
+                                <li><a class="blue-text darken-4" href="{{url_for('designations.extend', did=d.id)}}">Prorrogar</a></li>
+                                <li><a class="blue-text darken-4" href="#!">Baja</a></li>
+                                <li><a class="blue-text darken-4" href="{{url_for('designations.convalidate', did=d.id)}}">Convalidar</a></li>
+                                <li><a class="blue-text darken-4" href="{{url_for('designations.replacement_select_person', did=d.id)}}">Suplencia</a></li>
+                                <li><a class="blue-text darken-4" href="{{url_for('leavelicense.createDesignationLeave')}}">Licencia</a></li>
+                                <li><a class="red-text darken-4" href="{{url_for('designations.delete', did=d.id)}}">Eliminar</a></li>
+                        </ul>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
