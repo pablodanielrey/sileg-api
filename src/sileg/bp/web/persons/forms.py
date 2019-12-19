@@ -1,3 +1,4 @@
+import json
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, DateTimeField, SelectField, FileField
 from wtforms.fields.html5 import EmailField
@@ -6,7 +7,7 @@ from wtforms.validators import ValidationError, DataRequired, EqualTo, Email
 from sileg.helpers.apiHandler import getStates
 
 from sileg.models import usersModel, open_users_session
-from users.model.entities.User import User, Mail, Phone, UserFiles, MailTypes, PhoneTypes, UserFileTypes, UsersLog
+from users.model.entities.User import User, Mail, Phone, UserFiles, MailTypes, PhoneTypes, UserFileTypes, UsersLog, UserLogTypes
 
 class PersonCreateForm(FlaskForm):
     lastname = StringField('Apellidos', validators=[DataRequired()])
@@ -93,7 +94,15 @@ class PersonCreateForm(FlaskForm):
                     newWorkEmail.type = MailTypes.INSTITUTIONAL
                     newWorkEmail.user_id = newUser.id
                     session.add(newWorkEmail)
-                    toLog.append(newWorkEmail.as_dict())
+                    toLog.append({  'id': newWorkEmail.id,
+                                    'created': newWorkEmail.created,
+                                    'updated': newWorkEmail.updated,
+                                    'deleted': newWorkEmail.deleted,
+                                    'type': newWorkEmail.type.value,
+                                    'email': newWorkEmail.email,
+                                    'confirmed': newWorkEmail.confirmed,
+                                    'user_id': newWorkEmail.user_id,
+                                })
 
                 if self.personal_email.data:
                     newPersonalMail = Mail()
@@ -101,7 +110,15 @@ class PersonCreateForm(FlaskForm):
                     newPersonalMail.type = MailTypes.NOTIFICATION
                     newPersonalMail.user_id = newUser.id
                     session.add(newPersonalMail)
-                    toLog.append(newPersonalMail.as_dict())
+                    toLog.append({  'id': newPersonalMail.id,
+                                    'created': newPersonalMail.created,
+                                    'updated': newPersonalMail.updated,
+                                    'deleted': newPersonalMail.deleted,
+                                    'type': newPersonalMail.type.value,
+                                    'email': newPersonalMail.email,
+                                    'confirmed': newPersonalMail.confirmed,
+                                    'user_id': newPersonalMail.user_id,
+                                })
 
                 if self.land_line.data:
                     landLinePhone = Phone()
@@ -109,7 +126,15 @@ class PersonCreateForm(FlaskForm):
                     landLinePhone.number = self.land_line.data
                     landLinePhone.user_id = newUser.id
                     session.add(landLinePhone)
-                    toLog.append(landLinePhone.as_dict())
+                    toLog.append({  'id': landLinePhone.id,
+                                    'created': landLinePhone.created,
+                                    'updated': landLinePhone.updated,
+                                    'deleted': landLinePhone.deleted,
+                                    'type': landLinePhone.type.value,
+                                    'email': landLinePhone.email,
+                                    'confirmed': landLinePhone.confirmed,
+                                    'user_id': landLinePhone.user_id,
+                                })
 
                 if self.mobile_number.data:
                     mobileNumber = Phone()
@@ -117,7 +142,15 @@ class PersonCreateForm(FlaskForm):
                     mobileNumber.number = self.mobile_number.data
                     mobileNumber.user_id = newUser.id
                     session.add(mobileNumber)
-                    toLog.append(mobileNumber.as_dict())
+                    toLog.append({  'id': mobileNumber.id,
+                                    'created': mobileNumber.created,
+                                    'updated': mobileNumber.updated,
+                                    'deleted': mobileNumber.deleted,
+                                    'type': mobileNumber.type.value,
+                                    'email': mobileNumber.email,
+                                    'confirmed': mobileNumber.confirmed,
+                                    'user_id': mobileNumber.user_id,
+                                })
 
                 if self.person_numberFile.data:
                     personNumberFile = UserFiles()
@@ -136,11 +169,12 @@ class PersonCreateForm(FlaskForm):
                     toLog.append(laboralNumberFile.as_dict())
 
                 newLog = UsersLog()
+                newLog.entity_id = newUser.id
                 newLog.authorizer_id = authorizer_id
-                newLog.data = toLog
+                newLog.type = UserLogTypes.CREATE
+                newLog.data = json.dumps(toLog)
                 session.add(newLog)
-                
-                #session.commit()
+                session.commit()
 
         #TODO Sileg model
         newSeniority = {
