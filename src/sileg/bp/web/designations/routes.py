@@ -326,7 +326,7 @@ def create_get(user, uid):
         form = DesignationCreateForm(session, silegModel)
         #form._load_values(session, silegModel)
  
-    return render_template('createDesignations.html', user=user, person=person, form=form)
+    return render_template('createDesignation.html', user=user, person=person, form=form)
 
 @bp.route('/crear/<uid>', methods=['POST'])
 @require_user
