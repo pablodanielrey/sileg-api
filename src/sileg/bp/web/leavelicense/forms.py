@@ -32,7 +32,7 @@ class LeaveLicensePersonalCreateForm(FlaskForm):
     def __init__(self):
         super().__init__()
         self.type.choices = [ (t.value, lt2s(t)) for t in LicenseTypes ]
-        self.end_type.choices = [ (t.vale, et2s(t)) for t in LicenseEndTypes ]
+        self.end_type.choices = [ (t.value, et2s(t)) for t in LicenseEndTypes ]
         self.article.choices = [('0','Seleccione una opción...'),('0','Ejemplo 1'),('0','Ejemplo 2'),('0','Ejemplo 3')]
 
     def save(self, session, silegModel:SilegModel, uid):

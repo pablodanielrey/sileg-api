@@ -16,6 +16,7 @@
             </div>
             <div class="divider"></div>
             <form action="" method="post">
+                {{ form.csrf_token }}
                 <div class="row">
                     <div class="col m5">
                         <h5 class="grey-text text-darken-2">Datos de licencia</h5>
@@ -24,13 +25,13 @@
                 <div class="row">
                     <div class="col m1"></div>
                     <div class="col m4">
-                        {{ form.leaveType.label }}
-                        {{ form.leaveType }}
+                        {{ form.type.label }}
+                        {{ form.type }}
                     </div>
                     <div class="col m1"></div>
                     <div class="col m4">
-                        {{ form.leaveArticle.label }}
-                        {{ form.leaveArticle }}
+                        {{ form.article.label }}
+                        {{ form.article }}
                     </div>
                 </div>
                 <div class="row">
@@ -50,21 +51,21 @@
                 <div class="row">
                     <div class="col m1"></div>
                     <div class="col m4 input-field">
-                        {{ form.leaveFrom.label }}
-                        {{ form.leaveFrom(class="datepicker") }}
+                        {{ form.start.label }}
+                        {{ form.start(class="datepicker") }}
                     </div>
                     <div class="col m1"></div>
                     <div class="col m4 input-field">
-                        {{ form.leaveTo.label }}
-                        {{ form.leaveTo(class="datepicker") }}
+                        {{ form.end.label }}
+                        {{ form.end(class="datepicker") }}
                     </div>
                     <div class="col m1"></div>
                 </div>
                 <div class="row">
                     <div class="col m1"></div>
                     <div class="col m4">
-                        {{ form.leaveEndType.label }}
-                        {{ form.leaveEndType }}
+                        {{ form.end_type.label }}
+                        {{ form.end_type }}
                     </div>
                 </div>
                 <div class="divider"></div>
