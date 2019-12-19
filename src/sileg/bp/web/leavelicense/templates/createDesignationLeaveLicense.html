@@ -6,31 +6,22 @@
         <div class="card-panel grey lighten-5">
             <div class="row">
                 <div class="col m8">
-                    <h4>Alta de Licencia de Designacion</h4>
+                    <h4>Alta de Licencia de Designación</h4>
                 </div>
                 <div class="col m3">
                     <p>Nombre: {{person.firstname}}</p>
                     <p>Apellido: {{person.lastname}}</p>
-                    <p>DNI: {{person.dni}}</p>
+                    <p>DNI: {{person.person_number}}</p>
                 </div>
-            </div>
-            <div class="divider"></div>
-            <div class="row">
-                <div class="col m1"></div>
-                <div class="col m5">
-                    <p>Tipo de Cargo: Ayudante Diplomado</p>
-                    <p>Caracter: Interino</p>
-                    <p>Lugar de Trabajo: Lugar de Ejemplo</p>
-                </div>
-                <div class="col m5">
-                    <p>Dedicación: Exclusiva desde 01/02/2020 hasta 31/12/2020</p>
-                    <p>Área: Área de Ejemplo</p>
-                    <p>Función: Función de Ejemplo</p>
-                </div>
-                <div class="col m1"></div>
+                <div class="col m3">
+                    <h5>Designación</h5>
+                    <p>Cargo: {{designation.function.name}}</p>
+                    <p>Ubicación: {{designation.place.name}}</p>
+                </div>                
             </div>
             <div class="divider"></div>
             <form action="" method="post">
+                {{ form.csrf_token }}
                 <div class="row">
                     <div class="col m5">
                         <h5 class="grey-text text-darken-2">Datos de licencia</h5>
@@ -39,13 +30,13 @@
                 <div class="row">
                     <div class="col m1"></div>
                     <div class="col m4">
-                        {{ form.leaveType.label }}
-                        {{ form.leaveType }}
+                        {{ form.type.label }}
+                        {{ form.type }}
                     </div>
                     <div class="col m1"></div>
                     <div class="col m4">
-                        {{ form.leaveArticle.label }}
-                        {{ form.leaveArticle }}
+                        {{ form.article.label }}
+                        {{ form.article }}
                     </div>
                 </div>
                 <div class="row">
@@ -65,21 +56,21 @@
                 <div class="row">
                     <div class="col m1"></div>
                     <div class="col m4 input-field">
-                        {{ form.leaveFrom.label }}
-                        {{ form.leaveFrom(class="datepicker") }}
+                        {{ form.start.label }}
+                        {{ form.start(class="datepicker") }}
                     </div>
                     <div class="col m1"></div>
                     <div class="col m4 input-field">
-                        {{ form.leaveTo.label }}
-                        {{ form.leaveTo(class="datepicker") }}
+                        {{ form.end.label }}
+                        {{ form.end(class="datepicker") }}
                     </div>
                     <div class="col m1"></div>
                 </div>
                 <div class="row">
                     <div class="col m1"></div>
                     <div class="col m4">
-                        {{ form.leaveEndType.label }}
-                        {{ form.leaveEndType }}
+                        {{ form.end_type.label }}
+                        {{ form.end_type }}
                     </div>
                 </div>
                 <div class="divider"></div>
@@ -91,26 +82,22 @@
                 <div class="row">
                     <div class="col m1"></div>
                     <div class="col m3 input-field">
-                        {{ form.leaveResolutionNumber.label }}
-                        {{ form.leaveResolutionNumber }}
+                        {{ form.res.label }}
+                        {{ form.res }}
                     </div>
                     <div class="col m1"></div>
                     <div class="col m3 input-field">
-                        {{ form.leaveRecordNumber.label }}
-                        {{ form.leaveRecordNumber }}
+                        {{ form.exp.label }}
+                        {{ form.exp }}
                     </div>
                     <div class="col m3 input-field">
-                        {{ form.leaveRelatedNumber.label }}
-                        {{ form.leaveRelatedNumber }}
+                        {{ form.cor.label }}
+                        {{ form.cor }}
                     </div>
                 </div>
                 <div class="divider"></div>
                 <br>
                 <div class="row">
-                    <div class="col m3"></div>
-                    <div class="col m1">
-                        <button class="btn red lighten-2" type="reset">Limpiar</button>
-                    </div>
                     <div class="col m3"></div>
                     <div class="col m3">
                         <button class="btn light-blue darken-3">Crear Licencia</button>
@@ -122,26 +109,4 @@
     </div>
     <div class="col m1"></div>
 </div>
-<script type="text/javascript">
-    $(function () {
-        $('select').formSelect();
-        $('.datepicker').datepicker({
-            format: 'dd-mmmm-yyyy',
-            minDate: new Date(1900, 1, 1),
-            showClearBtn: true,
-            autoClose: true,
-            i18n: {
-                months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-                monthsShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-                weekdays: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
-                weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
-                weekdaysAbbrev: ["D", "L", "M", "M", "J", "V", "S"],
-                today: 'Hoy',
-                clear: 'Limpiar',
-                done: 'Aceptar',
-                cancel: 'Cancelar',
-            },
-        });
-    });
-</script>
 {% endblock %}

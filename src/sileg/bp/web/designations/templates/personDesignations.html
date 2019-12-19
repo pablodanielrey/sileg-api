@@ -64,7 +64,7 @@
                                 <li><a class="blue-text darken-4" href="#!">Baja</a></li>
                                 <li><a class="blue-text darken-4" href="{{url_for('designations.convalidate', did=d.id)}}">Convalidar</a></li>
                                 <li><a class="blue-text darken-4" href="{{url_for('designations.replacement_select_person', did=d.id)}}">Suplencia</a></li>
-                                <li><a class="blue-text darken-4" href="{{url_for('leavelicense.createDesignationLeave')}}">Licencia</a></li>
+                                <li><a class="blue-text darken-4" href="{{url_for('leavelicense.create_designation_leave_license', did=d.id)}}">Licencia</a></li>
                                 <li><a class="red-text darken-4" href="{{url_for('designations.delete', did=d.id)}}">Eliminar</a></li>
                         </ul>
                         {% endfor %}

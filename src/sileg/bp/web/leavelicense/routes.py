@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect,request, Markup, url_for, abort
 from . import bp
 
-from .forms import LeaveLicensePersonalCreateForm, LeaveLicenseDesignationCreateForm
+from .forms import LeaveLicensePersonalCreateForm, DesignationLeaveLicenseCreateForm
 
 from sileg.auth import require_user
 from sileg.models import usersModel, open_users_session, silegModel, open_sileg_session
@@ -50,16 +50,41 @@ def create_personal_leave_post(user, uid):
 
     return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
 
-@bp.route('/designacion/crear')
+@bp.route('/designacion/<did>')
 @require_user
-def createDesignationLeave(user):
+def create_designation_leave_license(user, did):
     """
     Pagina de creacion de Licencia de Designacion
     """
-    form = LeaveLicenseDesignationCreateForm()
-    person = {
-        'dni': '12345678',
-        'firstname': 'Pablo',
-        'lastname': 'Rey'
-    }
-    return render_template('createDesignationLeaveLicense.html', user=user, person=person, form=form)
+    assert did is not None
+    
+    with open_sileg_session() as session:
+        designations = silegModel.get_designations(session, [did])
+        if not designations or len(designations) <= 0:
+            abort(404)
+
+        designation = designations[0]
+        uid = designation.user_id
+        with open_users_session() as usession:
+            person = usersModel.get_users(usession, [uid])[0]
+
+            form = DesignationLeaveLicenseCreateForm()
+            return render_template('createDesignationLeaveLicense.html', user=user, person=person, designation=designation, form=form)
+
+@bp.route('/designacion/<did>', methods=['POST'])
+@require_user
+def create_designation_leave_license_post(user, did):
+    assert did is not None
+    with open_sileg_session() as session:
+        uid = silegModel.get_designations(session, [did])[0].user_id
+        
+        form = DesignationLeaveLicenseCreateForm()
+
+        if not form.validate_on_submit():
+            print(form.errors)
+            abort(404)
+
+        form.save(session, silegModel, did)
+        session.commit()
+
+    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))    
