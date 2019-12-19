@@ -86,4 +86,14 @@ def degrees(user,uid):
     }]
     form = TitleAssignForm()
     return render_template('showDegrees.html', user=user,person=person, titles=titles, form=form)
+
+@bp.route('<uid>')
+@require_user
+def personData(user,uid):
+    """
+    Pagina de vista de datos personales
+    """
+    with open_users_session() as session:
+        person = usersModel.get_users(session, [uid])[0]
+    return render_template('showPerson.html', user=user,person=person)
     

@@ -38,8 +38,8 @@
                     <tbody>
                         {% for p in persons %}
                         <tr>
-                            <td><a class="blue-text darken-4" href="#userId">{{ p.firstname }}, {{ p.lastname }}</a> </td>
-                            <td><a class="blue-text darken-4" href="#">{{ p.person_number }}</a></td>
+                            <td><a class="blue-text darken-4" href="{{url_for('persons.personData', uid=p.id)}}">{{ p.firstname }}, {{ p.lastname }}</a> </td>
+                            <td><a class="blue-text darken-4" href="{{url_for('persons.personData', uid=p.id)}}">{{ p.person_number }}</a></td>
                             <td class="center">
                                 <a class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3" href="#" data-target="d{{p.id}}">
                                     <i class="material-icons">edit</i>
