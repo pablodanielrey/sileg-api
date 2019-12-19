@@ -58,7 +58,7 @@
                     <li class="divider" tabindex="-1"></li>
                     <li><a class="blue-text darken-4" href="{{url_for('designations.personDesignations', uid=p.id)}}">Designaciones</a></li>
                     <li><a class="blue-text darken-4" href="{{url_for('persons.degrees', uid=p.id)}}">Titulos</a></li>
-                    <li><a class="blue-text darken-4" href="{{url_for('leavelicense.createPersonalLeave', uid=p.id)}}">Licencia</a></li>
+                    <li><a class="blue-text darken-4" href="{{url_for('leavelicense.create_personal_leave', uid=p.id)}}">Licencia</a></li>
                 </ul>
                 {% endfor %}
             </div>
