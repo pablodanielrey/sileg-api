@@ -6,7 +6,7 @@ from wtforms.validators import ValidationError, DataRequired, EqualTo, Email
 from sileg.helpers.apiHandler import getStates
 
 from sileg.models import usersModel, open_users_session
-from users.model.entities.User import User, Mail, Phone, UserFiles, MailTypes, PhoneTypes, UserFileTypes
+from users.model.entities.User import User, Mail, Phone, UserFiles, MailTypes, PhoneTypes, UserFileTypes, UsersLog
 
 class PersonCreateForm(FlaskForm):
     lastname = StringField('Apellidos', validators=[DataRequired()])
@@ -66,68 +66,81 @@ class PersonCreateForm(FlaskForm):
             if number < 0:
                 raise ValidationError('El número debe ser mayor a 0')
 
-    def save(self):
+    def save(self,authorizer_id):
         """
         Persistencia de datos en DB
         """
-        #TODO Chequear si el dni existe para otra persona
+        toLog = []
         with open_users_session() as session:
-            newUser = User()
-            newUser.lastname = self.lastname.data
-            newUser.firstname = self.firstname.data
-            newUser.person_number_type = self.person_number_type.data
-            newUser.person_number = self.person_number.data
-            newUser.gender = self.gender.data
-            newUser.marital_status = self.marital_status.data
-            newUser.birthplace = self.birthplace.data
-            newUser.birthdate = self.birthdate.data
-            newUser.residence = self.residence.data
-            newUser.address = self.address.data
+            if not usersModel.get_uid_person_number(session, self.person_number.data):
+                newUser = User()
+                newUser.lastname = self.lastname.data
+                newUser.firstname = self.firstname.data
+                newUser.person_number_type = self.person_number_type.data
+                newUser.person_number = self.person_number.data
+                newUser.gender = self.gender.data if self.gender.data != '0' else None
+                newUser.marital_status = self.marital_status.data if self.marital_status.data != '0' else None
+                newUser.birthplace = self.birthplace.data
+                newUser.birthdate = self.birthdate.data if self.birthdate.data else None
+                newUser.residence = self.residence.data
+                newUser.address = self.address.data
+                session.add(newUser)
+                toLog.append(newUser.as_dict())
+                
+                if self.work_email.data:
+                    newWorkEmail = Mail()
+                    newWorkEmail.email = self.work_email.data
+                    newWorkEmail.type = MailTypes.INSTITUTIONAL
+                    newWorkEmail.user_id = newUser.id
+                    session.add(newWorkEmail)
+                    toLog.append(newWorkEmail.as_dict())
 
-            session.add(newUser)
-            if self.work_email.data:
-                newWorkEmail = Mail()
-                newWorkEmail.email = self.work_email.data
-                newWorkEmail.type = MailTypes.INSTITUTIONAL
-                newWorkEmail.user_id = newUser.id
-                session.add(newWorkEmail)
-            
-            if self.personal_email.data:
-                newPersonalMail = Mail()
-                newPersonalMail.data = self.personal_email.data
-                newPersonalMail.type = MailTypes.NOTIFICATION
-                newPersonalMail.user_id = newUser.id
-                session.add(newPersonalMail)
-            
-            if self.land_line.data:
-                landLinePhone = Phone()
-                landLinePhone.phone_type = PhoneTypes.LANDLINE
-                landLinePhone.number = self.land_line.data
-                landLinePhone.user_id = newUser.id
-                session.add(landLinePhone)
-            
-            if self.mobile_number.data:
-                mobileNumber = Phone()
-                mobileNumber.phone_type = PhoneTypes.CELLPHONE
-                mobileNumber.number = self.mobile_number.data
-                mobileNumber.user_id = newUser.id
-                session.add(mobileNumber)
-            
-            if self.person_numberFile.data:
-                personNumberFile = UserFiles()
-                personNumberFile.mimetype = None
-                personNumberFile.type = UserFileTypes.PERSONNUMBER
-                personNumberFile.content = None
-                session.add(personNumberFile)
-            
-            if self.laboral_numberFile.data:
-                laboralNumberFile = UserFiles()
-                laboralNumberFile.mimetype = None
-                laboralNumberFile.type = UserFileTypes.LABORALNUMBER
-                laboralNumberFile.content = None
-                session.add(laboralNumberFile)
-            
-            #session.commit()
+                if self.personal_email.data:
+                    newPersonalMail = Mail()
+                    newPersonalMail.email = self.personal_email.data
+                    newPersonalMail.type = MailTypes.NOTIFICATION
+                    newPersonalMail.user_id = newUser.id
+                    session.add(newPersonalMail)
+                    toLog.append(newPersonalMail.as_dict())
+
+                if self.land_line.data:
+                    landLinePhone = Phone()
+                    landLinePhone.type = PhoneTypes.LANDLINE
+                    landLinePhone.number = self.land_line.data
+                    landLinePhone.user_id = newUser.id
+                    session.add(landLinePhone)
+                    toLog.append(landLinePhone.as_dict())
+
+                if self.mobile_number.data:
+                    mobileNumber = Phone()
+                    mobileNumber.type = PhoneTypes.CELLPHONE
+                    mobileNumber.number = self.mobile_number.data
+                    mobileNumber.user_id = newUser.id
+                    session.add(mobileNumber)
+                    toLog.append(mobileNumber.as_dict())
+
+                if self.person_numberFile.data:
+                    personNumberFile = UserFiles()
+                    personNumberFile.mimetype = None
+                    personNumberFile.type = UserFileTypes.PERSONNUMBER
+                    personNumberFile.content = None
+                    session.add(personNumberFile)
+                    toLog.append(personNumberFile.as_dict())
+
+                if self.laboral_numberFile.data:
+                    laboralNumberFile = UserFiles()
+                    laboralNumberFile.mimetype = None
+                    laboralNumberFile.type = UserFileTypes.LABORALNUMBER
+                    laboralNumberFile.content = None
+                    session.add(laboralNumberFile)
+                    toLog.append(laboralNumberFile.as_dict())
+
+                newLog = UsersLog()
+                newLog.authorizer_id = authorizer_id
+                newLog.data = toLog
+                session.add(newLog)
+                
+                #session.commit()
 
         #TODO Sileg model
         newSeniority = {

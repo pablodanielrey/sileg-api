@@ -16,7 +16,7 @@ def create(user):
     """
     form = PersonCreateForm()
     if form.validate_on_submit():
-        form.save()
+        form.save(user['sub'])
     return render_template('createPerson.html', user=user, form=form)
 
 @bp.route('/buscar')
