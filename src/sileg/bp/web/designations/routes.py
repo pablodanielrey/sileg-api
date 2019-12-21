@@ -267,6 +267,20 @@ def extend_post(user, did):
     return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
 
 
+@bp.route('/restaurar/<did>')
+@require_user
+def undelete(user, did):
+    assert did is not None
+    with open_sileg_session() as session:
+        d = silegModel.get_designations(session, [did])[0]
+        uid = d.user_id
+        d.deleted = None
+        d.historic = False
+        session.commit()
+    
+    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))        
+
+
 @bp.route('/eliminar/<did>')
 @require_user
 def delete(user, did):

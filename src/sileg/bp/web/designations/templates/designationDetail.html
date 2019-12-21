@@ -41,6 +41,11 @@
                     <p>Tipo de Fin: {{ det2s(designation.end_type) }}</p>
                     <p>Expediente: {{designation.exp}} / {{designation.cor}}</p>
                     <p>Resolución: {{designation.res}}</p>
+                    {% if designation.deleted %}
+                        <p>Eliminada: {{designation.deleted}}</p>
+                    {% else %}
+                        <p>Eliminada: NO </p>
+                    {% endif %}
                 </div>
 
                 <div class="col m4">
@@ -48,6 +53,10 @@
                     <a class="btn waves-effect blue lighten-1" href="{{url_for('designations.promote', did=designation.id)}}">Extender</a>
                     <a class="btn waves-effect blue lighten-1" href="{{url_for('leavelicense.create_designation_leave_license', did=designation.id)}}">Licencia</a>
                     <a class="btn waves-effect blue lighten-1" href="{{url_for('designations.replacement_select_person', did=designation.id)}}">Suplencia</a>
+
+                    {% if designation.deleted %}
+                        <a class="btn waves-effect blue lighten-1" href="{{url_for('designations.undelete', did=designation.id)}}">Restaurar</a>
+                    {% endif %}
                 </div>
         
             </div>            
