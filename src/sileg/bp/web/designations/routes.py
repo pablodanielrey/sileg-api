@@ -378,7 +378,7 @@ def personDesignations(user, uid):
         dids = silegModel.get_designations_by_uuid(session, uid)
         designations = silegModel.get_designations(session, dids)
 
-        original = [d for d in designations if d.deleted is None and not d.historic and d.type == DesignationTypes.ORIGINAL]
+        original = [d for d in designations if d.deleted is None and not d.historic and (d.type == DesignationTypes.ORIGINAL or d.type == DesignationTypes.REPLACEMENT)]
 
         #armo el grupo de las designaciones relacionadas con el cargo original
         active = []
