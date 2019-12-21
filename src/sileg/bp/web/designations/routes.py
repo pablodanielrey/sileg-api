@@ -290,6 +290,12 @@ def delete_post(user, did):
     ########################################
 """
 
+def _is_extension(d):
+    return d.type == DesignationTypes.EXTENSION
+
+def _is_promotion(d):
+    return d.type == DesignationTypes.PROMOTION
+
 @bp.route('/listado/<uid>')
 @require_user
 def personDesignations(user, uid):
@@ -306,9 +312,9 @@ def personDesignations(user, uid):
         dids = silegModel.get_designations_by_uuid(session, uid)
         designations = silegModel.get_designations(session, dids)
 
-        active = [d for d in designations if d.deleted is None and not d.historic ]
+        active = [d for d in designations if d.deleted is None and not d.historic and d.type == DesignationTypes.ORIGINAL ]
 
-        return render_template('personDesignations.html', dt2s=dt2s, user=user, designations=active, person=person)
+        return render_template('personDesignations.html', dt2s=dt2s, user=user, designations=active, person=person, is_ext=_is_extension, is_prom=_is_promotion)
 
 
 @bp.route('/crear/<uid>')

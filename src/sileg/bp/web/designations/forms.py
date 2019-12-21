@@ -247,7 +247,7 @@ class ExtendDesignationForm(FlaskForm):
 
         d.start = self.start.data
         d.end = self.end.data
-        d.end_type = self.functionEndType.data
+        d.end_type = DesignationEndTypes(self.functionEndType.data)
         d.exp = self.exp.data
         d.res = self.res.data
         d.cor = self.cor.data
