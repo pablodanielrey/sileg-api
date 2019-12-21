@@ -4,10 +4,10 @@
 <script>
 function toggle(id) {
     var x = document.getElementById(id);
-    if (x.style.display === "none") {
-      x.style.display = "table";
+    if (x.style.visibility === "collapse") {
+      x.style.visibility = "visible";
     } else {
-      x.style.display = "none";
+      x.style.visibility = "collapse";
     }
   }
 </script>
@@ -25,7 +25,7 @@ function toggle(id) {
                 <div class="col m4">
                     <p>Nombre: {{person.firstname}}</p>
                     <p>Apellido: {{person.lastname}}</p>
-                    <p>DNI: {{person.person_number}}</p>
+                    <p>DNI: <a href="{{url_for('persons.personData',uid=person.id)}}">{{person.person_number}}</a></p>
                 </div>
                 <div class="col m4">
                     <p>Fecha de Nacimiento: {{person.birthdate}}</p>
@@ -51,6 +51,8 @@ function toggle(id) {
                             <th class="center">Cargo</th>
                             <th class="center">Carácter</th>
                             <th class="center">Dedicacion</th>
+                            <th class="center">Inicio</th>
+                            <th class="center">Fin (Calculado)</th>
                             <th class="center">Acciones</th>
                         </tr>
                     </thead>
@@ -64,11 +66,13 @@ function toggle(id) {
                             <tr>
                             {% endif %}
                             -->
-                                <td class="center"><a class="blue-text darken-4" href="#type">{{ dt2s(d.type) }}</a></td>
+                                <td class="center"><a class="blue-text darken-4" href="{{url_for('designations.designation_detail', did=d.id)}}">{{ dt2s(d.type) }}</a></td>
                                 <td class="center"><a class="blue-text darken-4" href="#place">{{ d.place.name }}, ({{d.place.type.value}})</a></td>
                                 <td class="center"><a class="blue-text darken-4" href="#cargo">{{ d.function.name.split('-')[0] }}</a></td>
                                 <td class="center"><a class="blue-text darken-4" href="#caracter">{{ d.function.name.split('-')[2] }}</a></td>
                                 <td class="center"><a class="blue-text darken-4" href="#cargopplanta">{{ d.function.name.split('-')[1] }}</a></td>
+                                <td class="center"><a class="blue-text darken-4" href="#type">{{ d.start }}</a></td>
+                                <td class="center"><a class="blue-text darken-4" href="#type">{{ cend(d) }}</a></td>
                                 <td class="center">
                                     <a class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3" href="#" data-target='dropdown-{{d.id}}'>
                                         <i class="material-icons">edit</i>
@@ -78,6 +82,7 @@ function toggle(id) {
                             </tr>
                             <ul id='dropdown-{{d.id}}' class='dropdown-content'>
                                     <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
+                                    <li><a class="red-text darken-4" href="{{url_for('designations.designation_detail', did=d.id)}}">Detalle</a></li>
                                     <li class="divider" tabindex="-1"></li>
                                     <li><a class="blue-text darken-4" href="{{url_for('designations.promote', did=d.id)}}">Extender</a></li>
                                     <li><a class="blue-text darken-4" href="{{url_for('designations.extend', did=d.id)}}">Prorrogar</a></li>
@@ -89,7 +94,7 @@ function toggle(id) {
                             </ul>
 
                             {% if d.designations %}
-                                <tr id='prorrogas-{{d.id}}' style='width: 100%;'>
+                                <tr id='prorrogas-{{d.id}}' style='visibility: collapse;'>
                                     <td colspan='6'>
                                             <table class="responsive-table highlight">
                                                 <tbody>

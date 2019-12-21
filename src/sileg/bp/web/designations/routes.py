@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect,request, Markup, url_for, abo
 
 from sileg.auth import require_user
 from sileg.models import silegModel, open_sileg_session, usersModel, open_users_session
-from sileg_model.model.entities.Designation import DesignationTypes
+from sileg_model.model.entities.Designation import Designation, DesignationTypes, DesignationEndTypes
 
 from . import bp
 from .forms import ExtendDesignationForm, \
@@ -15,7 +15,29 @@ from .forms import ExtendDesignationForm, \
                 DesignationSearchForm, \
                 PersonSearchForm 
 
+def calculate_end(d:Designation):
+    if d.deleted:
+        return None
+    end = d.end
+    if d.designations:
+        for d2 in d.designations:
+            if not d2.deleted:
+                if not end or (d2.type is DesignationTypes.EXTENSION and d2.end and d2.end > end):
+                    end = d2.end
+    return end
 
+def det2s(det: DesignationEndTypes):
+    if det == DesignationEndTypes.INDETERMINATE:
+        return 'Indeterminado'
+    if det == DesignationEndTypes.REPLACEMENT:
+        return 'Hasta fin de suplencia'
+    if det == DesignationEndTypes.CONTEST:
+        return 'Hasta concurso'
+    if det == DesignationEndTypes.CONVALIDATION:
+        return 'Hasta convalidación por consejo superior'
+    if det == DesignationEndTypes.ENDDATE:
+        return 'Hasta fecha fin'
+    return ''
 
 def dt2s(dt: DesignationTypes):
     if dt == DesignationTypes.ORIGINAL:
@@ -296,6 +318,36 @@ def _is_extension(d):
 def _is_promotion(d):
     return d.type == DesignationTypes.PROMOTION
 
+@bp.route('/detalle/<did>')
+@require_user
+def designation_detail(user, did):
+    """
+        Detalle de una designación
+    """
+    assert did is not None
+
+    with open_sileg_session() as session:
+        designations = silegModel.get_designations(session, [did])
+        designation = designations[0]
+        uid = designation.user_id
+
+        extensions = [d for d in designation.designations if d.type == DesignationTypes.EXTENSION]
+        promotions = [d for d in designation.designations if d.type == DesignationTypes.PROMOTION]
+
+        #extensions = extensions.sort(reverse=True, key=lambda x:x.start)
+        #promotions = promotions.sort(reverse=True, key=lambda x:x.start)
+        if not extensions:
+            extensions = []
+
+        if not promotions:
+            promotions = []
+
+        with open_users_session() as session:
+            person = usersModel.get_users(session, [uid])[0]
+
+        return render_template('designationDetail.html', dt2s=dt2s, det2s=det2s, ie=_is_extension, ip=_is_promotion, user=user, person=person, designation=designation, extensions=extensions, promotions=promotions)
+
+
 @bp.route('/listado/<uid>')
 @require_user
 def personDesignations(user, uid):
@@ -314,7 +366,7 @@ def personDesignations(user, uid):
 
         active = [d for d in designations if d.deleted is None and not d.historic and (d.type == DesignationTypes.ORIGINAL or d.type == DesignationTypes.PROMOTION) ]
 
-        return render_template('personDesignations.html', dt2s=dt2s, user=user, designations=active, person=person, is_ext=_is_extension)
+        return render_template('personDesignations.html', dt2s=dt2s, cend=calculate_end, user=user, designations=active, person=person, is_ext=_is_extension)
 
 
 @bp.route('/crear/<uid>')
