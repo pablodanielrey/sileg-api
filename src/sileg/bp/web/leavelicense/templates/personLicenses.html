@@ -29,6 +29,18 @@
                 <h4> Licencias Personales </h4>
             </div>
             <br>
+
+            <!-- para generar una licencia nueva de persona -->
+            <div class="divider"></div>
+            <br>
+            <div class="row">
+                <div class="col m12 center">
+                    <a class="btn waves-effect blue lighten-1" href="{{url_for('leavelicense.create_personal_leave', uid=person.id)}}">Nueva Licencia</a>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <br>            
+
             <div>
                 <table class="responsive-table highlight">
                     <thead>
@@ -60,6 +72,18 @@
                 <h4> Licencias Asociadas a Designaciones </h4>
             </div>
             <br>
+
+
+            <!-- para generar una licencia nueva de designación -->
+            <div class="divider"></div>
+            <br>
+            <div class="row">
+                <div class="col m12 center">
+                    <a class="btn waves-effect blue lighten-1" href="{{url_for('designations.personDesignations', uid=person.id)}}">Nueva Licencia</a>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <br>              
 
             <div>
                 <table class="responsive-table highlight">
