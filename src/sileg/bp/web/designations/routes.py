@@ -312,9 +312,9 @@ def personDesignations(user, uid):
         dids = silegModel.get_designations_by_uuid(session, uid)
         designations = silegModel.get_designations(session, dids)
 
-        active = [d for d in designations if d.deleted is None and not d.historic and d.type == DesignationTypes.ORIGINAL ]
+        active = [d for d in designations if d.deleted is None and not d.historic and (d.type == DesignationTypes.ORIGINAL or d.type == DesignationTypes.PROMOTION) ]
 
-        return render_template('personDesignations.html', dt2s=dt2s, user=user, designations=active, person=person, is_ext=_is_extension, is_prom=_is_promotion)
+        return render_template('personDesignations.html', dt2s=dt2s, user=user, designations=active, person=person, is_ext=_is_extension)
 
 
 @bp.route('/crear/<uid>')
