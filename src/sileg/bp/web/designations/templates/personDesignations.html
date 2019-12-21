@@ -40,6 +40,10 @@ function toggle(id) {
                     <a class="btn waves-effect blue lighten-1" href="{{url_for('designations.create_get', uid=person.id)}}">Nueva Designación</a>
                 </div>
             </div>
+
+
+            {% for ds in designations %}
+
             <div class="divider"></div>
             <br>
             <div>
@@ -57,7 +61,7 @@ function toggle(id) {
                         </tr>
                     </thead>
                     <tbody>
-                        {% for d in designations %}
+                            {% for d in ds %}
                             <tr>
                             <!--
                             {% if d.designations %}
@@ -119,9 +123,12 @@ function toggle(id) {
                                     </td>
                                 </tr>
                             {% endif %}
-                        {% endfor %}
+                            {% endfor %}
                     </tbody>
                 </table>
+
+                {% endfor %}
+
             </div>
         </div>
     </div>
