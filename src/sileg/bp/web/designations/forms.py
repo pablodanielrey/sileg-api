@@ -49,7 +49,7 @@ class DesignationCreateForm(FlaskForm):
         self._load_values(session, silegModel)
 
     def _load_values(self, session, silegModel: SilegModel):
-        self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session) ]
+        self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session, silegModel.get_all_functions(session)) ]
         self.place.choices = [ (p.id, p.name) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session)) ]
         self.functionEndType.choices = [ (d.value, det2s(d)) for d in DesignationEndTypes ]
         
@@ -95,7 +95,7 @@ class ReplacementDesignationCreateForm(FlaskForm):
         self._load_values(session, silegModel)
 
     def _load_values(self, session, silegModel: SilegModel):
-        self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session) ]
+        self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session, silegModel.get_all_functions(session)) ]
         self.place.choices = [ (p.id, p.name) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session)) ]
         self.functionEndType.choices = [ (d.value, det2s(d)) for d in DesignationEndTypes ]
         
@@ -140,7 +140,7 @@ class ConvalidateDesignationForm(FlaskForm):
         self._load_values(session, silegModel)
 
     def _load_values(self, session, silegModel: SilegModel):
-        self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session) ]
+        self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session, silegModel.get_all_functions(session)) ]
         self.place.choices = [ (p.id, p.name) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session)) ]
         self.functionEndType.choices = [ (d.value, det2s(d)) for d in DesignationEndTypes ]        
 
@@ -188,7 +188,7 @@ class PromoteDesignationForm(FlaskForm):
         self._load_values(session, silegModel)
 
     def _load_values(self, session, silegModel: SilegModel):
-        self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session) ]
+        self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session, silegModel.get_all_functions(session)) ]
         self.place.choices = [ (p.id, p.name) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session)) ]
         self.functionEndType.choices = [ (d.value, det2s(d)) for d in DesignationEndTypes ]
         
@@ -233,7 +233,7 @@ class ExtendDesignationForm(FlaskForm):
         self._load_values(session, silegModel)
 
     def _load_values(self, session, silegModel: SilegModel):
-        self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session) ]
+        self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session, silegModel.get_all_functions(session)) ]
         self.place.choices = [ (p.id, p.name) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session)) ]
         self.functionEndType.choices = [ (d.value, det2s(d)) for d in DesignationEndTypes ]
         
