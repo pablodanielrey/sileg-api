@@ -46,6 +46,11 @@
                     {% else %}
                         <p>Eliminada: NO </p>
                     {% endif %}
+                    {% if designation.historic %}
+                        <p>Baja: Sí</p>
+                    {% else %}
+                        <p>Baja: NO </p>
+                    {% endif %}                    
                 </div>
 
                 <div class="col m4">
@@ -53,6 +58,7 @@
                     <a class="btn waves-effect blue lighten-1" href="{{url_for('designations.promote', did=designation.id)}}">Extender</a>
                     <a class="btn waves-effect blue lighten-1" href="{{url_for('leavelicense.create_designation_leave_license', did=designation.id)}}">Licencia</a>
                     <a class="btn waves-effect blue lighten-1" href="{{url_for('designations.replacement_select_person', did=designation.id)}}">Suplencia</a>
+                    <a class="btn waves-effect blue lighten-1" href="{{url_for('designations.discharge', did=designation.id)}}">Baja</a>
 
                     {% if designation.deleted %}
                         <a class="btn waves-effect blue lighten-1" href="{{url_for('designations.undelete', did=designation.id)}}">Restaurar</a>
@@ -64,6 +70,64 @@
             <div class="divider"></div>
             <br>
 
+            <!-- bajas -->
+            {% if designation.historic %}
+                <div>
+                        <div class="center">
+                                <h4> Bajas </h4>
+                        </div>
+
+                    <table class="responsive-table highlight">
+                        <thead>
+                            <tr>
+                                <th class="center">Tipo</th>
+                                <th class="center">Lugar</th>
+                                <th class="center">Cargo</th>
+                                <th class="center">Carácter</th>
+                                <th class="center">Dedicacion</th>
+                                <th clasS="center">Fecha</th>
+                                <th clasS="center">Expediente</th>
+                                <th clasS="center">Resolución</th>
+                                <th clasS="center">Razón</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in discharges %}
+                                {% if d.historic %}
+                                <tr class="blue-grey lighten-3">
+                                {% else %}
+                                <tr>
+                                {% endif %}
+                                    <td class="center"><a class="blue-text darken-4" href="{{url_for('designations.designation_detail', did=d.id)}}">{{ dt2s(d.type) }}</a></td>
+                                    <td class="center"><a class="blue-text darken-4" href="#place">{{ d.place.name }}, ({{d.place.type.value}})</a></td>
+                                    <td class="center"><a class="blue-text darken-4" href="#cargo">{{ d.function.name.split('-')[0] }}</a></td>
+                                    <td class="center"><a class="blue-text darken-4" href="#caracter">{{ d.function.name.split('-')[2] }}</a></td>
+                                    <td class="center"><a class="blue-text darken-4" href="#cargopplanta">{{ d.function.name.split('-')[1] }}</a></td>
+                                    <td class="center"><a class="blue-text darken-4" href="#type">{{ d.start }}</a></td>
+                                    <td class="center"><a class="blue-text darken-4" href="#type">{{ d.exp }} / {{d.cor}} </a></td>
+                                    <td class="center"><a class="blue-text darken-4" href="#type">{{ d.res }}</a></td>
+                                    <td class="center"><a class="blue-text darken-4" href="#type">{{ d.comments }}</a></td>
+                                    <td class="center">
+                                        <a class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3" href="#" data-target='dropdown-{{d.id}}'>
+                                            <i class="material-icons">edit</i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <ul id='dropdown-{{d.id}}' class='dropdown-content'>
+                                        <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
+                                        <li class="divider" tabindex="-1"></li>
+                                        <li><a class="blue-text darken-4" href="#!">Baja</a></li>
+                                        <li><a class="blue-text darken-4" href="{{url_for('designations.convalidate', did=d.id)}}">Convalidar</a></li>
+                                        <li><a class="red-text darken-4" href="{{url_for('designations.delete', did=d.id)}}">Eliminar</a></li>
+                                </ul>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+
+            <div class="divider"></div>
+            <br>
 
             <!-- prorrogas -->
             {% if not ie(designation) %}

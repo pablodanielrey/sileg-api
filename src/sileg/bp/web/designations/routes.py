@@ -400,6 +400,7 @@ def designation_detail(user, did):
 
         extensions = [d for d in designation.designations if d.type == DesignationTypes.EXTENSION]
         promotions = [d for d in designation.designations if d.type == DesignationTypes.PROMOTION]
+        discharges = [d for d in designation.designations if d.type == DesignationTypes.DISCHARGE]
 
         #extensions = extensions.sort(reverse=True, key=lambda x:x.start)
         #promotions = promotions.sort(reverse=True, key=lambda x:x.start)
@@ -412,7 +413,7 @@ def designation_detail(user, did):
         with open_users_session() as session:
             person = usersModel.get_users(session, [uid])[0]
 
-        return render_template('designationDetail.html', dt2s=dt2s, det2s=det2s, ie=_is_extension, ip=_is_promotion, user=user, person=person, designation=designation, extensions=extensions, promotions=promotions)
+        return render_template('designationDetail.html', dt2s=dt2s, det2s=det2s, ie=_is_extension, ip=_is_promotion, user=user, person=person, designation=designation, extensions=extensions, promotions=promotions, discharges=discharges)
 
 
 def _is_secondary(d:Designation):

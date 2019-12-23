@@ -302,7 +302,7 @@ class DischargeDesignationForm(FlaskForm):
         d.res = self.res.data
         d.cor = self.cor.data
 
-        d.observations = self.observations.data
+        d.comments = self.observations.data
 
         session.add(d)
 
