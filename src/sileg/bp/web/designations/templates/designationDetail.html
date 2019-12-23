@@ -180,7 +180,39 @@
                                     <li><a class="blue-text darken-4" href="{{url_for('designations.convalidate', did=d.id)}}">Convalidar</a></li>
                                     <li><a class="red-text darken-4" href="{{url_for('designations.delete', did=d.id)}}">Eliminar</a></li>
                             </ul>
+
+                            <!-- bajas de prorrogas -->
+                            {% for dp in d.designations %}
+                                {% if dp.historic %}
+                                <tr class="blue-grey lighten-3">
+                                {% else %}
+                                <tr>
+                                {% endif %}
+                                    <td class="center"><a class="blue-text darken-4" href="{{url_for('designations.designation_detail', did=dp.id)}}">{{ dt2s(dp.type) }}</a></td>
+                                    <td class="center"><a class="blue-text darken-4" href="#place">{{ dp.place.name }}, ({{dp.place.type.value}})</a></td>
+                                    <td class="center"><a class="blue-text darken-4" href="#cargo">{{ dp.function.name.split('-')[0] }}</a></td>
+                                    <td class="center"><a class="blue-text darken-4" href="#caracter">{{ dp.function.name.split('-')[2] }}</a></td>
+                                    <td class="center"><a class="blue-text darken-4" href="#cargopplanta">{{ dp.function.name.split('-')[1] }}</a></td>
+                                    <td class="center"><a class="blue-text darken-4" href="#type">{{ dp.start }}</a></td>
+                                    <td class="center"><a class="blue-text darken-4" href="#type"></a></td>
+                                    <td class="center"><a class="blue-text darken-4" href="#type">{{ dp.exp }} / {{dp.cor}} </a></td>
+                                    <td class="center"><a class="blue-text darken-4" href="#type">{{ dp.res }}</a></td>
+                                    <td class="center">
+                                        <a class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3" href="#" data-target='dropdown-{{d.id}}'>
+                                            <i class="material-icons">edit</i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <ul id='dropdown-{{dp.id}}' class='dropdown-content'>
+                                        <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
+                                        <li class="divider" tabindex="-1"></li>
+                                        <li><a class="red-text darken-4" href="{{url_for('designations.delete', did=dp.id)}}">Eliminar</a></li>
+                                </ul>
+                            {% endfor %}
+
+
                         {% endfor %}
+
                     </tbody>
                 </table>
             </div>
