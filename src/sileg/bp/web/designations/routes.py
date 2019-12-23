@@ -296,6 +296,27 @@ def discharge(user, did):
 
         return render_template('dischargeDesignation.html', user=user, person=person, designation=designation, form=form)
 
+@bp.route('/baja/<did>', methods=['POST'])
+@require_user
+def discharge_post(user, did):
+    """
+        Genera la baja asociada a did, en la base de datos
+    """
+    assert did is not None
+
+    with open_sileg_session() as session:
+        form = DischargeDesignationForm()
+        designation = silegModel.get_designations(session, [did])[0]
+        uid = designation.user_id
+
+        if not form.is_submitted():
+            print(form.errors)
+            abort(404)
+
+        form.save(session, designation_to_discharge=designation)
+        session.commit()
+
+    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
 
 
 
@@ -420,7 +441,7 @@ def personDesignations(user, uid):
         dids = silegModel.get_designations_by_uuid(session, uid)
         designations = silegModel.get_designations(session, dids)
 
-        original = [d for d in designations if d.deleted is None and not d.historic and (d.type == DesignationTypes.ORIGINAL or d.type == DesignationTypes.REPLACEMENT)]
+        original = [d for d in designations if d.deleted is None and (d.type == DesignationTypes.ORIGINAL or d.type == DesignationTypes.REPLACEMENT)]
 
         #armo el grupo de las designaciones relacionadas con el cargo original
         active = []
