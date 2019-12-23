@@ -366,6 +366,16 @@ def designation_detail(user, did):
         return render_template('designationDetail.html', dt2s=dt2s, det2s=det2s, ie=_is_extension, ip=_is_promotion, user=user, person=person, designation=designation, extensions=extensions, promotions=promotions)
 
 
+def _is_secondary(d:Designation):
+    """ 
+        retorna true si va en el listado secundario de desiganciones
+        ej: bajas de prorrogas, prorrogas
+    """
+    if d.type == DesignationTypes.DISCHARGE:
+        return d.designation.type == DesignationTypes.EXTENSION
+    return not (d.type == DesignationTypes.PROMOTION or d.type == DesignationTypes.ORIGINAL)
+
+
 @bp.route('/listado/<uid>')
 @require_user
 def personDesignations(user, uid):
@@ -393,7 +403,7 @@ def personDesignations(user, uid):
                     related.append(dr)
             active.append(related)
 
-        return render_template('personDesignations.html', dt2s=dt2s, cend=calculate_end, user=user, designations=active, person=person, is_ext=_is_extension)
+        return render_template('personDesignations.html', dt2s=dt2s, cend=calculate_end, user=user, designations=active, person=person, is_secondary=_is_secondary)
 
 
 @bp.route('/crear/<uid>')

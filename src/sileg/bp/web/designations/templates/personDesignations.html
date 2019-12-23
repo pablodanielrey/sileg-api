@@ -42,6 +42,7 @@ function toggle(id) {
             </div>
 
 
+            <!-- grupos de designaciones por cargo -->
             {% for ds in designations %}
             <br><br><br>
             <div class="divider"></div>
@@ -61,15 +62,9 @@ function toggle(id) {
                         </tr>
                     </thead>
                     <tbody>
+                            <!-- designaciones originales, bajas, extensiones -->
                             {% for d in ds %}
                             <tr>
-                            <!--
-                            {% if d.designations %}
-                            <tr class="blue-grey lighten-3">
-                            {% else %}
-                            <tr>
-                            {% endif %}
-                            -->
                                 <td class="center"><a class="blue-text darken-4" href="{{url_for('designations.designation_detail', did=d.id)}}">{{ dt2s(d.type) }}</a></td>
                                 <td class="center"><a class="blue-text darken-4" href="#place">{{ d.place.name }}, ({{d.place.type.value}})</a></td>
                                 <td class="center"><a class="blue-text darken-4" href="#cargo">{{ d.function.name.split('-')[0] }}</a></td>
@@ -97,14 +92,16 @@ function toggle(id) {
                                     <li><a class="red-text darken-4" href="{{url_for('designations.delete', did=d.id)}}">Eliminar</a></li>
                             </ul>
 
+                            <!-- prorrogas, bajas de prorrogas -->
                             {% if d.designations %}
                                 <tr id='prorrogas-{{d.id}}' style='visibility: collapse;'>
                                     <td colspan='6'>
                                             <table class="responsive-table highlight">
                                                 <tbody>
                                                     {% for d2 in d.designations %}
-                                                    {% if not d2.historic and is_ext(d2) %}
+                                                    {% if not d2.historic and is_secondary(d2) %}
                                                         <tr>
+                                                            <td class="center">{{d2.id}}</td>
                                                             <td class="center blue-text darken-4">{{ dt2s(d2.type) }}</td>
                                                             <td class="center blue-text darken-4">{{ d2.start }}</td>
                                                             <td class="center blue-text darken-4">{{ d2.end }}</td>
