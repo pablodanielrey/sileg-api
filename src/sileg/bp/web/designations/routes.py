@@ -37,6 +37,8 @@ def det2s(det: DesignationEndTypes):
         return 'Hasta convalidación por consejo superior'
     if det == DesignationEndTypes.ENDDATE:
         return 'Hasta fecha fin'
+    if det == DesignationEndTypes.RENEWAL:
+        return 'Hasta nuevo llamado'
     return ''
 
 def dt2s(dt: DesignationTypes):
@@ -48,6 +50,8 @@ def dt2s(dt: DesignationTypes):
         return 'Extensión'
     if dt == DesignationTypes.REPLACEMENT:
         return 'Suplencia'
+    if dt == DesignationTypes.DISCHARGE:
+        return 'Baja'
     return ''
 
 
