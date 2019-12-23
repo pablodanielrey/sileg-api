@@ -85,7 +85,7 @@ function toggle(id) {
                                     <li class="divider" tabindex="-1"></li>
                                     <li><a class="blue-text darken-4" href="{{url_for('designations.promote', did=d.id)}}">Extender</a></li>
                                     <li><a class="blue-text darken-4" href="{{url_for('designations.extend', did=d.id)}}">Prorrogar</a></li>
-                                    <li><a class="blue-text darken-4" href="#!">Baja</a></li>
+                                    <li><a class="blue-text darken-4" href="{{url_for('designations.discharge', did=d.id)}}">Baja</a></li>
                                     <li><a class="blue-text darken-4" href="{{url_for('designations.convalidate', did=d.id)}}">Convalidar</a></li>
                                     <li><a class="blue-text darken-4" href="{{url_for('designations.replacement_select_person', did=d.id)}}">Suplencia</a></li>
                                     <li><a class="blue-text darken-4" href="{{url_for('leavelicense.create_designation_leave_license', did=d.id)}}">Licencia</a></li>
@@ -110,7 +110,7 @@ function toggle(id) {
                                                         <ul id='dropdown-{{d2.id}}' class='dropdown-content'>
                                                                 <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
                                                                 <li class="divider" tabindex="-1"></li>
-                                                                <li><a class="blue-text darken-4" href="#!">Baja</a></li>
+                                                                <li><a class="blue-text darken-4" href="{{url_for('designations.discharge', did=d2.id)}}>Baja</a></li>
                                                                 <li><a class="red-text darken-4" href="{{url_for('designations.delete', did=d2.id)}}">Eliminar</a></li>
                                                         </ul>                                
                                                     {% endif %}

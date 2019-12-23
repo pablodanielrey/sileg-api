@@ -255,6 +255,58 @@ class ExtendDesignationForm(FlaskForm):
         session.add(d)
 
 
+class DischargeDesignationForm(FlaskForm):
+    # Datos del cargo
+    start = DateTimeField('Fecha Baja', format='%d-%m-%Y', validators=[DataRequired()])
+
+    res = StringField('Número de resolución')
+    exp = StringField('Expediente')
+    cor = StringField('Corresponde')
+
+    observations = SelectField('Finaliza', coerce=str)
+
+    def __init__(self):
+        super().__init__()
+        self._load_values()
+
+    def _load_values(self):
+        tipos = [
+            'Fallecimiento',
+            'Renuncia',
+            'Término de Designación',
+            'Cambio de Cátedra',
+            'Termino de Extensión',
+            'Limitación de Funciones',
+            'Término de Licencia',
+            'Cambio de Licencia',
+            'reintegro de licencia',
+            'Jubilación',
+            'Limitacion de Cargo'
+        ]
+        self.observations.choices = [ (f,f) for f in tipos ]
+
+    def save(self, session, designation_to_discharge: Designation):
+        designation_to_discharge.historic = True
+
+        d = Designation()
+        d.type = DesignationTypes.DISCHARGE
+        d.designation_id = designation_to_discharge.id
+        d.user_id = designation_to_discharge.user_id
+        d.place_id = designation_to_discharge.place_id
+        d.function_id = designation_to_discharge.function_id
+        d.end_type = DesignationEndTypes.INDETERMINATE
+        
+        d.start = self.start.data
+        
+        d.exp = self.exp.data
+        d.res = self.res.data
+        d.cor = self.cor.data
+
+        d.observations = self.observations.data
+
+        session.add(d)
+
+
 class DeleteDesignationForm(FlaskForm):
 
     def save(self, session, designation: Designation):

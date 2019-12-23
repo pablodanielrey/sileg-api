@@ -11,6 +11,7 @@ from .forms import ExtendDesignationForm, \
                 ConvalidateDesignationForm, \
                 PromoteDesignationForm, \
                 ExtendDesignationForm, \
+                DischargeDesignationForm, \
                 DeleteDesignationForm, \
                 DesignationSearchForm, \
                 PersonSearchForm 
@@ -269,6 +270,33 @@ def extend_post(user, did):
         session.commit()
 
     return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
+
+
+"""
+    ##########################################
+    ################## BAJA ##################
+    ##########################################
+"""
+
+@bp.route('/baja/<did>')
+@require_user
+def discharge(user, did):
+    """
+        Crea una baja asociada a la designacion did
+    """
+    assert did is not None
+
+    with open_sileg_session() as session:
+        form = DischargeDesignationForm()
+        designation = silegModel.get_designations(session, [did])[0]
+        original_uid = designation.user_id
+
+        with open_users_session() as session:
+            person = usersModel.get_users(session, uids=[original_uid])[0]
+
+        return render_template('dischargeDesignation.html', user=user, person=person, designation=designation, form=form)
+
+
 
 
 @bp.route('/restaurar/<did>')
