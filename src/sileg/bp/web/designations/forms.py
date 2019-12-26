@@ -7,7 +7,7 @@ from wtforms.validators import ValidationError, DataRequired, EqualTo, Optional
 #from wtforms.fields.html5 import DateTimeField
 
 from sileg_model.model.SilegModel import SilegModel
-from sileg_model.model.entities.Designation import Designation, DesignationTypes, DesignationEndTypes
+from sileg_model.model.entities.Designation import Designation, DesignationTypes, DesignationEndTypes, DesignationStatus
 
 def det2s(d: DesignationEndTypes):
     if d == DesignationEndTypes.INDETERMINATE:
@@ -20,6 +20,14 @@ def det2s(d: DesignationEndTypes):
         return 'Hasta Fin de Suplencia'
     if d == DesignationEndTypes.ENDDATE:
         return 'Fecha Fin'    
+
+def ds2s(s:DesignationStatus):
+    if s == DesignationStatus.APROVED:
+        return 'Aprobada'
+    if s == DesignationStatus.EFFECTIVE:
+        return 'Efectivo'
+    if s == DesignationStatus.PENDING:
+        return 'Pendiente'
 
 class DesignationCreateForm(FlaskForm):
     # Datos del cargo
@@ -34,6 +42,8 @@ class DesignationCreateForm(FlaskForm):
     cor = StringField('Corresponde')
 
     place = SelectField('Ubicación',coerce=str)
+
+    status = SelectField('Estado', coerce=str)
 
     observations = StringField('Observaciones', widget=TextArea())
 
@@ -52,6 +62,7 @@ class DesignationCreateForm(FlaskForm):
         self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session, silegModel.get_all_functions(session)) ]
         self.place.choices = [ (p.id, p.name) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session)) ]
         self.functionEndType.choices = [ (d.value, det2s(d)) for d in DesignationEndTypes ]
+        self.status.choices = [(d.value, ds2s(d)) for d in DesignationStatus]
         
     def save(self, session, silegModel, uid):
         d = Designation()
@@ -64,6 +75,8 @@ class DesignationCreateForm(FlaskForm):
         d.end_type = self.functionEndType.data
         d.place_id = self.place.data
         
+        d.status = self.status.data
+
         d.exp = self.exp.data
         d.res = self.res.data
         d.cor = self.cor.data
