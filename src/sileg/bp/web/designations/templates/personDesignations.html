@@ -77,6 +77,7 @@ function toggle(id) {
                                         <i class="material-icons">edit</i>
                                     </a>
                                     <button onclick="toggle('prorrogas-{{d.id}}')">P</button>
+                                    <button onclick="toggle('suplencia-{{d.id}}')">S</button>
                                 </td>
                             </tr>
                             <ul id='dropdown-{{d.id}}' class='dropdown-content'>
@@ -119,6 +120,33 @@ function toggle(id) {
                                             </table>
                                     </td>
                                 </tr>
+
+                                <!-- suplencias -->
+                                <tr id='suplencia-{{d.id}}' style='visibility: collapse;'>
+                                    <td colspan='6'>
+                                            <table class="responsive-table highlight">
+                                                <tbody>
+                                                    {% for d2 in d.designations %}
+                                                    {% if not d2.historic and is_suplencia(d2) %}
+                                                        <tr>
+                                                            <td class="center">{{d2.id}}</td>
+                                                            <td class="center blue-text darken-4"><a href="{{url_for('designations.designation_detail', did=d2.id)}}">{{ dt2s(d2.type) }}</a></td>
+                                                            <td colspan='2' class="center blue-text darken-4">{{ find_user(d2) }}</td>
+                                                            <td class="center"><a class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3" href="#" data-target='dropdown-{{d2.id}}'><i class="material-icons">edit</i></a></td>
+                                                        </tr>
+                                                        <ul id='dropdown-{{d2.id}}' class='dropdown-content'>
+                                                                <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
+                                                                <li class="divider" tabindex="-1"></li>
+                                                                <li><a class="blue-text darken-4" href="{{url_for('designations.discharge', did=d2.id)}}">Baja</a></li>
+                                                                <li><a class="red-text darken-4" href="{{url_for('designations.delete', did=d2.id)}}">Eliminar</a></li>
+                                                        </ul>                                
+                                                    {% endif %}
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                    </td>
+                                </tr>
+
                             {% endif %}
                             {% endfor %}
                     </tbody>
