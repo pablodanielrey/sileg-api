@@ -153,31 +153,48 @@ class PersonCreateForm(FlaskForm):
                                     'confirmed': mobileNumber.confirmed,
                                     'user_id': mobileNumber.user_id,
                                 })
-
                 if self.person_numberFile.data:
                     personNumberFile = UserFiles()
-                    personNumberFile.mimetype = None
+                    personNumberFile.mimetype = self.person_numberFile.data.mimetype
                     personNumberFile.type = UserFileTypes.PERSONNUMBER
-                    personNumberFile.content = base64.b64encode(self.person_numberFile.data).decode()
-                    #session.add(personNumberFile)
-                    toLog.append(personNumberFile.as_dict())
+                    personNumberFile.content = base64.b64encode(self.person_numberFile.data.read()).decode()
+                    personNumberFile.user_id = newUser.id
+                    session.add(personNumberFile)
+                    toLog.append({  'id': personNumberFile.id,
+                                    'created': personNumberFile.created,
+                                    'updated': personNumberFile.updated,
+                                    'deleted': personNumberFile.deleted,
+                                    'mimetype': personNumberFile.mimetype,
+                                    'type': personNumberFile.type.value,
+                                    'content': personNumberFile.content,
+                                    'user_id': personNumberFile.user_id,
+                                })
 
                 if self.laboral_numberFile.data:
                     laboralNumberFile = UserFiles()
-                    laboralNumberFile.mimetype = None
+                    laboralNumberFile.mimetype = self.laboral_numberFile.data.mimetype
                     laboralNumberFile.type = UserFileTypes.LABORALNUMBER
-                    laboralNumberFile.content = base64.b64encode(self.laboral_numberFile.data).decode()
-                    #session.add(laboralNumberFile)
-                    toLog.append(laboralNumberFile.as_dict())
+                    laboralNumberFile.content = base64.b64encode(self.laboral_numberFile.data.read()).decode()
+                    laboralNumberFile.user_id = newUser.id
+                    session.add(laboralNumberFile)
+                    toLog.append({  'id': laboralNumberFile.id,
+                                    'created': laboralNumberFile.created,
+                                    'updated': laboralNumberFile.updated,
+                                    'deleted': laboralNumberFile.deleted,
+                                    'mimetype': laboralNumberFile.mimetype,
+                                    'type': laboralNumberFile.type.value,
+                                    'content': laboralNumberFile.content,
+                                    'user_id': laboralNumberFile.user_id,
+                                })
 
                 newLog = UsersLog()
                 newLog.entity_id = newUser.id
                 newLog.authorizer_id = authorizer_id
                 newLog.type = UserLogTypes.CREATE
-                newLog.data = json.dumps(toLog)
+                newLog.data = json.dumps(toLog, default=str)
                 session.add(newLog)
-                #session.commit()
-                print(newUser.id)                
+                session.commit()
+                
 
         #TODO Sileg model
         newSeniority = {
