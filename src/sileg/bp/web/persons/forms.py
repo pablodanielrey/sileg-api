@@ -1,6 +1,8 @@
 import json
+import base64
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, DateTimeField, SelectField, FileField
+from wtforms import StringField, PasswordField, BooleanField, DateTimeField, SelectField
+from flask_wtf.file import FileField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import ValidationError, DataRequired, EqualTo, Email
 
@@ -156,16 +158,16 @@ class PersonCreateForm(FlaskForm):
                     personNumberFile = UserFiles()
                     personNumberFile.mimetype = None
                     personNumberFile.type = UserFileTypes.PERSONNUMBER
-                    personNumberFile.content = None
-                    session.add(personNumberFile)
+                    personNumberFile.content = base64.b64encode(self.person_numberFile.data).decode()
+                    #session.add(personNumberFile)
                     toLog.append(personNumberFile.as_dict())
 
                 if self.laboral_numberFile.data:
                     laboralNumberFile = UserFiles()
                     laboralNumberFile.mimetype = None
                     laboralNumberFile.type = UserFileTypes.LABORALNUMBER
-                    laboralNumberFile.content = None
-                    session.add(laboralNumberFile)
+                    laboralNumberFile.content = base64.b64encode(self.laboral_numberFile.data).decode()
+                    #session.add(laboralNumberFile)
                     toLog.append(laboralNumberFile.as_dict())
 
                 newLog = UsersLog()
@@ -174,7 +176,8 @@ class PersonCreateForm(FlaskForm):
                 newLog.type = UserLogTypes.CREATE
                 newLog.data = json.dumps(toLog)
                 session.add(newLog)
-                session.commit()
+                #session.commit()
+                print(newUser.id)                
 
         #TODO Sileg model
         newSeniority = {
@@ -182,7 +185,6 @@ class PersonCreateForm(FlaskForm):
             'seniority_external_months'  : self.seniority_external_months.data,
             'seniority_external_days' : self.seniority_external_days.data
         }
-        #TODO Guardar datos modificados en tabla separada JSON
 
 class TitleAssignForm(FlaskForm):
     titleType = SelectField('Tipo de Título')

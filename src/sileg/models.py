@@ -1,6 +1,6 @@
 
 from users.model.UsersModel import UsersModel
-from users.model.entities import User, Mail, Phone, UserFiles, MailTypes, PhoneTypes, UserFileTypes
+from users.model.entities.User import User, Mail, Phone, UserFiles, MailTypes, PhoneTypes, UserFileTypes
 import users.model
 
 from sileg_model.model.SilegModel import SilegModel
