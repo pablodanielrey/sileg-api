@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect,request, Markup, url_for
+from flask import render_template, flash, redirect,request, Markup, url_for, abort
 from . import bp
 
 from .forms import PersonCreateForm, PersonSearchForm, TitleAssignForm
@@ -65,4 +65,18 @@ def degrees(user,uid):
     }]
     form = TitleAssignForm()
     return render_template('showDegrees.html', user=user,person=person, titles=titles, form=form)
+
+@bp.route('<uid>')
+@require_user
+def personData(user,uid):
+    """
+    Pagina de vista de datos personales
+    """
+    with open_users_session() as session:
+        persons = usersModel.get_users(session, [uid])
+        if not persons or len(persons) <= 0:
+            abort(404)
+        person = persons[0]
+
+    return render_template('showPerson.html', user=user,person=person)
     
