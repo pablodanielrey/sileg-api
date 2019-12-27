@@ -141,7 +141,6 @@ class PersonCreateForm(FlaskForm):
                                     'deleted': landLinePhone.deleted,
                                     'type': landLinePhone.type.value,
                                     'number': landLinePhone.number,
-                                    'confirmed': landLinePhone.confirmed,
                                     'user_id': landLinePhone.user_id,
                                 })
 
@@ -157,7 +156,6 @@ class PersonCreateForm(FlaskForm):
                                     'deleted': mobileNumber.deleted,
                                     'type': mobileNumber.type.value,
                                     'number': mobileNumber.number,
-                                    'confirmed': mobileNumber.confirmed,
                                     'user_id': mobileNumber.user_id,
                                 })
                 if self.person_numberFile.data:
