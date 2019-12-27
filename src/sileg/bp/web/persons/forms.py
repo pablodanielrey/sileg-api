@@ -140,7 +140,7 @@ class PersonCreateForm(FlaskForm):
                                     'updated': landLinePhone.updated,
                                     'deleted': landLinePhone.deleted,
                                     'type': landLinePhone.type.value,
-                                    'email': landLinePhone.email,
+                                    'number': landLinePhone.number,
                                     'confirmed': landLinePhone.confirmed,
                                     'user_id': landLinePhone.user_id,
                                 })
@@ -156,7 +156,7 @@ class PersonCreateForm(FlaskForm):
                                     'updated': mobileNumber.updated,
                                     'deleted': mobileNumber.deleted,
                                     'type': mobileNumber.type.value,
-                                    'email': mobileNumber.email,
+                                    'number': mobileNumber.number,
                                     'confirmed': mobileNumber.confirmed,
                                     'user_id': mobileNumber.user_id,
                                 })
@@ -219,8 +219,8 @@ class TitleAssignForm(FlaskForm):
     def __init__(self):
         super(TitleAssignForm,self).__init__()
         #TODO Obtener del modelo los titulos existentes y tipos
-        self.titleType.choices = [('0','Seleccione una opción...'),('1','Grado'),('2','Posgrado')]
-        self.titleName.choices = [('0','Seleccione una opción...'),('1','Contador'),('2','Ingeniero'),('3','Licenciado en Ciencias Administrativas')]
+        self.titleType.choices = [('0','Seleccione...'),('1','Grado'),('2','Posgrado')]
+        self.titleName.choices = [('0','Seleccione...'),('1','Contador'),('2','Ingeniero'),('3','Licenciado en Ciencias Administrativas')]
 
     def validate_titleType(self, titleType):
         if self.titleType.data == '0':
