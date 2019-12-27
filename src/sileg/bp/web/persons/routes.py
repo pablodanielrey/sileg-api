@@ -40,30 +40,13 @@ def degrees(user,uid):
     """
     Pagina de Listado de Títulos de persona
     """
-    person = {
-        'dni': '12345678',
-        'firstname': 'Pablo',
-        'lastname': 'Rey'
-    }
-    titles = [{
-        'titleType' : 'Grado',
-        'titleDate' : '1998-12-15',
-        'titleName' : 'Secundario',
-        'titleFile' : 'fileId.pdf'
-    },
-    {
-        'titleType' : 'Grado',
-        'titleDate' : '2020-12-15',
-        'titleName' : 'Licenciado en Sistemas',
-        'titleFile' : 'fileId.pdf'
-    },
-    {
-        'titleType' : 'Posgrado',
-        'titleDate' : '2025-12-15',
-        'titleName' : 'Doctorado en Ciencias Informáticas',
-        'titleFile' : 'fileId.pdf'
-    }]
     form = TitleAssignForm()
+    with open_users_session() as session:
+        persons = usersModel.get_users(session, [uid])
+        if not persons or len(persons) <= 0:
+            abort(404)
+        person = persons[0]
+    titles = None
     return render_template('showDegrees.html', user=user,person=person, titles=titles, form=form)
 
 @bp.route('<uid>')
