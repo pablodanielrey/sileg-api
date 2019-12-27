@@ -28,7 +28,7 @@
                 <div class="col m5">
                     <h6><strong>Tipo de documento</strong></h6>
                     {% if person.person_number_type %}
-                    <p>{{person.person_number_type}}</p>
+                    <p>{{person.person_number_type.value}}</p>
                     {% else %}
                     <p>No se encuentra registrado</p>
                     {% endif %}
