@@ -9,7 +9,7 @@ from wtforms.validators import ValidationError, DataRequired, EqualTo, Email
 from sileg.helpers.apiHandler import getStates
 
 from sileg.models import usersModel, open_users_session
-from users.model.entities.User import User, Mail, Phone, UserFiles, MailTypes, PhoneTypes, UserFileTypes, UsersLog, UserLogTypes
+from users.model.entities.User import User, Mail, Phone, UserFiles, MailTypes, PhoneTypes, UserFileTypes, UsersLog, UserLogTypes, PersonNumberTypes
 
 class PersonCreateForm(FlaskForm):
     lastname = StringField('Apellidos', validators=[DataRequired()])
@@ -79,7 +79,14 @@ class PersonCreateForm(FlaskForm):
                 newUser = User()
                 newUser.lastname = self.lastname.data
                 newUser.firstname = self.firstname.data
-                newUser.person_number_type = self.person_number_type.data
+                if self.person_number_type.data == '1':
+                    newUser.person_number_type = PersonNumberTypes.LC
+                elif self.person_number_type.data == '2':
+                    newUser.person_number_type = PersonNumberTypes.LE
+                elif self.person_number_type.data == '3':
+                    newUser.person_number_type = PersonNumberTypes.DNI
+                elif self.person_number_type.data == '4':
+                    newUser.person_number_type = PersonNumberTypes.PASSPORT
                 newUser.person_number = self.person_number.data
                 newUser.gender = self.gender.data if self.gender.data != '0' else None
                 newUser.marital_status = self.marital_status.data if self.marital_status.data != '0' else None
