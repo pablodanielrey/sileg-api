@@ -423,7 +423,13 @@ def _is_secondary(d:Designation):
     """
     if d.type == DesignationTypes.DISCHARGE:
         return d.designation.type == DesignationTypes.EXTENSION
-    return not (d.type == DesignationTypes.PROMOTION or d.type == DesignationTypes.ORIGINAL)
+    return d.type == DesignationTypes.EXTENSION
+
+def _is_suplencia(d:Designation):
+    return d.type == DesignationTypes.REPLACEMENT
+
+def _find_user(d:Designation):
+    return 'Walter'
 
 
 @bp.route('/listado/<uid>')
@@ -449,11 +455,12 @@ def personDesignations(user, uid):
         for d in original:
             related = [d]
             for dr in d.designations:
-                if not (dr.historic or dr.deleted or dr.type is DesignationTypes.EXTENSION):
-                    related.append(dr)
+                if not (dr.historic or dr.deleted):
+                    if dr.type is DesignationTypes.PROMOTION or dr.type is DesignationTypes.ORIGINAL:
+                        related.append(dr)
             active.append(related)
 
-        return render_template('personDesignations.html', dt2s=dt2s, cend=calculate_end, user=user, designations=active, person=person, is_secondary=_is_secondary)
+        return render_template('personDesignations.html', dt2s=dt2s, cend=calculate_end, user=user, designations=active, person=person, is_secondary=_is_secondary, is_suplencia=_is_suplencia, find_user=_find_user)
 
 
 @bp.route('/crear/<uid>')
