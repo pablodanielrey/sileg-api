@@ -145,7 +145,7 @@ class ConvalidateDesignationForm(FlaskForm):
         self.functionEndType.choices = [ (d.value, det2s(d)) for d in DesignationEndTypes ]        
 
     def save(self, session, replaced_designation: Designation):
-        replaced_designation.deleted = datetime.datetime.now()
+        #replaced_designation.deleted = datetime.datetime.now()
         replaced_designation.historic = True
 
         d = Designation()
