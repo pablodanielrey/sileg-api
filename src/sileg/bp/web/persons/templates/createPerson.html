@@ -270,6 +270,19 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- cuil -->
+                    <div class="col m4">
+                        <div class="input-field">
+                            {{ form.laboral_number.label }}
+                            {% if form.laboral_number.errors %}
+                            {{ form.laboral_number(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.laboral_number.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.laboral_number(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
                     <div class="col m4">
                         <div class="file-field input-field">
                             <div class="btn">
@@ -281,6 +294,8 @@
                             </div>
                         </div>
                     </div>
+
+                    
                 </div>
                 <div class="divider"></div>
                 <br>
