@@ -47,6 +47,13 @@
                 </div>                
                 <div class="row">
                     <div class="col m1"></div>
+                    <div class="col m5">
+                        {{ form.status.label }}
+                        {{ form.status }}
+                    </div>
+                </div>                
+                <div class="row">
+                    <div class="col m1"></div>
                     <div class="col m2 input-field">
                         {{ form.start.label }}
                         {{ form.start(class="datepicker") }}
@@ -102,10 +109,6 @@
                 <br>
                 <br>
                 <div class="row">
-                    <div class="col m3"></div>
-                    <div class="col m1">
-                        <button class="btn red lighten-2" type="reset">Limpiar</button>
-                    </div>
                     <div class="col m3"></div>
                     <div class="col m3">
                         <button class="btn light-blue darken-3">crear designacion</button>

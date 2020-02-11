@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect,request, Markup, url_for, abo
 
 from sileg.auth import require_user
 from sileg.models import silegModel, open_sileg_session, usersModel, open_users_session
-from sileg_model.model.entities.Designation import DesignationTypes
+from sileg_model.model.entities.Designation import Designation, DesignationTypes, DesignationEndTypes
 
 from . import bp
 from .forms import ExtendDesignationForm, \
@@ -11,11 +11,36 @@ from .forms import ExtendDesignationForm, \
                 ConvalidateDesignationForm, \
                 PromoteDesignationForm, \
                 ExtendDesignationForm, \
+                DischargeDesignationForm, \
                 DeleteDesignationForm, \
                 DesignationSearchForm, \
                 PersonSearchForm 
 
+def calculate_end(d:Designation):
+    if d.deleted:
+        return None
+    end = d.end
+    if d.designations:
+        for d2 in d.designations:
+            if not d2.deleted:
+                if not end or (d2.type is DesignationTypes.EXTENSION and d2.end and d2.end > end):
+                    end = d2.end
+    return end
 
+def det2s(det: DesignationEndTypes):
+    if det == DesignationEndTypes.INDETERMINATE:
+        return 'Indeterminado'
+    if det == DesignationEndTypes.REPLACEMENT:
+        return 'Hasta fin de suplencia'
+    if det == DesignationEndTypes.CONTEST:
+        return 'Hasta concurso'
+    if det == DesignationEndTypes.CONVALIDATION:
+        return 'Hasta convalidación por consejo superior'
+    if det == DesignationEndTypes.ENDDATE:
+        return 'Hasta fecha fin'
+    if det == DesignationEndTypes.RENEWAL:
+        return 'Hasta nuevo llamado'
+    return ''
 
 def dt2s(dt: DesignationTypes):
     if dt == DesignationTypes.ORIGINAL:
@@ -26,6 +51,8 @@ def dt2s(dt: DesignationTypes):
         return 'Extensión'
     if dt == DesignationTypes.REPLACEMENT:
         return 'Suplencia'
+    if dt == DesignationTypes.DISCHARGE:
+        return 'Baja'
     return ''
 
 
@@ -245,6 +272,68 @@ def extend_post(user, did):
     return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
 
 
+"""
+    ##########################################
+    ################## BAJA ##################
+    ##########################################
+"""
+
+@bp.route('/baja/<did>')
+@require_user
+def discharge(user, did):
+    """
+        Crea una baja asociada a la designacion did
+    """
+    assert did is not None
+
+    with open_sileg_session() as session:
+        form = DischargeDesignationForm()
+        designation = silegModel.get_designations(session, [did])[0]
+        original_uid = designation.user_id
+
+        with open_users_session() as session:
+            person = usersModel.get_users(session, uids=[original_uid])[0]
+
+        return render_template('dischargeDesignation.html', user=user, person=person, designation=designation, form=form)
+
+@bp.route('/baja/<did>', methods=['POST'])
+@require_user
+def discharge_post(user, did):
+    """
+        Genera la baja asociada a did, en la base de datos
+    """
+    assert did is not None
+
+    with open_sileg_session() as session:
+        form = DischargeDesignationForm()
+        designation = silegModel.get_designations(session, [did])[0]
+        uid = designation.user_id
+
+        if not form.is_submitted():
+            print(form.errors)
+            abort(404)
+
+        form.save(session, designation_to_discharge=designation)
+        session.commit()
+
+    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
+
+
+
+@bp.route('/restaurar/<did>')
+@require_user
+def undelete(user, did):
+    assert did is not None
+    with open_sileg_session() as session:
+        d = silegModel.get_designations(session, [did])[0]
+        uid = d.user_id
+        d.deleted = None
+        d.historic = False
+        session.commit()
+    
+    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))        
+
+
 @bp.route('/eliminar/<did>')
 @require_user
 def delete(user, did):
@@ -290,6 +379,59 @@ def delete_post(user, did):
     ########################################
 """
 
+def _is_extension(d):
+    return d.type == DesignationTypes.EXTENSION
+
+def _is_promotion(d):
+    return d.type == DesignationTypes.PROMOTION
+
+@bp.route('/detalle/<did>')
+@require_user
+def designation_detail(user, did):
+    """
+        Detalle de una designación
+    """
+    assert did is not None
+
+    with open_sileg_session() as session:
+        designations = silegModel.get_designations(session, [did])
+        designation = designations[0]
+        uid = designation.user_id
+
+        extensions = [d for d in designation.designations if d.type == DesignationTypes.EXTENSION]
+        promotions = [d for d in designation.designations if d.type == DesignationTypes.PROMOTION]
+        discharges = [d for d in designation.designations if d.type == DesignationTypes.DISCHARGE]
+
+        #extensions = extensions.sort(reverse=True, key=lambda x:x.start)
+        #promotions = promotions.sort(reverse=True, key=lambda x:x.start)
+        if not extensions:
+            extensions = []
+
+        if not promotions:
+            promotions = []
+
+        with open_users_session() as session:
+            person = usersModel.get_users(session, [uid])[0]
+
+        return render_template('designationDetail.html', dt2s=dt2s, det2s=det2s, ie=_is_extension, ip=_is_promotion, user=user, person=person, designation=designation, extensions=extensions, promotions=promotions, discharges=discharges)
+
+
+def _is_secondary(d:Designation):
+    """ 
+        retorna true si va en el listado secundario de desiganciones
+        ej: bajas de prorrogas, prorrogas
+    """
+    if d.type == DesignationTypes.DISCHARGE:
+        return d.designation.type == DesignationTypes.EXTENSION
+    return d.type == DesignationTypes.EXTENSION
+
+def _is_suplencia(d:Designation):
+    return d.type == DesignationTypes.REPLACEMENT
+
+def _find_user(d:Designation):
+    return 'Walter'
+
+
 @bp.route('/listado/<uid>')
 @require_user
 def personDesignations(user, uid):
@@ -306,9 +448,19 @@ def personDesignations(user, uid):
         dids = silegModel.get_designations_by_uuid(session, uid)
         designations = silegModel.get_designations(session, dids)
 
-        active = [d for d in designations if d.deleted is None and not d.historic ]
+        original = [d for d in designations if d.deleted is None and (d.type == DesignationTypes.ORIGINAL or d.type == DesignationTypes.REPLACEMENT)]
 
-        return render_template('personDesignations.html', dt2s=dt2s, user=user, designations=active, person=person)
+        #armo el grupo de las designaciones relacionadas con el cargo original
+        active = []
+        for d in original:
+            related = [d]
+            for dr in d.designations:
+                if not (dr.historic or dr.deleted):
+                    if dr.type is DesignationTypes.PROMOTION or dr.type is DesignationTypes.ORIGINAL:
+                        related.append(dr)
+            active.append(related)
+
+        return render_template('personDesignations.html', dt2s=dt2s, cend=calculate_end, user=user, designations=active, person=person, is_secondary=_is_secondary, is_suplencia=_is_suplencia, find_user=_find_user)
 
 
 @bp.route('/crear/<uid>')

@@ -1,9 +1,27 @@
+import json
+import uuid
+import base64
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, DateTimeField, SelectField, FileField
+from wtforms import StringField, PasswordField, BooleanField, DateTimeField, SelectField
+from flask_wtf.file import FileField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import ValidationError, DataRequired, EqualTo, Email
 
 from sileg.helpers.apiHandler import getStates
+
+from sileg.models import usersModel, open_users_session
+from users.model.entities.User import User, IdentityNumber, Mail, Phone, File, MailTypes, PhoneTypes, UsersLog, UserLogTypes, IdentityNumberTypes
+
+def id2s(id:IdentityNumberTypes):
+    if id == IdentityNumberTypes.DNI:
+        return 'DNI'
+    if id == IdentityNumberTypes.LC:
+        return 'LC'
+    if id == IdentityNumberTypes.LE:
+        return 'LE'
+    if id == IdentityNumberTypes.PASSPORT:
+        return 'Pasaporte'
+    return ''    
 
 class PersonCreateForm(FlaskForm):
     lastname = StringField('Apellidos', validators=[DataRequired()])
@@ -17,10 +35,11 @@ class PersonCreateForm(FlaskForm):
     residence = StringField('Ciudad de Residencia')
     address = StringField('Dirección')
     work_email = EmailField('Correo de Trabajo')
-    personal_email = EmailField('Correo Personal')
+    personal_email = EmailField('Correo Personal',validators=[DataRequired()])
     land_line = StringField('Telefono Fijo')
     mobile_number =StringField('Telefono Movil')
     person_numberFile = FileField('Adjuntar DNI')
+    laboral_number = StringField('CUIL')
     laboral_numberFile = FileField('Adjuntar CUIL')
     seniority_external_years = StringField('Años')
     seniority_external_months = StringField('Meses')
@@ -28,7 +47,7 @@ class PersonCreateForm(FlaskForm):
         
     def __init__(self):
         super(PersonCreateForm,self).__init__()
-        self.person_number_type.choices = [('0','Seleccione una opción...'),('1','LC'),('2','LE'),('3','DNI'),('4','PASAPORTE')]
+        self.person_number_type.choices = [(id.value, id2s(id)) for id in IdentityNumberTypes]
         self.gender.choices = [('0','Seleccione una opción...'),('1','Femenino'),('2','Masculino'),('3','Autopercibido')]
         self.marital_status.choices = [('0','Seleccione una opción...'),('1','Casado/a'),('2','Soltero/a'),('3','Conviviente'),('4','Divorciado/a'),]
 
@@ -63,6 +82,160 @@ class PersonCreateForm(FlaskForm):
             if number < 0:
                 raise ValidationError('El número debe ser mayor a 0')
 
+    def save(self,authorizer_id):
+        """
+        Persistencia de datos en DB
+        """
+        toLog = []
+        with open_users_session() as session:
+            if not usersModel.get_uid_person_number(session, self.person_number.data):
+                uid = str(uuid.uuid4())
+                newUser = User()
+                newUser.id = uid
+                newUser.lastname = self.lastname.data
+                newUser.firstname = self.firstname.data
+                newUser.gender = self.gender.data if self.gender.data != '0' else None
+                newUser.marital_status = self.marital_status.data if self.marital_status.data != '0' else None
+                newUser.birthplace = self.birthplace.data
+                newUser.birthdate = self.birthdate.data if self.birthdate.data else None
+                newUser.residence = self.residence.data
+                newUser.address = self.address.data
+                session.add(newUser)
+                toLog.append(newUser)
+
+                """ se generan los datos asociados al dni - archivo """
+                dni_id = None
+                if self.person_numberFile.data:
+                    dni_id = str(uuid.uuid4())                    
+                    personNumberFile = File()
+                    personNumberFile.id = dni_id
+                    personNumberFile.mimetype = self.person_numberFile.data.mimetype
+                    personNumberFile.content = base64.b64encode(self.person_numberFile.data.read()).decode()
+                    session.add(personNumberFile)
+                    toLog.append({  'id': personNumberFile.id,
+                                    'created': personNumberFile.created,
+                                    'updated': personNumberFile.updated,
+                                    'deleted': personNumberFile.deleted,
+                                    'mimetype': personNumberFile.mimetype,
+                                    'type': personNumberFile.type.value,
+                                    'content': personNumberFile.content,
+                                    'user_id': personNumberFile.user_id,
+                                })
+
+                """ entidad del dni """
+                id = IdentityNumber()
+                id.user_id = uid
+                id.number = self.person_number.data
+                id.type = self.person_number_type.data
+                if dni_id:
+                    id.file_id = dni_id
+                session.add(id)
+                
+                if self.work_email.data:
+                    newWorkEmail = Mail()
+                    newWorkEmail.email = self.work_email.data
+                    newWorkEmail.type = MailTypes.INSTITUTIONAL
+                    newWorkEmail.user_id = uid
+                    session.add(newWorkEmail)
+                    toLog.append({  'id': newWorkEmail.id,
+                                    'created': newWorkEmail.created,
+                                    'updated': newWorkEmail.updated,
+                                    'deleted': newWorkEmail.deleted,
+                                    'type': newWorkEmail.type.value,
+                                    'email': newWorkEmail.email,
+                                    'confirmed': newWorkEmail.confirmed,
+                                    'user_id': newWorkEmail.user_id,
+                                })
+
+                if self.personal_email.data:
+                    newPersonalMail = Mail()
+                    newPersonalMail.email = self.personal_email.data
+                    newPersonalMail.type = MailTypes.NOTIFICATION
+                    newPersonalMail.user_id = uid
+                    session.add(newPersonalMail)
+                    toLog.append({  'id': newPersonalMail.id,
+                                    'created': newPersonalMail.created,
+                                    'updated': newPersonalMail.updated,
+                                    'deleted': newPersonalMail.deleted,
+                                    'type': newPersonalMail.type.value,
+                                    'email': newPersonalMail.email,
+                                    'confirmed': newPersonalMail.confirmed,
+                                    'user_id': newPersonalMail.user_id,
+                                })
+
+                if self.land_line.data:
+                    landLinePhone = Phone()
+                    landLinePhone.type = PhoneTypes.LANDLINE
+                    landLinePhone.number = self.land_line.data
+                    landLinePhone.user_id = uid
+                    session.add(landLinePhone)
+                    toLog.append({  'id': landLinePhone.id,
+                                    'created': landLinePhone.created,
+                                    'updated': landLinePhone.updated,
+                                    'deleted': landLinePhone.deleted,
+                                    'type': landLinePhone.type.value,
+                                    'number': landLinePhone.number,
+                                    'user_id': landLinePhone.user_id,
+                                })
+
+                if self.mobile_number.data:
+                    mobileNumber = Phone()
+                    mobileNumber.type = PhoneTypes.CELLPHONE
+                    mobileNumber.number = self.mobile_number.data
+                    mobileNumber.user_id = uid
+                    session.add(mobileNumber)
+                    toLog.append({  'id': mobileNumber.id,
+                                    'created': mobileNumber.created,
+                                    'updated': mobileNumber.updated,
+                                    'deleted': mobileNumber.deleted,
+                                    'type': mobileNumber.type.value,
+                                    'number': mobileNumber.number,
+                                    'user_id': mobileNumber.user_id,
+                                })
+               
+
+                if self.laboral_number.data:
+                    cid = str(uuid.uuid4())
+                    if self.laboral_numberFile.data:
+                        laboralNumberFile = File()
+                        laboralNumberFile.id = cid
+                        laboralNumberFile.mimetype = self.laboral_numberFile.data.mimetype
+                        laboralNumberFile.content = base64.b64encode(self.laboral_numberFile.data.read()).decode()
+                        session.add(laboralNumberFile)
+                        toLog.append({  'id': laboralNumberFile.id,
+                                        'created': laboralNumberFile.created,
+                                        'updated': laboralNumberFile.updated,
+                                        'deleted': laboralNumberFile.deleted,
+                                        'mimetype': laboralNumberFile.mimetype,
+                                        'type': laboralNumberFile.type.value,
+                                        'content': laboralNumberFile.content,
+                                        'user_id': laboralNumberFile.user_id,
+                                    })
+
+                    cuil = IdentityNumber()
+                    cuil.user_id = uid
+                    cuil.number = self.laboral_number.data
+                    cuil.type = IdentityNumberTypes.CUIL
+                    if cid:
+                        cuil.file_id = cid
+                    session.add(cuil)                        
+
+                newLog = UsersLog()
+                newLog.entity_id = newUser.id
+                newLog.authorizer_id = authorizer_id
+                newLog.type = UserLogTypes.CREATE
+                newLog.data = json.dumps(toLog, default=str)
+                session.add(newLog)
+                session.commit()
+                
+
+        #TODO Sileg model
+        newSeniority = {
+            'seniority_external_years' : self.seniority_external_years.data,
+            'seniority_external_months'  : self.seniority_external_months.data,
+            'seniority_external_days' : self.seniority_external_days.data
+        }
+
 class TitleAssignForm(FlaskForm):
     titleType = SelectField('Tipo de Título')
     titleDate = StringField('Fecha de Obtención')
@@ -72,8 +245,8 @@ class TitleAssignForm(FlaskForm):
     def __init__(self):
         super(TitleAssignForm,self).__init__()
         #TODO Obtener del modelo los titulos existentes y tipos
-        self.titleType.choices = [('0','Seleccione una opción...'),('1','Grado'),('2','Posgrado')]
-        self.titleName.choices = [('0','Seleccione una opción...'),('1','Contador'),('2','Ingeniero'),('3','Licenciado en Ciencias Administrativas')]
+        self.titleType.choices = [('0','Seleccione...'),('1','Grado'),('2','Posgrado')]
+        self.titleName.choices = [('0','Seleccione...'),('1','Contador'),('2','Ingeniero'),('3','Licenciado en Ciencias Administrativas')]
 
     def validate_titleType(self, titleType):
         if self.titleType.data == '0':
