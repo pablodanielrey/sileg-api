@@ -6,7 +6,8 @@ from .config import Config
 """
 
 #ver el tema de ssl termination y el proxyFix
-from werkzeug.contrib.fixers import ProxyFix
+#from werkzeug.contrib.fixers import ProxyFix
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
