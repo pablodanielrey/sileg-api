@@ -43,13 +43,13 @@
                 <div class="row center">
                     <div class="col m1"></div>
                     <div class="col m3">
-                            {{ form.person_number_type.label }}
-                            {% if form.person_number_type.errors %}
-                            {{ form.person_number_type(class="validate invalid") }}
-                            <span class="helper-text red-text">Debe seleccionar una opción</span>
-                            {% else %}
-                            {{ form.person_number_type(class="validate") }}
-                            {% endif %}
+                        {{ form.person_number_type.label }}
+                        {% if form.person_number_type.errors %}
+                        {{ form.person_number_type(class="validate invalid") }}
+                        <span class="helper-text red-text">Debe seleccionar una opción</span>
+                        {% else %}
+                        {{ form.person_number_type(class="validate") }}
+                        {% endif %}
                     </div>
                     <div class="col m4">
                         <div class="input-field">
@@ -208,6 +208,21 @@
                         <h5>Datos Laborales</h5>
                     </div>
                 </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        <div class="input-field">
+                            {{ form.laboral_number.label }}
+                            {% if form.laboral_number.errors %}
+                            {{ form.laboral_number(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.laboral_number.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.laboral_number(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
                 <div class="row">
                     <div class="col m1"></div>
                     <div class="col m5">
@@ -259,7 +274,7 @@
                 </div>
                 <div class="row center">
                     <div class="col m1"></div>
-                    <div class="col m4">
+                    <div class="col m5">
                         <div class="file-field input-field">
                             <div class="btn">
                                 <span>DNI</span>
@@ -270,20 +285,7 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- cuil -->
-                    <div class="col m4">
-                        <div class="input-field">
-                            {{ form.laboral_number.label }}
-                            {% if form.laboral_number.errors %}
-                            {{ form.laboral_number(class="validate invalid") }}
-                            <span class="helper-text" data-error="{{form.laboral_number.errors[0]}}"></span>
-                            {% else %}
-                            {{ form.laboral_number(class="validate") }}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col m4">
+                    <div class="col m5">
                         <div class="file-field input-field">
                             <div class="btn">
                                 <span>CUIL</span>
@@ -294,8 +296,7 @@
                             </div>
                         </div>
                     </div>
-
-                    
+                    <div class="col m1"></div>
                 </div>
                 <div class="divider"></div>
                 <br>

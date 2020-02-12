@@ -200,25 +200,24 @@ class PersonCreateForm(FlaskForm):
                                 })
                
                 """ Se genera archivo de cuil """
+                cid = None
+                if self.laboral_numberFile.data:
+                    cid = str(uuid.uuid4())
+                    laboralNumberFile = File()
+                    laboralNumberFile.id = cid
+                    laboralNumberFile.mimetype = self.laboral_numberFile.data.mimetype
+                    laboralNumberFile.content = base64.b64encode(self.laboral_numberFile.data.read()).decode()
+                    session.add(laboralNumberFile)
+                    toLog.append({  'id': laboralNumberFile.id,
+                                    'created': laboralNumberFile.created,
+                                    'updated': laboralNumberFile.updated,
+                                    'deleted': laboralNumberFile.deleted,
+                                    'mimetype': laboralNumberFile.mimetype,
+                                    'type': laboralNumberFile.type.value,
+                                    'content': laboralNumberFile.content,
+                                    'user_id': laboralNumberFile.user_id,
+                                })
                 if self.laboral_number.data:
-                    cid = None
-                    if self.laboral_numberFile.data:
-                        cid = str(uuid.uuid4())
-                        laboralNumberFile = File()
-                        laboralNumberFile.id = cid
-                        laboralNumberFile.mimetype = self.laboral_numberFile.data.mimetype
-                        laboralNumberFile.content = base64.b64encode(self.laboral_numberFile.data.read()).decode()
-                        session.add(laboralNumberFile)
-                        toLog.append({  'id': laboralNumberFile.id,
-                                        'created': laboralNumberFile.created,
-                                        'updated': laboralNumberFile.updated,
-                                        'deleted': laboralNumberFile.deleted,
-                                        'mimetype': laboralNumberFile.mimetype,
-                                        'type': laboralNumberFile.type.value,
-                                        'content': laboralNumberFile.content,
-                                        'user_id': laboralNumberFile.user_id,
-                                    })
-
                     cuil = IdentityNumber()
                     cuil.type = IdentityNumberTypes.CUIL
                     cuil.number = self.laboral_number.data
