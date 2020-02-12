@@ -10,9 +10,9 @@ from wtforms.validators import ValidationError, DataRequired, EqualTo, Email
 from sileg.helpers.apiHandler import getStates
 
 from sileg.models import usersModel, open_users_session
-from users.model.entities.User import User, IdentityNumber, Mail, Phone, File, MailTypes, PhoneTypes, UsersLog, UserLogTypes, IdentityNumberTypes
+from users.model.entities.User import User, IdentityNumber, Mail, Phone, File, MailTypes, PhoneTypes, UsersLog, UserLogTypes, IdentityNumberTypes, DegreeTypes, UserDegree
 
-def id2s(id:IdentityNumberTypes):
+def id2sIdentityNumber(id:IdentityNumberTypes):
     if id == IdentityNumberTypes.DNI:
         return 'DNI'
     if id == IdentityNumberTypes.LC:
@@ -26,6 +26,19 @@ def id2s(id:IdentityNumberTypes):
     if id == IdentityNumberTypes.CUIT:
         return 'CUIT'
     return ''    
+
+def id2sDegrees(id:DegreeTypes):
+    if id == DegreeTypes.ELEMENTARY:
+        return 'Primario'
+    if id == DegreeTypes.HIGHER:
+        return 'Secundario'
+    if id == DegreeTypes.COLLEGE:
+        return 'Grado'
+    if id == DegreeTypes.MASTER:
+        return 'Maestría'
+    if id == DegreeTypes.DOCTORAL:
+        return 'Doctorado'
+    return ''
 
 class PersonCreateForm(FlaskForm):
     lastname = StringField('Apellidos', validators=[DataRequired()])
@@ -51,7 +64,9 @@ class PersonCreateForm(FlaskForm):
         
     def __init__(self):
         super(PersonCreateForm,self).__init__()
-        self.person_number_type.choices = [(id.value, id2s(id)) for id in IdentityNumberTypes]
+        person_number_choices = [(id.value, id2sIdentityNumber(id)) for id in IdentityNumberTypes]
+        person_number_choices.insert(0,('0','Seleccione una opción...'))
+        self.person_number_type.choices = person_number_choices
         self.gender.choices = [('0','Seleccione una opción...'),('1','Femenino'),('2','Masculino'),('3','Autopercibido')]
         self.marital_status.choices = [('0','Seleccione una opción...'),('1','Casado/a'),('2','Soltero/a'),('3','Conviviente'),('4','Divorciado/a'),]
 
@@ -245,21 +260,66 @@ class PersonCreateForm(FlaskForm):
 class TitleAssignForm(FlaskForm):
     titleType = SelectField('Tipo de Título')
     titleDate = StringField('Fecha de Obtención')
-    titleName = SelectField('Nombre del Título')
+    titleName = StringField('Nombre del Título',validators=[DataRequired(message='Debe especificar nombre de título.')])
     titleFile = FileField('Adjuntar Título')
         
     def __init__(self):
         super(TitleAssignForm,self).__init__()
         #TODO Obtener del modelo los titulos existentes y tipos
-        self.titleType.choices = [('0','Seleccione...'),('1','Grado'),('2','Posgrado')]
-        self.titleName.choices = [('0','Seleccione...'),('1','Contador'),('2','Ingeniero'),('3','Licenciado en Ciencias Administrativas')]
+        titleChoices = [(id.value, id2sDegrees(id)) for id in DegreeTypes]
+        titleChoices.insert(0,('0','Seleccione...'))
+        self.titleType.choices = titleChoices
 
     def validate_titleType(self, titleType):
         if self.titleType.data == '0':
             raise ValidationError('Debe seleccionar una opción')
-    def validate_titleName(self, titleName):
-        if self.titleName.data == '0':
-            raise ValidationError('Debe seleccionar una opción')
+
+    def save(self,uid,authorizer_id):
+        """ Persiste datos del formulario en la base """
+        toLog = []
+        with open_users_session() as session:
+            if usersModel.get_users(session, [uid])[0]:
+                """ Se carga archivo del titulo si existe """
+                degree_file_id = None
+                if self.titleFile.data:
+                    degree_file_id = str(uuid.uuid4())                    
+                    degreeFile = File()
+                    degreeFile.id = degree_file_id
+                    degreeFile.mimetype = self.degreeFile.data.mimetype
+                    degreeFile.content = base64.b64encode(self.degreeFile.data.read()).decode()
+                    session.add(degreeFile)
+                    toLog.append({  'id': degreeFile.id,
+                                    'created': degreeFile.created,
+                                    'updated': degreeFile.updated,
+                                    'deleted': degreeFile.deleted,
+                                    'mimetype': degreeFile.mimetype,
+                                    'content': degreeFile.content,
+                                })
+                tid = str(uuid.uuid4())
+                newDegree = UserDegree()
+                newDegree.id = tid
+                newDegree.type = self.titleType.data
+                newDegree.title = self.titleName.data
+                newDegree.start = self.titleDate.data if self.titleDate.data else None
+                newDegree.user_id = uid
+                if degree_file_id:
+                    newDegree.file_id = degree_file_id
+                session.add(newDegree)
+                toLog.append({  'id': newDegree.id,
+                                'created': newDegree.created,
+                                'updated': newDegree.updated,
+                                'deleted': newDegree.deleted,
+                                'title': newDegree.title,
+                                'start': newDegree.start,
+                                'user_id': newDegree.user_id,
+                            })                
+                newLog = UsersLog()
+                newLog.entity_id = tid
+                newLog.authorizer_id = authorizer_id
+                newLog.type = UserLogTypes.CREATE
+                newLog.data = json.dumps(toLog, default=str)
+                session.add(newLog)
+                session.commit()
 
 class PersonSearchForm(FlaskForm):
     query = StringField('Buscar persona por apellido o número de documento')

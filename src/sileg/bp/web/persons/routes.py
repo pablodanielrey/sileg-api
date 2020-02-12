@@ -34,7 +34,7 @@ def search(user):
             persons = usersModel.get_users(session, uids)
     return render_template('searchPerson.html', user=user, persons=persons, form=form)
 
-@bp.route('<uid>/titulos')
+@bp.route('<uid>/titulos',methods=['GET','POST'])
 @require_user
 def degrees(user,uid):
     """
@@ -46,7 +46,9 @@ def degrees(user,uid):
         if not persons or len(persons) <= 0:
             abort(404)
         person = persons[0]
-    titles = None
+        titles = usersModel.get_person_titles(session,uid)
+    if form.validate_on_submit():
+        form.save(uid,user['sub'])
     return render_template('showDegrees.html', user=user,person=person, titles=titles, form=form)
 
 @bp.route('<uid>')
