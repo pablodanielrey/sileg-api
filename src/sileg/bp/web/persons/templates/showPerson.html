@@ -14,69 +14,77 @@
             <div class="row center">
                 <div class="col m1"></div>
                 <div class="col m5">
-                    <h6><strong>Apellidos</strong></h6>
-                    <p>{{person.lastname}}</p>
+                    <p>Apellidos</p>
+                    <h6><strong>{{person.lastname}}</strong></h6>
                 </div>
                 <div class="col m5">
-                    <h6><strong>Nombres</strong></h6>
-                    <p>{{person.firstname}}</p>
+                    <p>Nombres</p>
+                    <h6><strong>{{person.firstname}}</strong></h6>
                 </div>
                 <div class="col m1"></div>
             </div>
             <div class="row center">
                 <div class="col m1"></div>
                 <div class="col m5">
-                    <h6><strong>Tipo de documento</strong></h6>
-                    {% if person.person_number_type %}
-                    <p>{{person.person_number_type.value}}</p>
+                    <p>Tipo de documento</p>
+                    {% if person.identity_numbers|length > 0 %}
+                    {% for pi in person.identity_numbers if pi.type.value != 'CUIL' and pi.type.value != 'CUIT' %}
+                    <h6><strong>{{pi.type.value}}</strong></h6>
                     {% else %}
-                    <p>No se encuentra registrado</p>
+                    <h6><strong>No se encuentra registrado</strong></h6>
+                    {% endfor %}
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
                     {% endif %}
                 </div>
                 <div class="col m5">
-                    <h6><strong>Número de documento</strong></h6>
-                    {% if person.person_number %}
-                    <p>{{person.person_number}}</p>
+                    <p>Número de documento</p>
+                    {% if person.identity_numbers|length > 0 %}
+                    {% for pi in person.identity_numbers if pi.type.value != 'CUIL' and pi.type.value != 'CUIT' %}
+                    <h6><strong>{{pi.number}}</strong></h6>
                     {% else %}
-                    <p>No se encuentra registrado</p>
+                    <h6><strong>No se encuentra registrado</strong></h6>
+                    {% endfor %}
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
                     {% endif %}
                 </div>
             </div>
             <div class="row center">
                 <div class="col m1"></div>
                 <div class="col m5">
-                    <h6><strong>Género</strong></h6>
+                    <p>Género</p>
                     {% if person.gender %}
-                    <p>{{person.gender}}</p>
+                    <h6><strong>{{person.gender}}</strong></h6>
                     {% else %}
-                    <p>No se encuentra registrado</p>
+                    <h6><strong>No se encuentra registrado</strong></h6>
                     {% endif %}
                 </div>
                 <div class="col m5">
-                    <h6><strong>Estado civil</strong></h6>
+                    <p>Estado civil</p>
                     {% if person.marital_status %}
-                    <p>{{person.marital_status}}</p>
+                    <h6><strong>{{person.marital_status}}</strong></h6>
                     {% else %}
-                    <p>No se encuentra registrado</p>
+                    <h6><strong>No se encuentra registrado</strong></h6>
                     {% endif %}
                 </div>
             </div>
             <div class="row center">
                 <div class="col m1"></div>
                 <div class="col m5">
-                    <h6><strong>Lugar de nacimiento</strong></h6>
+                    <p>Lugar de nacimiento</p>
                     {% if person.birthplace %}
-                    <p>{{person.birthplace}}</p>
+                    <h6><strong>{{person.birthplace}}</strong></h6>
                     {% else %}
-                    <p>No se encuentra registrado</p>
+                    <h6><strong>No se encuentra registrado</strong></h6>
                     {% endif %}
                 </div>
                 <div class="col m5">
-                    <h6><strong>Fecha de nacimiento</strong></h6>
+                    <p>Fecha de nacimiento</p>
                     {% if person.birthdate %}
-                    <p>{{person.birthdate}}</p>
+                    <h6><strong>{{person.birthdate}}</strong></h6>
                     {% else %}
-                    <p>No se encuentra registrado</p>
+                    <h6><strong>No se encuentra registrado</strong></h6>
                     {% endif %}
                 </div>
             </div>
@@ -89,19 +97,19 @@
             <div class="row center">
                 <div class="col m1"></div>
                 <div class="col m5">
-                    <h6><strong>Direccion</strong></h6>
+                    <p>Direccion</p>
                     {% if person.address %}
-                    <p>{{person.address}}</p>
+                    <h6><strong>{{person.address}}</strong></h6>
                     {% else %}
-                    <p>No se encuentra registrado</p>
+                    <h6><strong>No se encuentra registrado</strong></h6>
                     {% endif %}
                 </div>
                 <div class="col m5">
-                    <h6><strong>Ciudad de residencia</strong></h6>
+                    <p>Ciudad de residencia</p>
                     {% if person.residence %}
-                    <p>{{person.residence}}</p>
+                    <h6><strong>{{person.residence}}</strong></h6>
                     {% else %}
-                    <p>No se encuentra registrado</p>
+                    <h6><strong>No se encuentra registrado</strong></h6>
                     {% endif %}
                 </div>
                 <div class="col m1"></div>
@@ -115,43 +123,55 @@
             <div class="row center">
                 <div class="col m1"></div>
                 <div class="col m5">
-                    <h6><strong>Correo de trabajo</strong></h6>
-                    {% for m in person.mails%}
-                    <p>{{m.email}}</p>
+                    <p>Correo de trabajo</p>
+                    {% if person.mails|length > 0 %}
+                    {% for pm in person.mails if pm.type.value == 'NOTIFICATION' %}
+                    <h6><strong>{{pm.email}}</strong></h6>
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
                     {% endfor %}
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
+                    {% endif %}
                 </div>
                 <div class="col m5">
-                    <h6><strong>Correo Personal</strong></h6>
-                    {% for m in person.mails%}
-                    <p>{{m.email}}</p>
+                    <p>Correo Personal</p>
+                    {% if person.mails|length > 0 %}
+                    {% for pm in person.mails if pm.type.value == 'ALTERNATIVE' %}
+                    <h6><strong>{{pm.email}}</strong></h6>
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
                     {% endfor %}
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
+                    {% endif %}
                 </div>
                 <div class="col m1"></div>
             </div>
             <div class="row center">
                 <div class="col m1"></div>
                 <div class="col m5">
-                    <h6><strong>Teléfono Fijo</strong></h6>
+                    <p>Teléfono Fijo</p>
                     {% if person.phones|length > 0 %}
-                    {% for ph in person.phones%}
-                    {% if ph.type == 'LANDLINE' %}
-                    <p>ph.number</p>
-                    {% endif %}
+                    {% for ph in person.phones if ph.type.value == 'LANDLINE' %}
+                    <h6><strong>{{ph.number}}</strong></h6>
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
                     {% endfor %}
                     {% else %}
-                    <p>No se encuentra registrado</p>
+                    <h6><strong>No se encuentra registrado</strong></h6>
                     {% endif %}
                 </div>
                 <div class="col m5">
-                    <h6><strong>Teléfono Móvil</strong></h6>
+                    <p>Teléfono Móvil</p>
                     {% if person.phones|length > 0 %}
-                    {% for ph in person.phones%}
-                    {% if ph.type == 'CELLPHONE' %}
-                    <p>ph.number</p>
-                    {% endif %}
+                    {% for ph in person.phones if ph.type.value == 'CELLPHONE' %}
+                    <h6><strong>{{ph.number}}</strong></h6>
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
                     {% endfor %}
                     {% else %}
-                    <p>No se encuentra registrado</p>
+                    <h6><strong>No se encuentra registrado</strong></h6>
                     {% endif %}
                 </div>
                 <div class="col m1"></div>
