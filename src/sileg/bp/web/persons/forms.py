@@ -21,6 +21,10 @@ def id2s(id:IdentityNumberTypes):
         return 'LE'
     if id == IdentityNumberTypes.PASSPORT:
         return 'Pasaporte'
+    if id == IdentityNumberTypes.CUIL:
+        return 'CUIL'
+    if id == IdentityNumberTypes.CUIT:
+        return 'CUIT'
     return ''    
 
 class PersonCreateForm(FlaskForm):
@@ -103,12 +107,12 @@ class PersonCreateForm(FlaskForm):
                 session.add(newUser)
                 toLog.append(newUser)
 
-                """ se generan los datos asociados al dni - archivo """
-                dni_id = None
+                """ Se carga archivo DNI """
+                person_file_id = None
                 if self.person_numberFile.data:
-                    dni_id = str(uuid.uuid4())                    
+                    person_file_id = str(uuid.uuid4())                    
                     personNumberFile = File()
-                    personNumberFile.id = dni_id
+                    personNumberFile.id = file_id
                     personNumberFile.mimetype = self.person_numberFile.data.mimetype
                     personNumberFile.content = base64.b64encode(self.person_numberFile.data.read()).decode()
                     session.add(personNumberFile)
@@ -117,24 +121,23 @@ class PersonCreateForm(FlaskForm):
                                     'updated': personNumberFile.updated,
                                     'deleted': personNumberFile.deleted,
                                     'mimetype': personNumberFile.mimetype,
-                                    'type': personNumberFile.type.value,
                                     'content': personNumberFile.content,
-                                    'user_id': personNumberFile.user_id,
                                 })
 
-                """ entidad del dni """
-                id = IdentityNumber()
-                id.user_id = uid
-                id.number = self.person_number.data
-                id.type = self.person_number_type.data
-                if dni_id:
-                    id.file_id = dni_id
-                session.add(id)
+                """ Se genera DNI """
+                idNumber = IdentityNumber()
+                idNumber.type = self.person_number_type.data
+                idNumber.number = self.person_number.data
+                idNumber.user_id = uid
+                if person_file_id:
+                    idNumber.file_id = person_file_id
+                session.add(idNumber)
                 
+                """ Se genera correo laboral """
                 if self.work_email.data:
                     newWorkEmail = Mail()
-                    newWorkEmail.email = self.work_email.data
                     newWorkEmail.type = MailTypes.INSTITUTIONAL
+                    newWorkEmail.email = self.work_email.data
                     newWorkEmail.user_id = uid
                     session.add(newWorkEmail)
                     toLog.append({  'id': newWorkEmail.id,
@@ -147,10 +150,11 @@ class PersonCreateForm(FlaskForm):
                                     'user_id': newWorkEmail.user_id,
                                 })
 
+                """ Se genera correo personal """
                 if self.personal_email.data:
                     newPersonalMail = Mail()
-                    newPersonalMail.email = self.personal_email.data
                     newPersonalMail.type = MailTypes.NOTIFICATION
+                    newPersonalMail.email = self.personal_email.data
                     newPersonalMail.user_id = uid
                     session.add(newPersonalMail)
                     toLog.append({  'id': newPersonalMail.id,
@@ -163,6 +167,7 @@ class PersonCreateForm(FlaskForm):
                                     'user_id': newPersonalMail.user_id,
                                 })
 
+                """ Se genera telefono fijo """
                 if self.land_line.data:
                     landLinePhone = Phone()
                     landLinePhone.type = PhoneTypes.LANDLINE
@@ -178,6 +183,7 @@ class PersonCreateForm(FlaskForm):
                                     'user_id': landLinePhone.user_id,
                                 })
 
+                """ Se genera telefono movil """
                 if self.mobile_number.data:
                     mobileNumber = Phone()
                     mobileNumber.type = PhoneTypes.CELLPHONE
@@ -193,10 +199,11 @@ class PersonCreateForm(FlaskForm):
                                     'user_id': mobileNumber.user_id,
                                 })
                
-
+                """ Se genera archivo de cuil """
                 if self.laboral_number.data:
-                    cid = str(uuid.uuid4())
+                    cid = None
                     if self.laboral_numberFile.data:
+                        cid = str(uuid.uuid4())
                         laboralNumberFile = File()
                         laboralNumberFile.id = cid
                         laboralNumberFile.mimetype = self.laboral_numberFile.data.mimetype
@@ -213,9 +220,9 @@ class PersonCreateForm(FlaskForm):
                                     })
 
                     cuil = IdentityNumber()
-                    cuil.user_id = uid
-                    cuil.number = self.laboral_number.data
                     cuil.type = IdentityNumberTypes.CUIL
+                    cuil.number = self.laboral_number.data
+                    cuil.user_id = uid
                     if cid:
                         cuil.file_id = cid
                     session.add(cuil)                        
@@ -229,7 +236,7 @@ class PersonCreateForm(FlaskForm):
                 session.commit()
                 
 
-        #TODO Sileg model
+        #TODO Agregar a Sileg model la antiguedad de la persona
         newSeniority = {
             'seniority_external_years' : self.seniority_external_years.data,
             'seniority_external_months'  : self.seniority_external_months.data,
