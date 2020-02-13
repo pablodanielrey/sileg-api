@@ -95,13 +95,17 @@
                         <tr>
                             <td class="center blue-text darken-4">{{t.type}}</td>
                             <td class="center blue-text darken-4">{{t.title}}</td>
-                            <td class="center blue-text darken-4">{{t.start}}</td>
+                            {% if t.start %}
+                            <td class="center blue-text darken-4">{{ t.start.strftime('%d-%m-%Y')  }}</td>
+                            {% else %}
+                            <td class="center blue-text darken-4"></td>
+                            {% endif %}
                         {% if t.file_id %}
                             <td class="center blue-text darken-4">
                                 <a href="#"><i class="material-icons">cloud_download</i></a>
                             </td>
                         {% else %}
-                            <td class="center blue-text darken-4"></td>
+                            <td class="center blue-text darken-4"> No disponible </td>
                         {% endif %}
                         <td class="center">
                             <a class="btn-floating waves-effect waves-light red" href="#eliminar">

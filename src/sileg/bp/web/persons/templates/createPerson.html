@@ -42,7 +42,7 @@
                 </div>
                 <div class="row center">
                     <div class="col m1"></div>
-                    <div class="col m3">
+                    <div class="col m2">
                         {{ form.person_number_type.label }}
                         {% if form.person_number_type.errors %}
                         {{ form.person_number_type(class="validate invalid") }}
@@ -51,7 +51,7 @@
                         {{ form.person_number_type(class="validate") }}
                         {% endif %}
                     </div>
-                    <div class="col m4">
+                    <div class="col m3">
                         <div class="input-field">
                             {{ form.person_number.label }}
                             {% if form.person_number.errors %}
@@ -60,6 +60,17 @@
                             {% else %}
                             {{ form.person_number(class="validate") }}
                             {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m5">
+                        <div class="file-field input-field">
+                            <div class="btn">
+                                <span>Documento</span>
+                                {{ form.person_numberFile(class="validate") }}
+                            </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Adjuntar Documento">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -210,7 +221,7 @@
                 </div>
                 <div class="row center">
                     <div class="col m1"></div>
-                    <div class="col m4">
+                    <div class="col m5">
                         <div class="input-field">
                             {{ form.laboral_number.label }}
                             {% if form.laboral_number.errors %}
@@ -219,6 +230,17 @@
                             {% else %}
                             {{ form.laboral_number(class="validate") }}
                             {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m5">
+                        <div class="file-field input-field">
+                            <div class="btn">
+                                <span>CUIL</span>
+                                {{ form.laboral_numberFile(class="validate") }}
+                            </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Adjuntar CUIL">
+                            </div>
                         </div>
                     </div>
                     <div class="col m1"></div>
@@ -262,38 +284,6 @@
                             {% else %}
                             {{ form.seniority_external_days(class="validate", type="number") }}
                             {% endif %}
-                        </div>
-                    </div>
-                    <div class="col m1"></div>
-                </div>
-                <div class="divider"></div>
-                <div class="row">
-                    <div class="col m5">
-                        <h5>Archivos</h5>
-                    </div>
-                </div>
-                <div class="row center">
-                    <div class="col m1"></div>
-                    <div class="col m5">
-                        <div class="file-field input-field">
-                            <div class="btn">
-                                <span>DNI</span>
-                                {{ form.person_numberFile(class="validate") }}
-                            </div>
-                            <div class="file-path-wrapper">
-                                <input class="file-path validate" type="text" placeholder="Adjuntar DNI">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col m5">
-                        <div class="file-field input-field">
-                            <div class="btn">
-                                <span>CUIL</span>
-                                {{ form.laboral_numberFile(class="validate") }}
-                            </div>
-                            <div class="file-path-wrapper">
-                                <input class="file-path validate" type="text" placeholder="Adjuntar CUIL">
-                            </div>
                         </div>
                     </div>
                     <div class="col m1"></div>

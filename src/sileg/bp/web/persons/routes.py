@@ -3,6 +3,8 @@ from . import bp
 
 from .forms import PersonCreateForm, PersonSearchForm, TitleAssignForm
 
+from sileg.helpers.namesHandler import id2sDegrees
+
 from sileg.auth import require_user
 
 from sileg.auth import oidc
@@ -47,9 +49,28 @@ def degrees(user,uid):
             abort(404)
         person = persons[0]
         titles = usersModel.get_person_titles(session,uid)
+        for t in titles:
+            t.type = id2sDegrees(t.type)
     if form.validate_on_submit():
         form.save(uid,user['sub'])
+        return redirect(url_for('persons.degrees', uid=uid))
     return render_template('showDegrees.html', user=user,person=person, titles=titles, form=form)
+
+@bp.route('<uid>/titulos/<tid>/eliminar')
+@require_user
+def deleteDegree(user,uid,tid):
+    """
+    Metodo de baja de titulo
+    #TODO TEST
+    """
+    with open_users_session() as session:
+        title = usersModel.delete_person_title(session,uid,tid)
+        if not title:
+            abort(404)
+        elif title == tid:
+            session.commit()
+        return redirect(url_for('persons.degrees', uid=uid))
+    
 
 @bp.route('<uid>')
 @require_user
