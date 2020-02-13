@@ -97,7 +97,7 @@
             <div class="row center">
                 <div class="col m1"></div>
                 <div class="col m5">
-                    <p>Direccion</p>
+                    <p>Dirección</p>
                     {% if person.address %}
                     <h6><strong>{{person.address}}</strong></h6>
                     {% else %}
@@ -126,7 +126,7 @@
                     <p>Correo de trabajo</p>
                     {% if person.mails|length > 0 %}
                     {% for pm in person.mails if pm.type.value == 'NOTIFICATION' %}
-                    <h6><strong>{{pm.email}}</strong></h6>
+                    <h6><strong><a href="mailto:{{pm.email}}">{{pm.email}}</a></strong></h6>
                     {% else %}
                     <h6><strong>No se encuentra registrado</strong></h6>
                     {% endfor %}
@@ -138,7 +138,7 @@
                     <p>Correo Personal</p>
                     {% if person.mails|length > 0 %}
                     {% for pm in person.mails if pm.type.value == 'ALTERNATIVE' %}
-                    <h6><strong>{{pm.email}}</strong></h6>
+                    <h6><strong><a href="mailto:{{pm.email}}">{{pm.email}}</a></strong></h6>
                     {% else %}
                     <h6><strong>No se encuentra registrado</strong></h6>
                     {% endfor %}
@@ -183,20 +183,81 @@
                 </div>
             </div>
             <div class="row center">
+                {% if person.identity_numbers|length > 0 %}
                 <div class="col m1"></div>
                 <div class="col m5">
-                    <a href="#">
-                        <i class="large material-icons">cloud_download</i>
-                        <h6><strong>Descargar DNI</strong></h6>
-                    </a>
+                    <h6 class="blue-text text-lighten-1"><strong>Descarga de Documentos de identidad</strong></h6>
                 </div>
                 <div class="col m5">
-                    <a href="#">
-                        <i class="large material-icons">cloud_download</i>
-                        <h6><strong>Descargar constancia de CUIL</strong></h6>
-                    </a>
+                    <h6 class="blue-text text-lighten-1"><strong>Descarga de constancias de CUIL</strong></h6>
                 </div>
             </div>
+            <div class="row center">
+                <div class="col m6">
+                    <table class="centered responsive-table">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Número</th>
+                                <th>Fecha de carga</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for pi in person.identity_numbers if pi.type.value != 'CUIL' and pi.type.value != 'CUIT' %}
+                            <tr>
+                                <td>{{pi.type.value}}</td>
+                                <td>{{pi.number}}</td>
+                                {% if pi.file %}
+                                <td>{{pi.file.created.strftime('%d/%m/%Y')}}</td>
+                                <td><i class="material-icons">cloud_download</i></td>
+                                {% else %}
+                                <td colspan="2">No se subió archivo</td>
+                                {% endif %}
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4">No se encuentran subidos archivos de documento de identidad</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col m6">
+                    <table class="centered responsive-table">
+                        <thead>
+                            <tr>
+                                <th>CUIT / CUIL</th>
+                                <th>Fecha de carga</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for pi in person.identity_numbers if pi.type.value == 'CUIL' and pi.type.value == 'CUIT' %}
+                            <tr>
+                                <td>{{pi.type.value}}</td>
+                                <td>{{pi.number}}</td>
+                                {% if pi.file %}
+                                <td>{{pi.file.created.strftime('%d/%m/%Y')}}</td>
+                                <td><i class="material-icons">cloud_download</i></td>
+                                {% else %}
+                                <td colspan="2">No se subió archivo</td>
+                                {% endif %}
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4">No se encuentran subidos archivos de constancia de CUIT / CUIL</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% else %}
+            <h6><strong>No se subieron archivos para este usuario</strong></h6>
+            {% endif %}
         </div>
     </div>
     <div class="col m1"></div>
