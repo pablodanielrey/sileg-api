@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-    {{person}}
+    Nombre
+    {{form.firstname(value=person.firstname)}}
+    Apellido
+    {{form.lastname(value=person.lastname)}}
 
 {% endblock %}
