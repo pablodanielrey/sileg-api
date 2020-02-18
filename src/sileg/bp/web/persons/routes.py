@@ -77,5 +77,7 @@ def personData(user,uid):
         if not persons or len(persons) <= 0:
             abort(404)
         person = persons[0]
-    return render_template('showPerson.html', user=user,person=person)
+        #for pi in person.identity_numbers:
+        #    pi.file
+        return render_template('showPerson.html', user=user,person=person)
     

@@ -125,7 +125,7 @@
                 <div class="col m5">
                     <p>Correo de trabajo</p>
                     {% if person.mails|length > 0 %}
-                    {% for pm in person.mails if pm.type.value == 'NOTIFICATION' %}
+                    {% for pm in person.mails if pm.type.value == 'INSTITUTIONAL' %}
                     <h6><strong><a href="mailto:{{pm.email}}">{{pm.email}}</a></strong></h6>
                     {% else %}
                     <h6><strong>No se encuentra registrado</strong></h6>
