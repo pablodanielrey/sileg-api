@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect,request, Markup, url_for, abort
 from . import bp
 
-from .forms import PersonCreateForm, PersonSearchForm, TitleAssignForm
+from .forms import PersonCreateForm, PersonSearchForm, TitleAssignForm, PersonModifyForm
 
 from sileg.auth import require_user
 
@@ -79,4 +79,21 @@ def personData(user,uid):
         person = persons[0]
 
     return render_template('showPerson.html', user=user,person=person)
+
+@bp.route('<uid>/modificar')
+@require_user
+def modifyPersonData(user,uid):
+    """
+    Pagina de vista de datos personales
+    """
+    with open_users_session() as session:
+        persons = usersModel.get_users(session, [uid])
+        if not persons or len(persons) <= 0:
+            abort(404)
+        person = persons[0]
+        form = PersonModifyForm()
+        if form.validate_on_submit():
+            form.save(user['sub'])
+
+    return render_template('modifyPerson.html', user=user, person=person, form=form)
     
