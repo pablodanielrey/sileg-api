@@ -12,7 +12,7 @@ from sileg.helpers.apiHandler import getStates
 from sileg.models import usersModel, open_users_session
 from users.model.entities.User import User, IdentityNumber, Mail, Phone, File, MailTypes, PhoneTypes, UsersLog, UserLogTypes, IdentityNumberTypes
 
-def id2s(id:IdentityNumberTypes):
+def id2sIdentityNumber(id:IdentityNumberTypes):
     if id == IdentityNumberTypes.DNI:
         return 'DNI'
     if id == IdentityNumberTypes.LC:
@@ -21,7 +21,13 @@ def id2s(id:IdentityNumberTypes):
         return 'LE'
     if id == IdentityNumberTypes.PASSPORT:
         return 'Pasaporte'
-    return ''    
+    if id == IdentityNumberTypes.CUIL:
+        return 'CUIL'
+    if id == IdentityNumberTypes.CUIT:
+        return 'CUIT'
+    if id == IdentityNumberTypes.STUDENT:
+        return 'Legajo'
+    return ''   
 
 class PersonCreateForm(FlaskForm):
     lastname = StringField('Apellidos', validators=[DataRequired()])
@@ -47,9 +53,9 @@ class PersonCreateForm(FlaskForm):
         
     def __init__(self):
         super(PersonCreateForm,self).__init__()
-        self.person_number_type.choices = [(id.value, id2s(id)) for id in IdentityNumberTypes]
+        self.person_number_type.choices = [(id.value, id2sIdentityNumber(id)) for id in IdentityNumberTypes]
         self.gender.choices = [('0','Seleccione una opción...'),('1','Femenino'),('2','Masculino'),('3','Autopercibido')]
-        self.marital_status.choices = [('0','Seleccione una opción...'),('1','Casado/a'),('2','Soltero/a'),('3','Conviviente'),('4','Divorciado/a'),]
+        self.marital_status.choices = [('0','Seleccione una opción...'),('1','Casado/a'),('2','Soltero/a'),('3','Conviviente'),('4','Divorciado/a')]
 
     def validate_person_number_type(self, person_number_type):
         if self.person_number_type.data == '0':
@@ -284,9 +290,11 @@ class PersonModifyForm(FlaskForm):
         
     def __init__(self):
         super(PersonModifyForm,self).__init__()
-        self.person_number_type.choices = [(id.value, id2s(id)) for id in IdentityNumberTypes]
-        self.gender.choices = [('0','Seleccione una opción...'),('1','Femenino'),('2','Masculino'),('3','Autopercibido')]
-        self.marital_status.choices = [('0','Seleccione una opción...'),('1','Casado/a'),('2','Soltero/a'),('3','Conviviente'),('4','Divorciado/a'),]
+        person_number_choices = [(id.value, id2sIdentityNumber(id)) for id in IdentityNumberTypes]
+        person_number_choices.insert(0,('0','Seleccione una opción...'))
+        self.person_number_type.choices = person_number_choices
+        self.gender.choices = [('0','Seleccione una opción...'),('Femenino','Femenino'),('Masculino','Masculino'),('Autopercibido','Autopercibido')]
+        self.marital_status.choices = [('0','Seleccione una opción...'),('Casado/a','Casado/a'),('Soltero/a','Soltero/a'),('Conviviente','Conviviente'),('Divorciado/a','Divorciado/a'),('Viudo/a','Viudo/a')]
 
     def validate_person_number_type(self, person_number_type):
         if self.person_number_type.data == '0':
@@ -340,12 +348,12 @@ class PersonModifyForm(FlaskForm):
                 session.add(newUser)
                 toLog.append(newUser)
 
-                """ se generan los datos asociados al dni - archivo """
-                dni_id = None
+                """ Se carga archivo DNI """
+                person_file_id = None
                 if self.person_numberFile.data:
-                    dni_id = str(uuid.uuid4())                    
+                    person_file_id = str(uuid.uuid4())                    
                     personNumberFile = File()
-                    personNumberFile.id = dni_id
+                    personNumberFile.id = file_id
                     personNumberFile.mimetype = self.person_numberFile.data.mimetype
                     personNumberFile.content = base64.b64encode(self.person_numberFile.data.read()).decode()
                     session.add(personNumberFile)
@@ -354,24 +362,23 @@ class PersonModifyForm(FlaskForm):
                                     'updated': personNumberFile.updated,
                                     'deleted': personNumberFile.deleted,
                                     'mimetype': personNumberFile.mimetype,
-                                    'type': personNumberFile.type.value,
                                     'content': personNumberFile.content,
-                                    'user_id': personNumberFile.user_id,
                                 })
 
-                """ entidad del dni """
-                id = IdentityNumber()
-                id.user_id = uid
-                id.number = self.person_number.data
-                id.type = self.person_number_type.data
-                if dni_id:
-                    id.file_id = dni_id
-                session.add(id)
+                """ Se genera DNI """
+                idNumber = IdentityNumber()
+                idNumber.type = self.person_number_type.data
+                idNumber.number = self.person_number.data
+                idNumber.user_id = uid
+                if person_file_id:
+                    idNumber.file_id = person_file_id
+                session.add(idNumber)
                 
+                """ Se genera correo laboral """
                 if self.work_email.data:
                     newWorkEmail = Mail()
-                    newWorkEmail.email = self.work_email.data
                     newWorkEmail.type = MailTypes.INSTITUTIONAL
+                    newWorkEmail.email = self.work_email.data
                     newWorkEmail.user_id = uid
                     session.add(newWorkEmail)
                     toLog.append({  'id': newWorkEmail.id,
@@ -384,10 +391,11 @@ class PersonModifyForm(FlaskForm):
                                     'user_id': newWorkEmail.user_id,
                                 })
 
+                """ Se genera correo personal """
                 if self.personal_email.data:
                     newPersonalMail = Mail()
+                    newPersonalMail.type = MailTypes.ALTERNATIVE
                     newPersonalMail.email = self.personal_email.data
-                    newPersonalMail.type = MailTypes.NOTIFICATION
                     newPersonalMail.user_id = uid
                     session.add(newPersonalMail)
                     toLog.append({  'id': newPersonalMail.id,
@@ -400,6 +408,7 @@ class PersonModifyForm(FlaskForm):
                                     'user_id': newPersonalMail.user_id,
                                 })
 
+                """ Se genera telefono fijo """
                 if self.land_line.data:
                     landLinePhone = Phone()
                     landLinePhone.type = PhoneTypes.LANDLINE
@@ -415,6 +424,7 @@ class PersonModifyForm(FlaskForm):
                                     'user_id': landLinePhone.user_id,
                                 })
 
+                """ Se genera telefono movil """
                 if self.mobile_number.data:
                     mobileNumber = Phone()
                     mobileNumber.type = PhoneTypes.CELLPHONE
@@ -430,29 +440,29 @@ class PersonModifyForm(FlaskForm):
                                     'user_id': mobileNumber.user_id,
                                 })
                
-
-                if self.laboral_number.data:
+                """ Se genera archivo de cuil """
+                cid = None
+                if self.laboral_numberFile.data:
                     cid = str(uuid.uuid4())
-                    if self.laboral_numberFile.data:
-                        laboralNumberFile = File()
-                        laboralNumberFile.id = cid
-                        laboralNumberFile.mimetype = self.laboral_numberFile.data.mimetype
-                        laboralNumberFile.content = base64.b64encode(self.laboral_numberFile.data.read()).decode()
-                        session.add(laboralNumberFile)
-                        toLog.append({  'id': laboralNumberFile.id,
-                                        'created': laboralNumberFile.created,
-                                        'updated': laboralNumberFile.updated,
-                                        'deleted': laboralNumberFile.deleted,
-                                        'mimetype': laboralNumberFile.mimetype,
-                                        'type': laboralNumberFile.type.value,
-                                        'content': laboralNumberFile.content,
-                                        'user_id': laboralNumberFile.user_id,
-                                    })
-
+                    laboralNumberFile = File()
+                    laboralNumberFile.id = cid
+                    laboralNumberFile.mimetype = self.laboral_numberFile.data.mimetype
+                    laboralNumberFile.content = base64.b64encode(self.laboral_numberFile.data.read()).decode()
+                    session.add(laboralNumberFile)
+                    toLog.append({  'id': laboralNumberFile.id,
+                                    'created': laboralNumberFile.created,
+                                    'updated': laboralNumberFile.updated,
+                                    'deleted': laboralNumberFile.deleted,
+                                    'mimetype': laboralNumberFile.mimetype,
+                                    'type': laboralNumberFile.type.value,
+                                    'content': laboralNumberFile.content,
+                                    'user_id': laboralNumberFile.user_id,
+                                })
+                if self.laboral_number.data:
                     cuil = IdentityNumber()
-                    cuil.user_id = uid
-                    cuil.number = self.laboral_number.data
                     cuil.type = IdentityNumberTypes.CUIL
+                    cuil.number = self.laboral_number.data
+                    cuil.user_id = uid
                     if cid:
                         cuil.file_id = cid
                     session.add(cuil)                        
@@ -466,7 +476,7 @@ class PersonModifyForm(FlaskForm):
                 session.commit()
                 
 
-        #TODO Sileg model
+        #TODO Agregar a Sileg model la antiguedad de la persona
         newSeniority = {
             'seniority_external_years' : self.seniority_external_years.data,
             'seniority_external_months'  : self.seniority_external_months.data,
