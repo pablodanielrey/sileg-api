@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="row">
     <div class="col m1"></div>
@@ -12,7 +11,7 @@
                 <div class="col m3">
                     <p>Nombre: {{person.firstname}}</p>
                     <p>Apellido: {{person.lastname}}</p>
-                    <p>DNI: {{person.person_number}}</p>
+                    <p>DNI: {{person.identity_numbers[0].number}}</p>
                 </div>
             </div>
             <div class="divider"></div>
@@ -27,33 +26,33 @@
                 <div class="row">
                     <div class="col m1"></div>
                     <div class="col m2">
-                        {{ form.titleType.label }}
-                        {% if form.titleType.errors %}
-                        {{ form.titleType(class="validate invalid") }}
-                        <span class="helper-text" data-error="{{form.titleType.errors[0]}}"></span>
+                        {{ form.degreeType.label }}
+                        {% if form.degreeType.errors %}
+                        {{ form.degreeType(class="validate invalid") }}
+                        <span class="helper-text" data-error="{{form.degreeType.errors[0]}}"></span>
                         {% else %}
-                        {{ form.titleType(class="validate") }}
+                        {{ form.degreeType(class="validate") }}
                         {% endif %}
                     </div>
                     <div class="col m3">
                         <div class="input-field">
-                            {{ form.titleName.label }}
-                            {% if form.titleName.errors %}
-                            {{ form.titleName(class="validate invalid") }}
-                            <span class="helper-text" data-error="{{form.titleName.errors[0]}}"></span>
+                            {{ form.degreeName.label }}
+                            {% if form.degreeName.errors %}
+                            {{ form.degreeName(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.degreeName.errors[0]}}"></span>
                             {% else %}
-                            {{ form.titleName(class="validate") }}
+                            {{ form.degreeName(class="validate") }}
                             {% endif %}
                         </div>
                     </div>
                     <div class="col m2">
                         <div class="input-field">
-                            {{ form.titleDate.label }}
-                            {% if form.titleDate.errors %}
-                            {{ form.titleDate(class="validate invalid datepicker") }}
-                            <span class="helper-text" data-error="{{form.titleDate.errors[0]}}"></span>
+                            {{ form.degreeDate.label }}
+                            {% if form.degreeDate.errors %}
+                            {{ form.degreeDate(class="validate invalid datepicker") }}
+                            <span class="helper-text" data-error="{{form.degreeDate.errors[0]}}"></span>
                             {% else %}
-                            {{ form.titleDate(class="validate datepicker") }}
+                            {{ form.degreeDate(class="validate datepicker") }}
                             {% endif %}
                         </div>
                     </div>
@@ -61,7 +60,7 @@
                         <div class="file-field input-field">
                             <div class="btn blue darken-2">
                                 <span>Título</span>
-                                {{ form.titleFile(class="validate") }}
+                                {{ form.degreeFile(class="validate") }}
                             </div>
                             <div class="file-path-wrapper">
                                 <input class="file-path validate" type="text" placeholder="Adjuntar Título">
@@ -79,7 +78,7 @@
             <div class="divider"></div>
             <br>
             <div>
-                {% if titles %}
+                {% if degrees %}
                 <table class="responsive-table highlight">
                     <thead>
                         <tr>
@@ -91,24 +90,27 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for t in titles %}
+                        {% for d in degrees %}
                         <tr>
-                            <td class="center blue-text darken-4">{{t.type}}</td>
-                            <td class="center blue-text darken-4">{{t.title}}</td>
-                            {% if t.start %}
-                            <td class="center blue-text darken-4">{{ t.start.strftime('%d-%m-%Y')  }}</td>
+                            <td class="center blue-text darken-4">{{d.type}}</td>
+                            <td class="center blue-text darken-4">{{d.title}}</td>
+                            {% if d.start %}
+                            <td class="center blue-text darken-4">{{ d.start.strftime('%d-%m-%Y')  }}</td>
                             {% else %}
                             <td class="center blue-text darken-4"></td>
                             {% endif %}
-                        {% if t.file_id %}
+                        {% if d.file_id %}
                             <td class="center blue-text darken-4">
-                                <a href="#"><i class="material-icons">cloud_download</i></a>
+                                <a href="{{url_for('persons.downloadDegree',uid=person.id,did=d.id)}}" download>
+                                    <i class="material-icons">cloud_download</i>
+                                </a>
                             </td>
                         {% else %}
                             <td class="center blue-text darken-4"> No disponible </td>
                         {% endif %}
                         <td class="center">
-                            <a class="btn-floating waves-effect waves-light red" href="#eliminar">
+                            <a class="btn-floating waves-effect waves-light red"
+                            href="{{url_for('persons.deleteDegree',uid=person.id,did=d.id)}}">
                                 <i class="material-icons">delete</i>
                             </a>
                         </td>
