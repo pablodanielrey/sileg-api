@@ -252,21 +252,21 @@ class PersonCreateForm(FlaskForm):
             'seniority_external_days' : self.seniority_external_days.data
         }
 
-class TitleAssignForm(FlaskForm):
-    titleType = SelectField('Tipo de Título')
-    titleDate = StringField('Fecha de Obtención')
-    titleName = StringField('Nombre del Título',validators=[DataRequired(message='Debe especificar nombre de título.')])
-    titleFile = FileField('Adjuntar Título')
+class DegreeAssignForm(FlaskForm):
+    degreeType = SelectField('Tipo de Título')
+    degreeDate = DateTimeField('Fecha de Obtención',format='%d-%m-%Y')
+    degreeName = StringField('Nombre del Título',validators=[DataRequired(message='Debe especificar nombre de título.')])
+    degreeFile = FileField('Adjuntar Título')
         
     def __init__(self):
-        super(TitleAssignForm,self).__init__()
+        super(DegreeAssignForm,self).__init__()
         #TODO Obtener del modelo los titulos existentes y tipos
-        titleChoices = [(id.value, id2sDegrees(id)) for id in DegreeTypes]
-        titleChoices.insert(0,('0','Seleccione...'))
-        self.titleType.choices = titleChoices
+        degreeChoices = [(id.value, id2sDegrees(id)) for id in DegreeTypes]
+        degreeChoices.insert(0,('0','Seleccione...'))
+        self.degreeType.choices = degreeChoices
 
-    def validate_titleType(self, titleType):
-        if self.titleType.data == '0':
+    def validate_degreeType(self, degreeType):
+        if self.degreeType.data == '0':
             raise ValidationError('Debe seleccionar una opción')
 
     def save(self,uid,authorizer_id):
@@ -276,12 +276,12 @@ class TitleAssignForm(FlaskForm):
             if usersModel.get_users(session, [uid])[0]:
                 """ Se carga archivo del titulo si existe """
                 degree_file_id = None
-                if self.titleFile.data:
+                if self.degreeFile.data:
                     degree_file_id = str(uuid.uuid4())                    
                     degreeFile = File()
                     degreeFile.id = degree_file_id
-                    degreeFile.mimetype = self.titleFile.data.mimetype
-                    degreeFile.content = base64.b64encode(self.titleFile.data.read()).decode()
+                    degreeFile.mimetype = self.degreeFile.data.mimetype
+                    degreeFile.content = base64.b64encode(self.degreeFile.data.read()).decode()
                     session.add(degreeFile)
                     toLog.append({  'id': degreeFile.id,
                                     'created': degreeFile.created,
@@ -293,9 +293,9 @@ class TitleAssignForm(FlaskForm):
                 tid = str(uuid.uuid4())
                 newDegree = UserDegree()
                 newDegree.id = tid
-                newDegree.type = self.titleType.data
-                newDegree.title = self.titleName.data
-                newDegree.start = self.titleDate.data if self.titleDate.data else None
+                newDegree.type = self.degreeType.data
+                newDegree.title = self.degreeName.data
+                newDegree.start = self.degreeDate.data if self.degreeDate.data else None
                 newDegree.user_id = uid
                 if degree_file_id:
                     newDegree.file_id = degree_file_id
