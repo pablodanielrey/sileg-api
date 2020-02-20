@@ -224,7 +224,6 @@ class PersonCreateForm(FlaskForm):
                                         'updated': laboralNumberFile.updated,
                                         'deleted': laboralNumberFile.deleted,
                                         'mimetype': laboralNumberFile.mimetype,
-                                        'type': laboralNumberFile.type.value,
                                         'content': laboralNumberFile.content,
                                         'identityNumber': cid,
                                     })
@@ -240,17 +239,21 @@ class PersonCreateForm(FlaskForm):
                 session.add(newLog)
                 session.commit()
 
-        """
+                """
 
-            MODELO DE SILEG ---> ALTA DE ANTIGUEDAD DE PERSONA
+                MODELO DE SILEG ---> ALTA DE ANTIGUEDAD DE PERSONA
 
-        """
-        #TODO Agregar a Sileg model la antiguedad de la persona
-        newSeniority = {
-            'seniority_external_years' : self.seniority_external_years.data,
-            'seniority_external_months'  : self.seniority_external_months.data,
-            'seniority_external_days' : self.seniority_external_days.data
-        }
+                """
+                #TODO Agregar a Sileg model la antiguedad de la persona
+                newSeniority = {
+                    'seniority_external_years' : self.seniority_external_years.data,
+                    'seniority_external_months'  : self.seniority_external_months.data,
+                    'seniority_external_days' : self.seniority_external_days.data
+                }
+
+                return self.person_number.data
+            else:
+                return None
 
 class DegreeAssignForm(FlaskForm):
     degreeType = SelectField('Tipo de Título')
