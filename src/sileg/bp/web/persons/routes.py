@@ -22,7 +22,9 @@ def create(user):
     """
     form = PersonCreateForm()
     if form.validate_on_submit():
-        form.save(user['sub'])
+        identityNumber = form.save(user['sub'])
+        if identityNumber:
+            return redirect(url_for('persons.search', query=identityNumber))
     return render_template('createPerson.html', user=user, form=form)
 
 
