@@ -73,7 +73,7 @@ def deleteDegree(user,uid,did):
     Metodo de baja de titulo
     """
     with open_users_session() as session:
-        degree = usersModel.delete_person_degree(session,uid,did)
+        degree = usersModel.delete_person_degree(session,uid,did,user['sub'])
         if not degree:
             abort(404)
         elif degree == did:
