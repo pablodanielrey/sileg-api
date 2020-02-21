@@ -41,6 +41,8 @@ def search(user):
         with open_users_session() as session:
             uids = usersModel.search_user(session, query)
             persons = usersModel.get_users(session, uids)
+    else:
+        persons = None
     return render_template('searchPerson.html', user=user, persons=persons, form=form)
 
 
