@@ -500,7 +500,7 @@ def create_post(user, uid):
             print(form.errors)
             abort(404)
 
-        form.save(session, silegModel, uid)
+        form.save(session, silegModel, uid, user['sub'])
         session.commit()
 
     return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))

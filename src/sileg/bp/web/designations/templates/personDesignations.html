@@ -25,11 +25,11 @@ function toggle(id) {
                 <div class="col m4">
                     <p>Nombre: {{person.firstname}}</p>
                     <p>Apellido: {{person.lastname}}</p>
-                    <p>DNI: <a href="{{url_for('persons.personData',uid=person.id)}}">{{person.person_number}}</a></p>
+                    <p>DNI: <a href="{{url_for('persons.personData',uid=person.id)}}">{{person.identity_numbers[0].number}}</a></p>
                 </div>
                 <div class="col m4">
-                    <p>Fecha de Nacimiento: {{person.birthdate}}</p>
-                    <p>Direccion: {{person.address}}</p>
+                    <p>Fecha de Nacimiento: {{person.birthdate.strftime('%d-%m-%Y')}}</p>
+                    <p>Dirección: {{person.address}}</p>
                 </div>
                 <div class="col m2"></div>
             </div>
