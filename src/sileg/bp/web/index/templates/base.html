@@ -34,7 +34,7 @@
     </script>
 
 
-    <title>Titulo</title>
+    <title>SILEG</title>
 </head>
 
 <body class="light-blue lighten-5">
@@ -46,7 +46,7 @@
                     <li><a href="#" data-target="slide-out" class="sidenav-trigger show-on-large"><i class="material-icons">menu</i></a></li>
                 </ul>
                 <ul class="right">
-                    <a class="right" href="/logout"><i class="material-icons right">lock</i>{{user.given_name}} {{user.family_name}}</a>
+                    <a class="right" href="#"><i class="material-icons right">lock</i>{{user.given_name}} {{user.family_name}}</a>
                 </ul>
             </div>
         </nav>
@@ -63,6 +63,14 @@
     </footer>
     <!-- Contenido de Sidenav-->
     <ul id="slide-out" class="sidenav">
+        <div class='row'>
+            <div class="center">
+                <h2>Sileg</h2>    
+            </div>
+            <div class="center">
+                <h6>Sistema de Legajos</h6>
+            </div>
+        </div>
         <div class="collection">
             <a class="waves-effect collection-item green-text text-darken-2" href="{{url_for('persons.create')}}">Crear Persona</a>
             <a class="waves-effect collection-item green-text text-darken-2" href="{{url_for('persons.search')}}">Buscar Persona</a>
@@ -84,7 +92,7 @@
     <script type="text/javascript">
         $(function () {
             $('.sidenav').sidenav();
-            $(".dropdown-trigger").dropdown();
+            $(".dropdown-trigger").dropdown({ constrainWidth: false });
         });
     </script>
     {% with messages = get_flashed_messages() %}
