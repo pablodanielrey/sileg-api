@@ -1,4 +1,5 @@
 import datetime
+import json
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, SelectField, DateTimeField
@@ -8,6 +9,7 @@ from wtforms.validators import ValidationError, DataRequired, EqualTo, Optional
 
 from sileg_model.model.SilegModel import SilegModel
 from sileg_model.model.entities.Designation import Designation, DesignationTypes, DesignationEndTypes, DesignationStatus
+from sileg_model.model.entities.Log import SilegLog, SilegLogTypes
 
 def det2s(d: DesignationEndTypes):
     if d == DesignationEndTypes.INDETERMINATE:
@@ -16,6 +18,8 @@ def det2s(d: DesignationEndTypes):
         return 'Hasta Convalidación'
     if d == DesignationEndTypes.CONTEST:
         return 'Hasta Concurso'
+    if d == DesignationEndTypes.RENEWAL:
+        return 'Hasta Renovación'
     if d == DesignationEndTypes.REPLACEMENT:
         return 'Hasta Fin de Suplencia'
     if d == DesignationEndTypes.ENDDATE:
@@ -64,8 +68,9 @@ class DesignationCreateForm(FlaskForm):
         self.functionEndType.choices = [ (d.value, det2s(d)) for d in DesignationEndTypes ]
         self.status.choices = [(d.value, ds2s(d)) for d in DesignationStatus]
         
-    def save(self, session, silegModel, uid):
+    def save(self, session, silegModel, uid, authorizer_id):
         d = Designation()
+        d.id = str(uuid.uuid4())
         d.type = DesignationTypes.ORIGINAL
         d.user_id = uid
 
@@ -77,12 +82,41 @@ class DesignationCreateForm(FlaskForm):
         
         d.status = self.status.data
 
+        d.comments = self.observations.data
+
         d.exp = self.exp.data
         d.res = self.res.data
         d.cor = self.cor.data
         
         session.add(d)
-
+        
+        #TODO Dejo comentado por que falta crear la tabla logs en la base de datos
+        #designationToLog = {
+        #    'id': d.id,
+        #    'created': d.created,
+        #    'updated': d.updated,
+        #    'deleted': d.deleted,
+        #    'start': d.start,
+        #    'end': d.end,
+        #    'end_type': d.end_type,
+        #    'historic': d.historic,
+        #    'exp': d.exp,
+        #    'res': d.res,
+        #    'cor': d.cor,
+        #    'status': d.status,
+        #    'type': d.type,
+        #    'designation_id': d.designation_id,
+        #    'user_id': d.user_id,
+        #    'function_id': d.function_id,
+        #    'place_id': d.place_id,
+        #    'comments': d.comments,
+        #}
+        #log = SilegLog()
+        #log.type = SilegLogTypes.CREATE
+        #log.entity_id = d.id
+        #log.authorizer_id = authorizer_id
+        #log.data = json.dumps([designationToLog], default=str)
+        #session.add(log)
 
 class ReplacementDesignationCreateForm(FlaskForm):
     # Datos del cargo
