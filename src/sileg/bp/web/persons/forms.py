@@ -293,9 +293,9 @@ class DegreeAssignForm(FlaskForm):
                                     'mimetype': degreeFile.mimetype,
                                     'content': degreeFile.content,
                                 })
-                tid = str(uuid.uuid4())
+                did = str(uuid.uuid4())
                 newDegree = UserDegree()
-                newDegree.id = tid
+                newDegree.id = did
                 newDegree.type = self.degreeType.data
                 newDegree.title = self.degreeName.data
                 newDegree.start = self.degreeDate.data if self.degreeDate.data else None
@@ -312,7 +312,7 @@ class DegreeAssignForm(FlaskForm):
                                 'user_id': newDegree.user_id,
                             })                
                 newLog = UsersLog()
-                newLog.entity_id = tid
+                newLog.entity_id = did
                 newLog.authorizer_id = authorizer_id
                 newLog.type = UserLogTypes.CREATE
                 newLog.data = json.dumps(toLog, default=str)
