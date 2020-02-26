@@ -82,7 +82,7 @@
                 <div class="col m5">
                     <p>Fecha de nacimiento</p>
                     {% if person.birthdate %}
-                    <h6><strong>{{person.birthdate}}</strong></h6>
+                    <h6><strong>{{person.birthdate.strftime('%d/%m/%Y')}}</strong></h6>
                     {% else %}
                     <h6><strong>No se encuentra registrado</strong></h6>
                     {% endif %}
@@ -125,7 +125,7 @@
                 <div class="col m5">
                     <p>Correo de trabajo</p>
                     {% if person.mails|length > 0 %}
-                    {% for pm in person.mails if pm.type.value == 'INSTITUTIONAL' %}
+                    {% for pm in person.mails if pm.type.value == 'INSTITUTIONAL' or pm.type.value == 'NOTIFICATION' %}
                     <h6><strong><a href="mailto:{{pm.email}}">{{pm.email}}</a></strong></h6>
                     {% else %}
                     <h6><strong>No se encuentra registrado</strong></h6>
@@ -186,10 +186,10 @@
                 {% if person.identity_numbers|length > 0 %}
                 <div class="col m1"></div>
                 <div class="col m5">
-                    <h6 class="blue-text text-lighten-1"><strong>Descarga de Documentos de identidad</strong></h6>
+                    <h6><strong>Descarga de Documentos de identidad</strong></h6>
                 </div>
                 <div class="col m5">
-                    <h6 class="blue-text text-lighten-1"><strong>Descarga de constancias de CUIL</strong></h6>
+                    <h6><strong>Descarga de constancias de CUIL</strong></h6>
                 </div>
             </div>
             <div class="row center">
@@ -211,7 +211,11 @@
                                 <td>{{pi.number}}</td>
                                 {% if pi.file %}
                                 <td>{{pi.file.created.strftime('%d/%m/%Y')}}</td>
-                                <td><i class="material-icons">cloud_download</i></td>
+                                <td class="blue-text darken-4">
+                                    <a href="{{url_for('persons.downloadIdNumberFile',uid=person.id,iid=pi.id)}}" download>
+                                        <i class="material-icons">cloud_download</i>
+                                    </a>
+                                </td>
                                 {% else %}
                                 <td colspan="2">No se subió archivo</td>
                                 {% endif %}
@@ -229,19 +233,23 @@
                         <thead>
                             <tr>
                                 <th>CUIT / CUIL</th>
+                                <th>Número</th>
                                 <th>Fecha de carga</th>
                                 <th></th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            {% for pi in person.identity_numbers if pi.type.value == 'CUIL' and pi.type.value == 'CUIT' %}
+                            {% for pi in person.identity_numbers if pi.type.value == 'CUIL' or pi.type.value == 'CUIT' %}
                             <tr>
                                 <td>{{pi.type.value}}</td>
                                 <td>{{pi.number}}</td>
                                 {% if pi.file %}
                                 <td>{{pi.file.created.strftime('%d/%m/%Y')}}</td>
-                                <td><i class="material-icons">cloud_download</i></td>
+                                <td><a href="{{url_for('persons.downloadIdNumberFile',uid=person.id,iid=pi.id)}}" download>
+                                        <i class="material-icons">cloud_download</i>
+                                    </a>
+                                </td>
                                 {% else %}
                                 <td colspan="2">No se subió archivo</td>
                                 {% endif %}

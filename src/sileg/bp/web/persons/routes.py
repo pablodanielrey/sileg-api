@@ -115,4 +115,19 @@ def personData(user,uid):
         #for pi in person.identity_numbers:
         #    pi.file
         return render_template('showPerson.html', user=user,person=person)
-    
+
+
+@bp.route('<uid>/documento/<iid>/descargar')
+@require_user
+def downloadIdNumberFile(user,uid,iid):
+    with open_users_session() as session:
+        person = usersModel.get_users(session,[uid])[0]
+        identityNumber = usersModel.get_person_identityNumber(session,uid,iid)
+        if identityNumber and identityNumber.file_id is not None:
+            data = usersModel.get_file(session,identityNumber.file_id)
+            content = data.content
+            binary = base64.b64decode(content.encode())
+            extension = mimetypes.guess_extension(data.mimetype)
+            fileName = (person.lastname + identityNumber.type.value + extension).replace(' ','')
+            return send_file(io.BytesIO(binary), attachment_filename=fileName, as_attachment=True ,mimetype=data.mimetype)
+        return redirect(url_for('persons.personData', uid=uid))
