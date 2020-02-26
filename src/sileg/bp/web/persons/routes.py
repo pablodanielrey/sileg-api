@@ -101,6 +101,12 @@ def modifyPersonData(user,uid):
                 if pi.type.value != 'CUIL' and pi.type.value != 'CUIT':
                     form.person_number_type.data = pi.type.value
                     form.person_number.data = pi.number
+                else:
+                    form.laboral_number.data = pi.number
+        if person.gender:
+            form.gender.data = person.gender
+        if person.marital_status:
+            form.marital_status.data = person.marital_status
         if person.birthplace:
             form.birthplace.data = person.birthplace
         if person.birthdate:
