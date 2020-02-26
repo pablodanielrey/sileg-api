@@ -26,11 +26,13 @@
             <div class="divider"></div>
             <br>
             <div>
+                {% if persons %}
                 <table class="responsive-table highlight">
                     <thead>
                         <tr>
                             <th>Apellido y Nombre</th>
-                            <th>Documento</th>
+                            <th class="center">Tipo de Documento</th>
+                            <th class="center">Documento</th>
                             <th class="center">Acciones</th>
                             <th class="center">Eliminar</th>
                         </tr>
@@ -38,8 +40,9 @@
                     <tbody>
                         {% for p in persons %}
                         <tr>
-                            <td><a class="blue-text darken-4" href="{{url_for('persons.personData', uid=p.id)}}">{{ p.firstname }}, {{ p.lastname }}</a> </td>
-                            <td><a class="blue-text darken-4" href="{{url_for('persons.personData', uid=p.id)}}">{{ p.person_number }}</a></td>
+                            <td><a class="blue-text darken-4" href="{{url_for('persons.personData', uid=p.id)}}">{{ p.lastname }}, {{ p.firstname }}</a> </td>
+                            <td class="center"><a class="blue-text darken-4" href="{{url_for('persons.personData', uid=p.id)}}">{{ p.identity_numbers[0].type.name }}</a> </td>
+                            <td class="center"><a class="blue-text darken-4" href="{{url_for('persons.personData', uid=p.id)}}">{{ p.identity_numbers[0].number }}</a></td>
                             <td class="center">
                                 <a class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3" href="#" data-target="d{{p.id}}">
                                     <i class="material-icons">edit</i>
@@ -55,25 +58,17 @@
                 {% for p in persons %}
                 <ul id='d{{p.id}}' class='dropdown-content'>                        
                     <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
-                    <li class="divider" tabindex="-1"></li>
                     <li><a class="blue-text darken-4" href="{{url_for('designations.personDesignations', uid=p.id)}}">Designaciones</a></li>
-                    <li><a class="blue-text darken-4" href="{{url_for('persons.degrees', uid=p.id)}}">Titulos</a></li>
+                    <li><a class="blue-text darken-4" href="{{url_for('persons.degrees', uid=p.id)}}">Títulos</a></li>
                     <li><a class="blue-text darken-4" href="{{url_for('leavelicense.create_personal_leave', uid=p.id)}}">Generar Licencia</a></li>
                     <li><a class="blue-text darken-4" href="{{url_for('leavelicense.list_leave_licenses', uid=p.id)}}">Ver Licencias</a></li>
                 </ul>
                 {% endfor %}
-            </div>
-            <br>
-            <div class="center">
-                <ul class="pagination">
-                    <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
-                    <li class="active teal"><a href="#!">1</a></li>
-                    <li class="waves-effect"><a href="#!">2</a></li>
-                    <li class="waves-effect"><a href="#!">3</a></li>
-                    <li class="waves-effect"><a href="#!">4</a></li>
-                    <li class="waves-effect"><a href="#!">5</a></li>
-                    <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
-                </ul>
+                {% elif persons != None %}
+                <div class="center">
+                    <h4> No se encontraron resultados </h4>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>

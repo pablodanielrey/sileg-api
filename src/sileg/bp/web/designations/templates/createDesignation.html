@@ -11,19 +11,19 @@
                 <div class="col m3">
                     <p>Nombre: {{person.firstname}}</p>
                     <p>Apellido: {{person.lastname}}</p>
-                    <p>DNI: {{person.person_number}}</p>
+                    <p>DNI: {{person.identity_numbers[0].number}}</p>
                 </div>
             </div>
             <div class="divider"></div>
+            <br>
             <form action="" method="post">
                 {{ form.csrf_token }}
                 <div class="row">
                     <div class="col m1"></div>
-                    <div class="col m2 input-field">
+                    <div class="col m3 input-field">
                         {{ form.res.label }}
                         {{ form.res }}
                     </div>
-                    <div class="col m1"></div>
                     <div class="col m3 input-field">
                         {{ form.exp.label }}
                         {{ form.exp }}
@@ -67,14 +67,14 @@
 
                 <div class="row">
                     <div class="col m1"></div>
-                    <div class="col m4">
+                    <div class="col m5">
                         {{ form.functionEndType.label }}
                         {{ form.functionEndType }}
                     </div>
                 </div>
                 <div class="row">
                     <div class="col m1"></div>
-                    <div class="col m6 input-field">
+                    <div class="col m10 input-field">
                         {{ form.observations.label }}
                         {{ form.observations(class="materialize-textarea") }}
                     </div>
@@ -109,11 +109,11 @@
                 <br>
                 <br>
                 <div class="row">
-                    <div class="col m3"></div>
-                    <div class="col m3">
-                        <button class="btn light-blue darken-3">crear designacion</button>
+                    <div class="col m5"></div>
+                    <div class="col m2">
+                        <button class="btn light-blue darken-3">Crear Designación</button>
                     </div>
-                    <div class="col m3"></div>
+                    <div class="col m5"></div>
                 </div>
             </form>
         </div>

@@ -42,16 +42,16 @@
                 </div>
                 <div class="row center">
                     <div class="col m1"></div>
-                    <div class="col m3">
-                            {{ form.person_number_type.label }}
-                            {% if form.person_number_type.errors %}
-                            {{ form.person_number_type(class="validate invalid") }}
-                            <span class="helper-text red-text">Debe seleccionar una opción</span>
-                            {% else %}
-                            {{ form.person_number_type(class="validate") }}
-                            {% endif %}
+                    <div class="col m2">
+                        {{ form.person_number_type.label }}
+                        {% if form.person_number_type.errors %}
+                        {{ form.person_number_type(class="validate invalid") }}
+                        <span class="helper-text red-text">Debe seleccionar una opción</span>
+                        {% else %}
+                        {{ form.person_number_type(class="validate") }}
+                        {% endif %}
                     </div>
-                    <div class="col m4">
+                    <div class="col m3">
                         <div class="input-field">
                             {{ form.person_number.label }}
                             {% if form.person_number.errors %}
@@ -60,6 +60,17 @@
                             {% else %}
                             {{ form.person_number(class="validate") }}
                             {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m5">
+                        <div class="file-field input-field">
+                            <div class="btn">
+                                <span>Documento</span>
+                                {{ form.person_numberFile(class="validate") }}
+                            </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Adjuntar Documento">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -208,6 +219,32 @@
                         <h5>Datos Laborales</h5>
                     </div>
                 </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <div class="input-field">
+                            {{ form.laboral_number.label }}
+                            {% if form.laboral_number.errors %}
+                            {{ form.laboral_number(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.laboral_number.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.laboral_number(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m5">
+                        <div class="file-field input-field">
+                            <div class="btn">
+                                <span>CUIL</span>
+                                {{ form.laboral_numberFile(class="validate") }}
+                            </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Adjuntar CUIL">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
                 <div class="row">
                     <div class="col m1"></div>
                     <div class="col m5">
@@ -252,52 +289,6 @@
                     <div class="col m1"></div>
                 </div>
                 <div class="divider"></div>
-                <div class="row">
-                    <div class="col m5">
-                        <h5>Archivos</h5>
-                    </div>
-                </div>
-                <div class="row center">
-                    <div class="col m1"></div>
-                    <div class="col m4">
-                        <div class="file-field input-field">
-                            <div class="btn">
-                                <span>DNI</span>
-                                {{ form.person_numberFile(class="validate") }}
-                            </div>
-                            <div class="file-path-wrapper">
-                                <input class="file-path validate" type="text" placeholder="Adjuntar DNI">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- cuil -->
-                    <div class="col m4">
-                        <div class="input-field">
-                            {{ form.laboral_number.label }}
-                            {% if form.laboral_number.errors %}
-                            {{ form.laboral_number(class="validate invalid") }}
-                            <span class="helper-text" data-error="{{form.laboral_number.errors[0]}}"></span>
-                            {% else %}
-                            {{ form.laboral_number(class="validate") }}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col m4">
-                        <div class="file-field input-field">
-                            <div class="btn">
-                                <span>CUIL</span>
-                                {{ form.laboral_numberFile(class="validate") }}
-                            </div>
-                            <div class="file-path-wrapper">
-                                <input class="file-path validate" type="text" placeholder="Adjuntar CUIL">
-                            </div>
-                        </div>
-                    </div>
-
-                    
-                </div>
-                <div class="divider"></div>
                 <br>
                 <div class="row">
                     <div class="col m3"></div>
@@ -316,55 +307,6 @@
     <div class="col m1"></div>
 </div>
 <script type="text/javascript">
-    $(document).ready(function () {
-        $('input.autocomplete').autocomplete({
-            data: {},
-            minLength: 4
-        });
-        $("#birthplace").keyup(function () {
-            var query = $(this).val();
-            if ((query != '') && (query.length > 3)) {
-                $.ajax({
-                    dataType: "json",
-                    url: "http://localhost:10202/api/v0.1/ciudades/buscar",
-                    xhrFields: { withCredentials: true },
-                    method: "GET",
-                    data: { query: query },
-                    success: function (data) {
-                        let options = {};
-                        for (d in data) {
-                            options[data[d]["name"]] = null;
-                        }
-                        $("#birthplace").autocomplete("updateData", options);
-                    }
-                });
-            } else {
-                $("#birthplace").autocomplete({ data: {} })
-            }
-        });
-        $("#residence").keyup(function () {
-            var query = $(this).val();
-            if ((query != '') && (query.length > 3)) {
-                $.ajax({
-                    dataType: "json",
-                    url: "http://localhost:10202/api/v0.1/ciudades/buscar",
-                    xhrFields: { withCredentials: true },
-                    method: "GET",
-                    data: { query: query },
-                    success: function (data) {
-                        let options = {};
-                        for (d in data) {
-                            options[data[d]["name"]] = null;
-                        }
-                        $("#residence").autocomplete("updateData", options);
-                    }
-                });
-            } else {
-                $("#residence").autocomplete({ data: {} })
-            }
-        });
-    });
-
     $(function () {
         $('select').formSelect();
         $('.datepicker').datepicker({
