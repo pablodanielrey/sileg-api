@@ -11,155 +11,263 @@
                     <h5>Datos Personales</h5>
                 </div>
             </div>
-                <div class="row center">
-                    <div class="col m1"></div>
-                    <div class="col m5">
-                        <h6><strong>Apellidos</strong></h6>
-                        <p>{{person.lastname}}</p>
-                    </div>
-                    <div class="col m5">
-                        <h6><strong>Nombres</strong></h6>
-                        <p>{{person.firstname}}</p>
-                    </div>
-                    <div class="col m1"></div>
+            <div class="row center">
+                <div class="col m1"></div>
+                <div class="col m5">
+                    <p>Apellidos</p>
+                    <h6><strong>{{person.lastname}}</strong></h6>
                 </div>
-                <div class="row center">
-                    <div class="col m1"></div>
-                    <div class="col m3">
-                        <h6><strong>Tipo de documento</strong></h6>
-                        <p>{{person.person_number_type}}</p>
-                    </div>
-                    <div class="col m4">
-                        <h6><strong>Número de documento</strong></h6>
-                        <p>{{person.person_number}}</p>
-                    </div>
-                </div>
-                <div class="row center">
-                    <div class="col m1"></div>
-                    <div class="col m3">
-                        <h6><strong>Género</strong></h6>
-                        <p>{{person.gender}}</p>
-                    </div>
-                    <div class="col m3">
-                        <h6><strong>Estado civil</strong></h6>
-                        <p>{{person.marital_status}}</p>
-                    </div>
-                </div>
-                <div class="row center">
-                    <div class="col m1"></div>
-                    <div class="col m3">
-                        <h6><strong>Lugar de nacimiento</strong></h6>
-                        <p>{{person.birthplace}}</p>
-                    </div>
-                    <div class="col m3">
-                        <h6><strong>Fecha de nacimiento</strong></h6>
-                        <p>{{person.birthdate}}</p>
-                    </div>
+                <div class="col m5">
+                    <p>Nombres</p>
+                    <h6><strong>{{person.firstname}}</strong></h6>
                 </div>
                 <div class="col m1"></div>
-        <div class="divider"></div>
-        <div class="row">
-            <div class="col m5">
-                <h5>Domicilio</h5>
             </div>
-        </div>
-        <div class="row center">
-            <div class="col m1"></div>
-            <div class="col m6">
-                <h6><strong>Direccion</strong></h6>
-                <p>{{person.address}}</p>
-            </div>
-            <div class="col m4">
-                <h6><strong>Ciudad de residencia</strong></h6>
-                {% if person.residence %}
-                <p>{{person.residence}}</p>
-                {% else %}
-                <p>No se encuentra registrado</p>
-                {% endif %}
-            </div>
-            <div class="col m1"></div>
-        </div>
-        <div class="divider"></div>
-        <div class="row">
-            <div class="col m5">
-                <h5>Contacto</h5>
-            </div>
-        </div>
-        <div class="row center">
-            <div class="col m1"></div>
-            <div class="col m5">
-                <h6><strong>Correo de trabajo</strong></h6>
-                {% for m in person.mails%}
-                <p>{{m.email}}</p>
-                {% endfor %}
-            </div>
-            <div class="col m5">
-                <h6><strong>Correo Personal</strong></h6>
-                {% for m in person.mails%}
-                <p>{{m.email}}</p>
-                {% endfor %}
-            </div>
-            <div class="col m1"></div>
-        </div>
-        <div class="row center">
-            <div class="col m1"></div>
-            <div class="col m4">
-                <h6><strong>Teléfono Fijo</strong></h6>
-                {% if person.phones|length > 0 %}
-                    {% for ph in person.phones%}
-                    {% if ph.type == 'LANDLINE' %}
-                    <p>ph.number</p>
-                    {% endif %}
+            <div class="row center">
+                <div class="col m1"></div>
+                <div class="col m5">
+                    <p>Tipo de documento</p>
+                    {% if person.identity_numbers|length > 0 %}
+                    {% for pi in person.identity_numbers if pi.type.value != 'CUIL' and pi.type.value != 'CUIT' %}
+                    <h6><strong>{{pi.type.value}}</strong></h6>
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
                     {% endfor %}
                     {% else %}
-                    <p>No se encuentra registrado</p>
-                {% endif %}
-            </div>
-            <div class="col m4">
-                <h6><strong>Teléfono Móvil</strong></h6>
-                {% if person.phones|length > 0 %}
-                    {% for ph in person.phones%}
-                    {% if ph.type == 'CELLPHONE' %}
-                    <p>ph.number</p>
+                    <h6><strong>No se encuentra registrado</strong></h6>
                     {% endif %}
+                </div>
+                <div class="col m5">
+                    <p>Número de documento</p>
+                    {% if person.identity_numbers|length > 0 %}
+                    {% for pi in person.identity_numbers if pi.type.value != 'CUIL' and pi.type.value != 'CUIT' %}
+                    <h6><strong>{{pi.number}}</strong></h6>
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
                     {% endfor %}
                     {% else %}
-                    <p>No se encuentra registrado</p>
-                {% endif %}
-            </div>
-            <div class="col m1"></div>
-        </div>
-        <div class="divider"></div>
-        <div class="row">
-            <div class="col m5">
-                <h5>Archivos</h5>
-            </div>
-        </div>
-        <div class="row center">
-            <div class="col m1"></div>
-            <div class="col m4">
-                <div class="file-field">
-                    <div class="btn">
-                        <span>DNI</span>
-                    </div>
-                    <div class="file-path-wrapper">
-                        <input class="file-path validate" type="text" placeholder="Adjuntar DNI">
-                    </div>
+                    <h6><strong>No se encuentra registrado</strong></h6>
+                    {% endif %}
                 </div>
             </div>
-            <div class="col m4">
-                <div class="file-field">
-                    <div class="btn">
-                        <span>CUIL</span>
-                    </div>
-                    <div class="file-path-wrapper">
-                        <input class="file-path validate" type="text" placeholder="Adjuntar CUIL">
-                    </div>
+            <div class="row center">
+                <div class="col m1"></div>
+                <div class="col m5">
+                    <p>Género</p>
+                    {% if person.gender %}
+                    <h6><strong>{{person.gender}}</strong></h6>
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
+                    {% endif %}
+                </div>
+                <div class="col m5">
+                    <p>Estado civil</p>
+                    {% if person.marital_status %}
+                    <h6><strong>{{person.marital_status}}</strong></h6>
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
+                    {% endif %}
                 </div>
             </div>
+            <div class="row center">
+                <div class="col m1"></div>
+                <div class="col m5">
+                    <p>Lugar de nacimiento</p>
+                    {% if person.birthplace %}
+                    <h6><strong>{{person.birthplace}}</strong></h6>
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
+                    {% endif %}
+                </div>
+                <div class="col m5">
+                    <p>Fecha de nacimiento</p>
+                    {% if person.birthdate %}
+                    <h6><strong>{{person.birthdate.strftime('%d/%m/%Y')}}</strong></h6>
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="row">
+                <div class="col m5">
+                    <h5>Domicilio</h5>
+                </div>
+            </div>
+            <div class="row center">
+                <div class="col m1"></div>
+                <div class="col m5">
+                    <p>Dirección</p>
+                    {% if person.address %}
+                    <h6><strong>{{person.address}}</strong></h6>
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
+                    {% endif %}
+                </div>
+                <div class="col m5">
+                    <p>Ciudad de residencia</p>
+                    {% if person.residence %}
+                    <h6><strong>{{person.residence}}</strong></h6>
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
+                    {% endif %}
+                </div>
+                <div class="col m1"></div>
+            </div>
+            <div class="divider"></div>
+            <div class="row">
+                <div class="col m5">
+                    <h5>Contacto</h5>
+                </div>
+            </div>
+            <div class="row center">
+                <div class="col m1"></div>
+                <div class="col m5">
+                    <p>Correo de trabajo</p>
+                    {% if person.mails|length > 0 %}
+                    {% for pm in person.mails if pm.type.value == 'INSTITUTIONAL' or pm.type.value == 'NOTIFICATION' %}
+                    <h6><strong><a href="mailto:{{pm.email}}">{{pm.email}}</a></strong></h6>
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
+                    {% endfor %}
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
+                    {% endif %}
+                </div>
+                <div class="col m5">
+                    <p>Correo Personal</p>
+                    {% if person.mails|length > 0 %}
+                    {% for pm in person.mails if pm.type.value == 'ALTERNATIVE' %}
+                    <h6><strong><a href="mailto:{{pm.email}}">{{pm.email}}</a></strong></h6>
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
+                    {% endfor %}
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
+                    {% endif %}
+                </div>
+                <div class="col m1"></div>
+            </div>
+            <div class="row center">
+                <div class="col m1"></div>
+                <div class="col m5">
+                    <p>Teléfono Fijo</p>
+                    {% if person.phones|length > 0 %}
+                    {% for ph in person.phones if ph.type.value == 'LANDLINE' %}
+                    <h6><strong>{{ph.number}}</strong></h6>
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
+                    {% endfor %}
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
+                    {% endif %}
+                </div>
+                <div class="col m5">
+                    <p>Teléfono Móvil</p>
+                    {% if person.phones|length > 0 %}
+                    {% for ph in person.phones if ph.type.value == 'CELLPHONE' %}
+                    <h6><strong>{{ph.number}}</strong></h6>
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
+                    {% endfor %}
+                    {% else %}
+                    <h6><strong>No se encuentra registrado</strong></h6>
+                    {% endif %}
+                </div>
+                <div class="col m1"></div>
+            </div>
+            <div class="divider"></div>
+            <div class="row">
+                <div class="col m5">
+                    <h5>Archivos</h5>
+                </div>
+            </div>
+            <div class="row center">
+                {% if person.identity_numbers|length > 0 %}
+                <div class="col m1"></div>
+                <div class="col m5">
+                    <h6><strong>Descarga de Documentos de identidad</strong></h6>
+                </div>
+                <div class="col m5">
+                    <h6><strong>Descarga de constancias de CUIL</strong></h6>
+                </div>
+            </div>
+            <div class="row center">
+                <div class="col m6">
+                    <table class="centered responsive-table">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Número</th>
+                                <th>Fecha de carga</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for pi in person.identity_numbers if pi.type.value != 'CUIL' and pi.type.value != 'CUIT' %}
+                            <tr>
+                                <td>{{pi.type.value}}</td>
+                                <td>{{pi.number}}</td>
+                                {% if pi.file %}
+                                <td>{{pi.file.created.strftime('%d/%m/%Y')}}</td>
+                                <td class="blue-text darken-4">
+                                    <a href="{{url_for('persons.downloadIdNumberFile',uid=person.id,iid=pi.id)}}" download>
+                                        <i class="material-icons">cloud_download</i>
+                                    </a>
+                                </td>
+                                {% else %}
+                                <td colspan="2">No se subió archivo</td>
+                                {% endif %}
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4">No se encuentran subidos archivos de documento de identidad</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col m6">
+                    <table class="centered responsive-table">
+                        <thead>
+                            <tr>
+                                <th>CUIT / CUIL</th>
+                                <th>Número</th>
+                                <th>Fecha de carga</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for pi in person.identity_numbers if pi.type.value == 'CUIL' or pi.type.value == 'CUIT' %}
+                            <tr>
+                                <td>{{pi.type.value}}</td>
+                                <td>{{pi.number}}</td>
+                                {% if pi.file %}
+                                <td>{{pi.file.created.strftime('%d/%m/%Y')}}</td>
+                                <td><a href="{{url_for('persons.downloadIdNumberFile',uid=person.id,iid=pi.id)}}" download>
+                                        <i class="material-icons">cloud_download</i>
+                                    </a>
+                                </td>
+                                {% else %}
+                                <td colspan="2">No se subió archivo</td>
+                                {% endif %}
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4">No se encuentran subidos archivos de constancia de CUIT / CUIL</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% else %}
+            <h6><strong>No se subieron archivos para este usuario</strong></h6>
+            {% endif %}
         </div>
     </div>
-</div>
-<div class="col m1"></div>
+    <div class="col m1"></div>
 
-{% endblock %}
+    {% endblock %}
