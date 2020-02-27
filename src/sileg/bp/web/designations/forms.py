@@ -1,5 +1,6 @@
 import datetime
 import json
+import uuid
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, SelectField, DateTimeField
@@ -90,33 +91,33 @@ class DesignationCreateForm(FlaskForm):
         
         session.add(d)
         
-        #TODO Dejo comentado por que falta crear la tabla logs en la base de datos
-        #designationToLog = {
-        #    'id': d.id,
-        #    'created': d.created,
-        #    'updated': d.updated,
-        #    'deleted': d.deleted,
-        #    'start': d.start,
-        #    'end': d.end,
-        #    'end_type': d.end_type,
-        #    'historic': d.historic,
-        #    'exp': d.exp,
-        #    'res': d.res,
-        #    'cor': d.cor,
-        #    'status': d.status,
-        #    'type': d.type,
-        #    'designation_id': d.designation_id,
-        #    'user_id': d.user_id,
-        #    'function_id': d.function_id,
-        #    'place_id': d.place_id,
-        #    'comments': d.comments,
-        #}
-        #log = SilegLog()
-        #log.type = SilegLogTypes.CREATE
-        #log.entity_id = d.id
-        #log.authorizer_id = authorizer_id
-        #log.data = json.dumps([designationToLog], default=str)
-        #session.add(log)
+        
+        designationToLog = {
+            'id': d.id,
+            'created': d.created,
+            'updated': d.updated,
+            'deleted': d.deleted,
+            'start': d.start,
+            'end': d.end,
+            'end_type': d.end_type,
+            'historic': d.historic,
+            'exp': d.exp,
+            'res': d.res,
+            'cor': d.cor,
+            'status': d.status,
+            'type': d.type,
+            'designation_id': d.designation_id,
+            'user_id': d.user_id,
+            'function_id': d.function_id,
+            'place_id': d.place_id,
+            'comments': d.comments,
+        }
+        log = SilegLog()
+        log.type = SilegLogTypes.CREATE
+        log.entity_id = d.id
+        log.authorizer_id = authorizer_id
+        log.data = json.dumps([designationToLog], default=str)
+        session.add(log)
 
 class ReplacementDesignationCreateForm(FlaskForm):
     # Datos del cargo
