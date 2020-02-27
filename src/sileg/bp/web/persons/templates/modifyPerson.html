@@ -153,18 +153,19 @@
                         <h5>Contacto</h5>
                     </div>
                 </div>
-                <div class="row center">
+                <div class="row">
                     <div class="col m1"></div>
                     <div class="col m5">
-                        <div class="input-field">
-                            {{ form.work_email.label }}
-                            {% if form.work_email.errors %}
-                            {{ form.work_email(class="validate invalid", placeholder="nombre.apellido@econo.unlp.edu.ar") }}
-                            <span class="helper-text" data-error="{{form.work_email.errors[0]}}"></span>
-                            {% else %}                  
-                            {{ form.work_email(class="validate", placeholder="nombre.apellido@econo.unlp.edu.ar") }}
-                            {% endif %}
-                        </div>
+                        <p>Correo de trabajo</p>
+                        {% if person.mails|length > 0 %}
+                        {% for pm in person.mails if pm.type.value == 'INSTITUTIONAL' or pm.type.value == 'NOTIFICATION' %}
+                        <h6><strong>{{pm.email}}</strong></h6>
+                        {% else %}
+                        <h6><strong>No se encuentra registrado</strong></h6>
+                        {% endfor %}
+                        {% else %}
+                        <h6><strong>No se encuentra registrado</strong></h6>
+                        {% endif %}
                     </div>
                     <div class="col m5">
                         <div class="input-field">

@@ -160,9 +160,7 @@ def modifyPersonData(user,uid):
         if person.residence:
             form.residence.data = person.residence
         if len(person.mails) > 0:
-            for pm in person.mails: 
-                if pm.type.value == 'INSTITUTIONAL':
-                    form.work_email.data = pm.email
+            for pm in person.mails:
                 if pm.type.value == 'ALTERNATIVE':
                     form.personal_email.data = pm.email
         if len(person.phones) > 0:
@@ -172,6 +170,6 @@ def modifyPersonData(user,uid):
                 if ph.type.value == 'CELLPHONE':
                     form.mobile_number.data = ph.number
         if form.validate_on_submit():
-            form.save(user['sub'])
+            form.save(person.id,user['sub'])
 
     return render_template('modifyPerson.html', user=user, person=person, form=form)
