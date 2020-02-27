@@ -28,7 +28,7 @@ function toggle(id) {
                     <p>Documento: <a href="{{url_for('persons.personData',uid=person.id)}}">{{person.identity_numbers[0].number}}</a></p>
                 </div>
                 <div class="col m4">
-                    <p>Fecha de Nacimiento: {{person.birthdate.strftime('%d-%m-%Y')}}</p>
+                    <p>Fecha de Nacimiento: {% if person.birthdate %}{{person.birthdate.strftime('%d-%m-%Y')}}{% endif %}</p>
                     <p>Dirección: {{person.address}}</p>
                 </div>
                 <div class="col m2"></div>

@@ -16,7 +16,7 @@
                     <p>Documento: {{person.identity_numbers[0].number}}</p>
                 </div>
                 <div class="col m4">
-                    <p>Fecha de Nacimiento: {{person.birthdate}}</p>
+                    <p>Fecha de Nacimiento: {% if person.birthdate %}{{person.birthdate.strftime('%d-%m-%Y')}}{% endif %}</p>
                     <p>Direccion: {{person.address}}</p>
                 </div>
                 <div class="col m2"></div>
