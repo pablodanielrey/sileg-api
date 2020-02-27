@@ -443,7 +443,7 @@ class DischargeDesignationForm(FlaskForm):
         ]
         self.observations.choices = [ (f,f) for f in tipos ]
 
-    def save(self, session, designation_to_discharge: Designation, authorizer_id):
+    def save(self, session, authorizer_id , designation_to_discharge: Designation):
         designation_to_discharge.historic = True
 
         d = Designation()

@@ -313,7 +313,7 @@ def discharge_post(user, did):
             print(form.errors)
             abort(404)
 
-        form.save(session, designation_to_discharge=designation, user['sub'])
+        form.save(session, user['sub'], designation_to_discharge=designation)
         session.commit()
 
     return redirect(url_for('designations.personDesignations', uid=uid))
