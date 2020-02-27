@@ -147,13 +147,6 @@ def modifyPersonData(user,uid):
             form.lastname.data = person.lastname
         if person.firstname:
             form.firstname.data = person.firstname
-        if len(person.identity_numbers) > 0:
-            for pi in person.identity_numbers:
-                if pi.type.value != 'CUIL' and pi.type.value != 'CUIT':
-                    form.person_number_type.data = pi.type.value
-                    form.person_number.data = pi.number
-                else:
-                    form.laboral_number.data = pi.number
         if person.gender:
             form.gender.data = person.gender
         if person.marital_status:
@@ -177,8 +170,8 @@ def modifyPersonData(user,uid):
                 if ph.type.value == 'LANDLINE':
                     form.land_line.data = ph.number
                 if ph.type.value == 'CELLPHONE':
-                    form.mobile_number == ph.number
+                    form.mobile_number.data = ph.number
         if form.validate_on_submit():
             form.save(user['sub'])
 
-    return render_template('modifyPerson.html', user=user, form=form)
+    return render_template('modifyPerson.html', user=user, person=person, form=form)
