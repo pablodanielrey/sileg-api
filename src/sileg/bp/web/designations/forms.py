@@ -90,8 +90,7 @@ class DesignationCreateForm(FlaskForm):
         d.cor = self.cor.data
         
         session.add(d)
-        
-        
+                
         designationToLog = {
             'id': d.id,
             'created': d.created,
@@ -147,8 +146,9 @@ class ReplacementDesignationCreateForm(FlaskForm):
         self.place.choices = [ (p.id, p.name) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session)) ]
         self.functionEndType.choices = [ (d.value, det2s(d)) for d in DesignationEndTypes ]
         
-    def save(self, session, silegModel, uid, replaced_did):
+    def save(self, session, silegModel, uid, replaced_did, authorizer_id):
         d = Designation()
+        d.id = str(uuid.uuid4())
         d.type = DesignationTypes.REPLACEMENT
         d.designation_id = replaced_did
         
@@ -163,6 +163,32 @@ class ReplacementDesignationCreateForm(FlaskForm):
         d.cor = self.cor.data
         session.add(d)
 
+        replacementToLog = {
+            'id': d.id,
+            'created': d.created,
+            'updated': d.updated,
+            'deleted': d.deleted,
+            'start': d.start,
+            'end': d.end,
+            'end_type': d.end_type,
+            'historic': d.historic,
+            'exp': d.exp,
+            'res': d.res,
+            'cor': d.cor,
+            'status': d.status,
+            'type': d.type,
+            'designation_id': d.designation_id,
+            'user_id': d.user_id,
+            'function_id': d.function_id,
+            'place_id': d.place_id,
+            'comments': d.comments,
+        }
+        log = SilegLog()
+        log.type = SilegLogTypes.CREATE
+        log.entity_id = d.id
+        log.authorizer_id = authorizer_id
+        log.data = json.dumps([replacementToLog], default=str)
+        session.add(log)
 
 class ConvalidateDesignationForm(FlaskForm):
     # Datos del cargo
@@ -192,11 +218,12 @@ class ConvalidateDesignationForm(FlaskForm):
         self.place.choices = [ (p.id, p.name) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session)) ]
         self.functionEndType.choices = [ (d.value, det2s(d)) for d in DesignationEndTypes ]        
 
-    def save(self, session, replaced_designation: Designation):
+    def save(self, session, replaced_designation: Designation, authorizer_id):
         #replaced_designation.deleted = datetime.datetime.now()
         replaced_designation.historic = True
 
         d = Designation()
+        d.id = str(uuid.uuid4())
         d.type = DesignationTypes.ORIGINAL
         d.designation_id = replaced_designation.id
         d.user_id = replaced_designation.user_id
@@ -210,6 +237,33 @@ class ConvalidateDesignationForm(FlaskForm):
         d.res = self.res.data
         d.cor = self.cor.data
         session.add(d)
+
+        convalidateToLog = {
+            'id': d.id,
+            'created': d.created,
+            'updated': d.updated,
+            'deleted': d.deleted,
+            'start': d.start,
+            'end': d.end,
+            'end_type': d.end_type,
+            'historic': d.historic,
+            'exp': d.exp,
+            'res': d.res,
+            'cor': d.cor,
+            'status': d.status,
+            'type': d.type,
+            'designation_id': d.designation_id,
+            'user_id': d.user_id,
+            'function_id': d.function_id,
+            'place_id': d.place_id,
+            'comments': d.comments,
+        }
+        log = SilegLog()
+        log.type = SilegLogTypes.CREATE
+        log.entity_id = d.id
+        log.authorizer_id = authorizer_id
+        log.data = json.dumps([convalidateToLog], default=str)
+        session.add(log)
 
 
 class PromoteDesignationForm(FlaskForm):
@@ -240,8 +294,9 @@ class PromoteDesignationForm(FlaskForm):
         self.place.choices = [ (p.id, p.name) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session)) ]
         self.functionEndType.choices = [ (d.value, det2s(d)) for d in DesignationEndTypes ]
         
-    def save(self, session, designation: Designation):
+    def save(self, session, designation: Designation, authorizer_id):
         d = Designation()
+        d.id = str(uuid.uuid4())
         d.type = DesignationTypes.PROMOTION
         d.designation_id = designation.id
         d.user_id = designation.user_id
@@ -255,6 +310,33 @@ class PromoteDesignationForm(FlaskForm):
         d.cor = self.cor.data
         d.place_id = self.place.data
         session.add(d)
+
+        promoteToLog = {
+            'id': d.id,
+            'created': d.created,
+            'updated': d.updated,
+            'deleted': d.deleted,
+            'start': d.start,
+            'end': d.end,
+            'end_type': d.end_type,
+            'historic': d.historic,
+            'exp': d.exp,
+            'res': d.res,
+            'cor': d.cor,
+            'status': d.status,
+            'type': d.type,
+            'designation_id': d.designation_id,
+            'user_id': d.user_id,
+            'function_id': d.function_id,
+            'place_id': d.place_id,
+            'comments': d.comments,
+        }
+        log = SilegLog()
+        log.type = SilegLogTypes.CREATE
+        log.entity_id = d.id
+        log.authorizer_id = authorizer_id
+        log.data = json.dumps([promoteToLog], default=str)
+        session.add(log)
 
 
 class ExtendDesignationForm(FlaskForm):
@@ -285,8 +367,9 @@ class ExtendDesignationForm(FlaskForm):
         self.place.choices = [ (p.id, p.name) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session)) ]
         self.functionEndType.choices = [ (d.value, det2s(d)) for d in DesignationEndTypes ]
         
-    def save(self, session, designation: Designation):
+    def save(self, session, designation: Designation, authorizer_id):
         d = Designation()
+        d.id = str(uuid.uuid4())
         d.type = DesignationTypes.EXTENSION
         d.designation_id = designation.id
         d.user_id = designation.user_id
@@ -301,6 +384,33 @@ class ExtendDesignationForm(FlaskForm):
         d.cor = self.cor.data
 
         session.add(d)
+
+        extendToLog = {
+            'id': d.id,
+            'created': d.created,
+            'updated': d.updated,
+            'deleted': d.deleted,
+            'start': d.start,
+            'end': d.end,
+            'end_type': d.end_type,
+            'historic': d.historic,
+            'exp': d.exp,
+            'res': d.res,
+            'cor': d.cor,
+            'status': d.status,
+            'type': d.type,
+            'designation_id': d.designation_id,
+            'user_id': d.user_id,
+            'function_id': d.function_id,
+            'place_id': d.place_id,
+            'comments': d.comments,
+        }
+        log = SilegLog()
+        log.type = SilegLogTypes.CREATE
+        log.entity_id = d.id
+        log.authorizer_id = authorizer_id
+        log.data = json.dumps([extendToLog], default=str)
+        session.add(log)
 
 
 class DischargeDesignationForm(FlaskForm):
@@ -333,10 +443,11 @@ class DischargeDesignationForm(FlaskForm):
         ]
         self.observations.choices = [ (f,f) for f in tipos ]
 
-    def save(self, session, designation_to_discharge: Designation):
+    def save(self, session, designation_to_discharge: Designation, authorizer_id):
         designation_to_discharge.historic = True
 
         d = Designation()
+        d.id = str(uuid.uuid4())
         d.type = DesignationTypes.DISCHARGE
         d.designation_id = designation_to_discharge.id
         d.user_id = designation_to_discharge.user_id
@@ -354,12 +465,66 @@ class DischargeDesignationForm(FlaskForm):
 
         session.add(d)
 
+        dischargeToLog = {
+            'id': d.id,
+            'created': d.created,
+            'updated': d.updated,
+            'deleted': d.deleted,
+            'start': d.start,
+            'end': d.end,
+            'end_type': d.end_type,
+            'historic': d.historic,
+            'exp': d.exp,
+            'res': d.res,
+            'cor': d.cor,
+            'status': d.status,
+            'type': d.type,
+            'designation_id': d.designation_id,
+            'user_id': d.user_id,
+            'function_id': d.function_id,
+            'place_id': d.place_id,
+            'comments': d.comments,
+        }
+        log = SilegLog()
+        log.type = SilegLogTypes.CREATE
+        log.entity_id = d.id
+        log.authorizer_id = authorizer_id
+        log.data = json.dumps([dischargeToLog], default=str)
+        session.add(log)
+
 
 class DeleteDesignationForm(FlaskForm):
 
-    def save(self, session, designation: Designation):
+    def save(self, session, designation: Designation, authorizer_id):
         designation.deleted = datetime.datetime.now()
         designation.historic = True
+
+        deleteToLog = {
+            'id': designation.id,
+            'created': designation.created,
+            'updated': designation.updated,
+            'deleted': designation.deleted,
+            'start': designation.start,
+            'end': designation.end,
+            'end_type': designation.end_type,
+            'historic': designation.historic,
+            'exp': designation.exp,
+            'res': designation.res,
+            'cor': designation.cor,
+            'status': designation.status,
+            'type': designation.type,
+            'designation_id': designation.designation_id,
+            'user_id': designation.user_id,
+            'function_id': designation.function_id,
+            'place_id': designation.place_id,
+            'comments': designation.comments,
+        }
+        log = SilegLog()
+        log.type = SilegLogTypes.DELETE
+        log.entity_id = designation.id
+        log.authorizer_id = authorizer_id
+        log.data = json.dumps([deleteToLog], default=str)
+        session.add(log)
 
 
 class DesignationSearchForm(FlaskForm):

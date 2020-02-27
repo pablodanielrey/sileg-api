@@ -121,7 +121,7 @@ def replacement_create_designation_post(user, did, uid):
             print(form.errors)
             abort(404)
 
-        form.save(session, silegModel, uid, did)
+        form.save(session, silegModel, uid, did, user['sub'])
         session.commit()
 
     return redirect(url_for('designations.personDesignations', uid=original_uid))
@@ -169,7 +169,7 @@ def convalidate_post(user, did):
             print(form.errors)
             abort(404)
 
-        form.save(session, original_designation)
+        form.save(session, original_designation, user['sub'])
         session.commit()
 
     return redirect(url_for('designations.personDesignations', uid=uid))
@@ -217,7 +217,7 @@ def promote_post(user, did):
             print(form.errors)
             abort(404)
 
-        form.save(session, designation)
+        form.save(session, designation, user['sub'])
         session.commit()
 
     return redirect(url_for('designations.personDesignations', uid=uid))
@@ -266,7 +266,7 @@ def extend_post(user, did):
             print(form.errors)
             abort(404)
 
-        form.save(session, designation)
+        form.save(session, designation, user['sub'])
         session.commit()
 
     return redirect(url_for('designations.personDesignations', uid=uid))
@@ -313,7 +313,7 @@ def discharge_post(user, did):
             print(form.errors)
             abort(404)
 
-        form.save(session, designation_to_discharge=designation)
+        form.save(session, designation_to_discharge=designation, user['sub'])
         session.commit()
 
     return redirect(url_for('designations.personDesignations', uid=uid))
@@ -369,7 +369,7 @@ def delete_post(user, did):
             print(form.errors)
             abort(404)
 
-        form.save(session, designation)
+        form.save(session, designation, user['sub'])
         session.commit()
 
     return redirect(url_for('designations.personDesignations', uid=uid))
