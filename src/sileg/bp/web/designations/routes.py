@@ -124,7 +124,7 @@ def replacement_create_designation_post(user, did, uid):
         form.save(session, silegModel, uid, did)
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=original_uid))
+    return redirect(url_for('designations.personDesignations', uid=original_uid))
     
 
 """
@@ -172,7 +172,7 @@ def convalidate_post(user, did):
         form.save(session, original_designation)
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
+    return redirect(url_for('designations.personDesignations', uid=uid))
 
 """
     ##################################################
@@ -220,7 +220,7 @@ def promote_post(user, did):
         form.save(session, designation)
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
+    return redirect(url_for('designations.personDesignations', uid=uid))
 
 """
     ########################################
@@ -269,7 +269,7 @@ def extend_post(user, did):
         form.save(session, designation)
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
+    return redirect(url_for('designations.personDesignations', uid=uid))
 
 
 """
@@ -316,7 +316,7 @@ def discharge_post(user, did):
         form.save(session, designation_to_discharge=designation)
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
+    return redirect(url_for('designations.personDesignations', uid=uid))
 
 
 
@@ -331,7 +331,7 @@ def undelete(user, did):
         d.historic = False
         session.commit()
     
-    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))        
+    return redirect(url_for('designations.personDesignations', uid=uid))        
 
 
 @bp.route('/eliminar/<did>')
@@ -372,7 +372,7 @@ def delete_post(user, did):
         form.save(session, designation)
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
+    return redirect(url_for('designations.personDesignations', uid=uid))
 
 
 """
@@ -503,7 +503,7 @@ def create_post(user, uid):
         form.save(session, silegModel, uid, user['sub'])
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
+    return redirect(url_for('designations.personDesignations', uid=uid))
 
 
 @bp.route('/buscar')
