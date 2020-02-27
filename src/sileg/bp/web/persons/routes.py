@@ -37,10 +37,15 @@ def search(user):
     form = PersonSearchForm()
     query = request.args.get('query','',str)
     persons = []
+    search = []
     if query:
         with open_users_session() as session:
             uids = usersModel.search_user(session, query)
-            persons = usersModel.get_users(session, uids)
+            #Filtro uids repetidos
+            for uid in uids:
+                if uid not in search:
+                    search.append(uid)
+            persons = usersModel.get_users(session, search)
     else:
         persons = None
     return render_template('searchPerson.html', user=user, persons=persons, form=form)
