@@ -8,28 +8,17 @@ from wtforms.fields.html5 import EmailField
 from wtforms.validators import ValidationError, DataRequired, EqualTo, Email
 
 from sileg.helpers.apiHandler import getStates
+from sileg.helpers.namesHandler import id2sDegrees, id2sIdentityNumber
 
 from sileg.models import usersModel, open_users_session
-from users.model.entities.User import User, IdentityNumber, Mail, Phone, File, MailTypes, PhoneTypes, UsersLog, UserLogTypes, IdentityNumberTypes
-
-def id2sIdentityNumber(id:IdentityNumberTypes):
-    if id == IdentityNumberTypes.DNI:
-        return 'DNI'
-    if id == IdentityNumberTypes.LC:
-        return 'LC'
-    if id == IdentityNumberTypes.LE:
-        return 'LE'
-    if id == IdentityNumberTypes.PASSPORT:
-        return 'Pasaporte'
-    if id == IdentityNumberTypes.CUIL:
-        return 'CUIL'
-    if id == IdentityNumberTypes.CUIT:
-        return 'CUIT'
-    if id == IdentityNumberTypes.STUDENT:
-        return 'Legajo'
-    return ''   
+from users.model.entities.User import User, IdentityNumber, Mail, Phone, File, MailTypes, PhoneTypes, UsersLog, UserLogTypes, IdentityNumberTypes, DegreeTypes, UserDegree
 
 class PersonCreateForm(FlaskForm):
+    """
+
+    MODELO DE USUARIOS
+    
+    """
     lastname = StringField('Apellidos', validators=[DataRequired()])
     firstname = StringField('Nombres', validators=[DataRequired()])
     person_number_type = SelectField('Tipo de Documento', coerce=str)
@@ -44,7 +33,7 @@ class PersonCreateForm(FlaskForm):
     personal_email = EmailField('Correo Personal',validators=[DataRequired()])
     land_line = StringField('Telefono Fijo')
     mobile_number =StringField('Telefono Movil')
-    person_numberFile = FileField('Adjuntar DNI')
+    person_numberFile = FileField('Adjuntar Documento')
     laboral_number = StringField('CUIL')
     laboral_numberFile = FileField('Adjuntar CUIL')
     seniority_external_years = StringField('Años')
@@ -53,9 +42,9 @@ class PersonCreateForm(FlaskForm):
         
     def __init__(self):
         super(PersonCreateForm,self).__init__()
-        self.person_number_type.choices = [(id.value, id2sIdentityNumber(id)) for id in IdentityNumberTypes]
-        self.gender.choices = [('0','Seleccione una opción...'),('1','Femenino'),('2','Masculino'),('3','Autopercibido')]
-        self.marital_status.choices = [('0','Seleccione una opción...'),('1','Casado/a'),('2','Soltero/a'),('3','Conviviente'),('4','Divorciado/a')]
+        self.person_number_type.choices = [('0','Seleccione una opción...'),('DNI','DNI'),('LC','LC'),('LE','LE'),('PASSPORT','Pasaporte')]
+        self.gender.choices = [('0','Seleccione una opción...'),('Femenino','Femenino'),('Masculino','Masculino'),('Autopercibido','Autopercibido')]
+        self.marital_status.choices = [('0','Seleccione una opción...'),('Casado/a','Casado/a'),('Soltero/a','Soltero/a'),('Conviviente','Conviviente'),('Divorciado/a','Divorciado/a'),('Viudo/a','Viudo/a')]
 
     def validate_person_number_type(self, person_number_type):
         if self.person_number_type.data == '0':
@@ -107,14 +96,26 @@ class PersonCreateForm(FlaskForm):
                 newUser.residence = self.residence.data
                 newUser.address = self.address.data
                 session.add(newUser)
-                toLog.append(newUser)
+                toLog.append({  'id': newUser.id,
+                                'created': newUser.created,
+                                'updated': newUser.updated,
+                                'deleted': newUser.deleted,
+                                'lastname': newUser.lastname,
+                                'firstname': newUser.firstname,
+                                'gender': newUser.gender,
+                                'marital_status': newUser.marital_status,
+                                'birthplace': newUser.birthplace,
+                                'birthdate': newUser.birthdate,
+                                'residence': newUser.residence,
+                                'address': newUser.address,
+                                })
 
-                """ se generan los datos asociados al dni - archivo """
-                dni_id = None
+                """ Se carga archivo documento """
+                person_file_id = None
                 if self.person_numberFile.data:
-                    dni_id = str(uuid.uuid4())                    
+                    person_file_id = str(uuid.uuid4())                    
                     personNumberFile = File()
-                    personNumberFile.id = dni_id
+                    personNumberFile.id = person_file_id
                     personNumberFile.mimetype = self.person_numberFile.data.mimetype
                     personNumberFile.content = base64.b64encode(self.person_numberFile.data.read()).decode()
                     session.add(personNumberFile)
@@ -123,24 +124,23 @@ class PersonCreateForm(FlaskForm):
                                     'updated': personNumberFile.updated,
                                     'deleted': personNumberFile.deleted,
                                     'mimetype': personNumberFile.mimetype,
-                                    'type': personNumberFile.type.value,
                                     'content': personNumberFile.content,
-                                    'user_id': personNumberFile.user_id,
                                 })
 
-                """ entidad del dni """
-                id = IdentityNumber()
-                id.user_id = uid
-                id.number = self.person_number.data
-                id.type = self.person_number_type.data
-                if dni_id:
-                    id.file_id = dni_id
-                session.add(id)
+                """ Se genera documento """
+                idNumber = IdentityNumber()
+                idNumber.type = self.person_number_type.data
+                idNumber.number = self.person_number.data
+                idNumber.user_id = uid
+                if person_file_id:
+                    idNumber.file_id = person_file_id
+                session.add(idNumber)
                 
+                """ Se genera correo laboral """
                 if self.work_email.data:
                     newWorkEmail = Mail()
-                    newWorkEmail.email = self.work_email.data
                     newWorkEmail.type = MailTypes.INSTITUTIONAL
+                    newWorkEmail.email = self.work_email.data
                     newWorkEmail.user_id = uid
                     session.add(newWorkEmail)
                     toLog.append({  'id': newWorkEmail.id,
@@ -153,10 +153,11 @@ class PersonCreateForm(FlaskForm):
                                     'user_id': newWorkEmail.user_id,
                                 })
 
+                """ Se genera correo personal """
                 if self.personal_email.data:
                     newPersonalMail = Mail()
-                    newPersonalMail.email = self.personal_email.data
                     newPersonalMail.type = MailTypes.NOTIFICATION
+                    newPersonalMail.email = self.personal_email.data
                     newPersonalMail.user_id = uid
                     session.add(newPersonalMail)
                     toLog.append({  'id': newPersonalMail.id,
@@ -169,6 +170,7 @@ class PersonCreateForm(FlaskForm):
                                     'user_id': newPersonalMail.user_id,
                                 })
 
+                """ Se genera telefono fijo """
                 if self.land_line.data:
                     landLinePhone = Phone()
                     landLinePhone.type = PhoneTypes.LANDLINE
@@ -184,6 +186,7 @@ class PersonCreateForm(FlaskForm):
                                     'user_id': landLinePhone.user_id,
                                 })
 
+                """ Se genera telefono movil """
                 if self.mobile_number.data:
                     mobileNumber = Phone()
                     mobileNumber.type = PhoneTypes.CELLPHONE
@@ -198,13 +201,21 @@ class PersonCreateForm(FlaskForm):
                                     'number': mobileNumber.number,
                                     'user_id': mobileNumber.user_id,
                                 })
-               
 
                 if self.laboral_number.data:
                     cid = str(uuid.uuid4())
+                    cuil = IdentityNumber()
+                    cuil.id = cid
+                    cuil.type = IdentityNumberTypes.CUIL
+                    cuil.number = self.laboral_number.data
+                    cuil.user_id = uid
+                
+                    """ Se genera archivo de cuil """
+                    cfid = None
                     if self.laboral_numberFile.data:
+                        cfid = str(uuid.uuid4())
                         laboralNumberFile = File()
-                        laboralNumberFile.id = cid
+                        laboralNumberFile.id = cfid
                         laboralNumberFile.mimetype = self.laboral_numberFile.data.mimetype
                         laboralNumberFile.content = base64.b64encode(self.laboral_numberFile.data.read()).decode()
                         session.add(laboralNumberFile)
@@ -213,18 +224,12 @@ class PersonCreateForm(FlaskForm):
                                         'updated': laboralNumberFile.updated,
                                         'deleted': laboralNumberFile.deleted,
                                         'mimetype': laboralNumberFile.mimetype,
-                                        'type': laboralNumberFile.type.value,
                                         'content': laboralNumberFile.content,
-                                        'user_id': laboralNumberFile.user_id,
+                                        'identityNumber': cid,
                                     })
-
-                    cuil = IdentityNumber()
-                    cuil.user_id = uid
-                    cuil.number = self.laboral_number.data
-                    cuil.type = IdentityNumberTypes.CUIL
-                    if cid:
-                        cuil.file_id = cid
-                    session.add(cuil)                        
+                    if cfid:
+                        cuil.file_id = cfid
+                    session.add(cuil)  
 
                 newLog = UsersLog()
                 newLog.entity_id = newUser.id
@@ -233,33 +238,86 @@ class PersonCreateForm(FlaskForm):
                 newLog.data = json.dumps(toLog, default=str)
                 session.add(newLog)
                 session.commit()
-                
 
-        #TODO Sileg model
-        newSeniority = {
-            'seniority_external_years' : self.seniority_external_years.data,
-            'seniority_external_months'  : self.seniority_external_months.data,
-            'seniority_external_days' : self.seniority_external_days.data
-        }
+                """
 
-class TitleAssignForm(FlaskForm):
-    titleType = SelectField('Tipo de Título')
-    titleDate = StringField('Fecha de Obtención')
-    titleName = SelectField('Nombre del Título')
-    titleFile = FileField('Adjuntar Título')
+                MODELO DE SILEG ---> ALTA DE ANTIGUEDAD DE PERSONA
+
+                """
+                #TODO Agregar a Sileg model la antiguedad de la persona
+                newSeniority = {
+                    'seniority_external_years' : self.seniority_external_years.data,
+                    'seniority_external_months'  : self.seniority_external_months.data,
+                    'seniority_external_days' : self.seniority_external_days.data
+                }
+
+                return self.person_number.data
+            else:
+                return None
+
+class DegreeAssignForm(FlaskForm):
+    degreeType = SelectField('Tipo de Título')
+    degreeDate = DateTimeField('Fecha de Obtención',format='%d-%m-%Y')
+    degreeName = StringField('Nombre del Título',validators=[DataRequired(message='Debe especificar nombre de título.')])
+    degreeFile = FileField('Adjuntar Título')
         
     def __init__(self):
-        super(TitleAssignForm,self).__init__()
+        super(DegreeAssignForm,self).__init__()
         #TODO Obtener del modelo los titulos existentes y tipos
-        self.titleType.choices = [('0','Seleccione...'),('1','Grado'),('2','Posgrado')]
-        self.titleName.choices = [('0','Seleccione...'),('1','Contador'),('2','Ingeniero'),('3','Licenciado en Ciencias Administrativas')]
+        degreeChoices = [(id.value, id2sDegrees(id)) for id in DegreeTypes]
+        degreeChoices.insert(0,('0','Seleccione...'))
+        self.degreeType.choices = degreeChoices
 
-    def validate_titleType(self, titleType):
-        if self.titleType.data == '0':
+    def validate_degreeType(self, degreeType):
+        if self.degreeType.data == '0':
             raise ValidationError('Debe seleccionar una opción')
-    def validate_titleName(self, titleName):
-        if self.titleName.data == '0':
-            raise ValidationError('Debe seleccionar una opción')
+
+    def save(self,uid,authorizer_id):
+        """ Persiste datos del formulario en la base """
+        toLog = []
+        with open_users_session() as session:
+            if usersModel.get_users(session, [uid])[0]:
+                """ Se carga archivo del titulo si existe """
+                degree_file_id = None
+                if self.degreeFile.data:
+                    degree_file_id = str(uuid.uuid4())                    
+                    degreeFile = File()
+                    degreeFile.id = degree_file_id
+                    degreeFile.mimetype = self.degreeFile.data.mimetype
+                    degreeFile.content = base64.b64encode(self.degreeFile.data.read()).decode()
+                    session.add(degreeFile)
+                    toLog.append({  'id': degreeFile.id,
+                                    'created': degreeFile.created,
+                                    'updated': degreeFile.updated,
+                                    'deleted': degreeFile.deleted,
+                                    'mimetype': degreeFile.mimetype,
+                                    'content': degreeFile.content,
+                                })
+                did = str(uuid.uuid4())
+                newDegree = UserDegree()
+                newDegree.id = did
+                newDegree.type = self.degreeType.data
+                newDegree.title = self.degreeName.data
+                newDegree.start = self.degreeDate.data if self.degreeDate.data else None
+                newDegree.user_id = uid
+                if degree_file_id:
+                    newDegree.file_id = degree_file_id
+                session.add(newDegree)
+                toLog.append({  'id': newDegree.id,
+                                'created': newDegree.created,
+                                'updated': newDegree.updated,
+                                'deleted': newDegree.deleted,
+                                'title': newDegree.title,
+                                'start': newDegree.start,
+                                'user_id': newDegree.user_id,
+                            })                
+                newLog = UsersLog()
+                newLog.entity_id = did
+                newLog.authorizer_id = authorizer_id
+                newLog.type = UserLogTypes.CREATE
+                newLog.data = json.dumps(toLog, default=str)
+                session.add(newLog)
+                session.commit()
 
 class PersonSearchForm(FlaskForm):
     query = StringField('Buscar persona por apellido o número de documento')
@@ -353,7 +411,7 @@ class PersonModifyForm(FlaskForm):
                 if self.person_numberFile.data:
                     person_file_id = str(uuid.uuid4())                    
                     personNumberFile = File()
-                    personNumberFile.id = file_id
+                    personNumberFile.id = person_file_id
                     personNumberFile.mimetype = self.person_numberFile.data.mimetype
                     personNumberFile.content = base64.b64encode(self.person_numberFile.data.read()).decode()
                     session.add(personNumberFile)
