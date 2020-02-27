@@ -327,34 +327,24 @@ class PersonSearchForm(FlaskForm):
 class PersonModifyForm(FlaskForm):
     lastname = StringField('Apellidos', validators=[DataRequired()])
     firstname = StringField('Nombres', validators=[DataRequired()])
-    #person_number_type = SelectField('Tipo de Documento', coerce=str)
-    #person_number = StringField('Nro. de Documento', validators=[DataRequired()])
     gender = SelectField('Género', coerce=str)
     marital_status = SelectField('Estado Civil', coerce=str)
     birthplace = StringField('Ciudad de Nacimiento')
     birthdate = StringField('Fecha de Nacimiento')
     residence = StringField('Ciudad de Residencia')
     address = StringField('Dirección')
-    work_email = EmailField('Correo de Trabajo')
     personal_email = EmailField('Correo Personal',validators=[DataRequired()])
     land_line = StringField('Teléfono Fijo')
     mobile_number =StringField('Teléfono Móvil')
-    #person_numberFile = FileField('Adjuntar Documento')
-    #laboral_number = StringField('CUIL')
-    #laboral_numberFile = FileField('Adjuntar CUIL')
     seniority_external_years = StringField('Años')
     seniority_external_months = StringField('Meses')
     seniority_external_days = StringField('Días')
         
     def __init__(self):
         super(PersonModifyForm,self).__init__()
-        #self.person_number_type.choices = [('0','Seleccione una opción...'),('DNI','DNI'),('LC','LC'),('LE','LE'),('PASSPORT','Pasaporte')]
         self.gender.choices = [('0','Seleccione una opción...'),('Femenino','Femenino'),('Masculino','Masculino'),('Autopercibido','Autopercibido')]
         self.marital_status.choices = [('0','Seleccione una opción...'),('Casado/a','Casado/a'),('Soltero/a','Soltero/a'),('Conviviente','Conviviente'),('Divorciado/a','Divorciado/a'),('Viudo/a','Viudo/a')]
-
-    #def validate_person_number_type(self, person_number_type):
-    #    if self.person_number_type.data == '0':
-    #        raise ValidationError('Debe seleccionar una opción')   
+ 
 
     def validate_seniority_external_years(self,seniority_external_years):
         if self.seniority_external_years.data:
@@ -383,164 +373,97 @@ class PersonModifyForm(FlaskForm):
             if number < 0:
                 raise ValidationError('El número debe ser mayor a 0')
 
-    def save(self,authorizer_id):
+    def save(self,uid,authorizer_id):
         """
-        Persistencia de datos en DB
+        Actualización de datos en DB
         """
         toLog = []
         with open_users_session() as session:
-            if not usersModel.get_uid_person_number(session, self.person_number.data):
-                uid = str(uuid.uuid4())
-                newUser = User()
-                newUser.id = uid
-                newUser.lastname = self.lastname.data
-                newUser.firstname = self.firstname.data
-                newUser.gender = self.gender.data if self.gender.data != '0' else None
-                newUser.marital_status = self.marital_status.data if self.marital_status.data != '0' else None
-                newUser.birthplace = self.birthplace.data
-                newUser.birthdate = self.birthdate.data if self.birthdate.data else None
-                newUser.residence = self.residence.data
-                newUser.address = self.address.data
-                session.add(newUser)
-                toLog.append({  'id': newUser.id,
-                                'created': newUser.created,
-                                'updated': newUser.updated,
-                                'deleted': newUser.deleted,
-                                'lastname': newUser.lastname,
-                                'firstname': newUser.firstname,
-                                'gender': newUser.gender,
-                                'marital_status': newUser.marital_status,
-                                'birthplace': newUser.birthplace,
-                                'birthdate': newUser.birthdate,
-                                'residence': newUser.residence,
-                                'address': newUser.address,
+            persons = usersModel.get_users(session, [uid])
+            if len(persons) == 1:
+                person = persons[0]
+                person.lastname = self.lastname.data
+                person.firstname = self.firstname.data
+                person.gender = self.gender.data if self.gender.data != '0' else None
+                person.marital_status = self.marital_status.data if self.marital_status.data != '0' else None
+                person.birthplace = self.birthplace.data
+                person.birthdate = self.birthdate.data if self.birthdate.data else None
+                person.residence = self.residence.data
+                person.address = self.address.data
+                session.add(person)
+                toLog.append({  'id': person.id,
+                                'created': person.created,
+                                'updated': person.updated,
+                                'deleted': person.deleted,
+                                'lastname': person.lastname,
+                                'firstname': person.firstname,
+                                'gender': person.gender,
+                                'marital_status': person.marital_status,
+                                'birthplace': person.birthplace,
+                                'birthdate': person.birthdate,
+                                'residence': person.residence,
+                                'address': person.address,
                                 })
 
-                #""" Se carga archivo documento """
-                #person_file_id = None
-                #if self.person_numberFile.data:
-                #    person_file_id = str(uuid.uuid4())                    
-                #    personNumberFile = File()
-                #    personNumberFile.id = person_file_id
-                #    personNumberFile.mimetype = self.person_numberFile.data.mimetype
-                #    personNumberFile.content = base64.b64encode(self.person_numberFile.data.read()).decode()
-                #    session.add(personNumberFile)
-                #    toLog.append({  'id': personNumberFile.id,
-                #                    'created': personNumberFile.created,
-                #                    'updated': personNumberFile.updated,
-                #                    'deleted': personNumberFile.deleted,
-                #                    'mimetype': personNumberFile.mimetype,
-                #                    'content': personNumberFile.content,
-                #                })
+                """ Modificacion de correo personal """
+                if len(person.mails) > 0:
+                    for pm in person.mails:
+                        if pm.type.value == 'ALTERNATIVE' and not pm.deleted:
+                            if self.personal_email.data != pm.email:
+                                newPersonalMail = Mail()
+                                newPersonalMail.type = MailTypes.ALTERNATIVE
+                                newPersonalMail.email = self.personal_email.data
+                                newPersonalMail.user_id = person.id
+                                session.add(newPersonalMail)
+                                toLog.append({  'id': newPersonalMail.id,
+                                                'created': newPersonalMail.created,
+                                                'updated': newPersonalMail.updated,
+                                                'deleted': newPersonalMail.deleted,
+                                                'type': newPersonalMail.type.value,
+                                                'email': newPersonalMail.email,
+                                                'confirmed': newPersonalMail.confirmed,
+                                                'user_id': newPersonalMail.user_id,
+                                            })
 
-                #""" Se genera documento """
-                #idNumber = IdentityNumber()
-                #idNumber.type = self.person_number_type.data
-                #idNumber.number = self.person_number.data
-                #idNumber.user_id = uid
-                #if person_file_id:
-                #    idNumber.file_id = person_file_id
-                #session.add(idNumber)
-                
-                """ Se genera correo laboral """
-                if self.work_email.data:
-                    newWorkEmail = Mail()
-                    newWorkEmail.type = MailTypes.INSTITUTIONAL
-                    newWorkEmail.email = self.work_email.data
-                    newWorkEmail.user_id = uid
-                    session.add(newWorkEmail)
-                    toLog.append({  'id': newWorkEmail.id,
-                                    'created': newWorkEmail.created,
-                                    'updated': newWorkEmail.updated,
-                                    'deleted': newWorkEmail.deleted,
-                                    'type': newWorkEmail.type.value,
-                                    'email': newWorkEmail.email,
-                                    'confirmed': newWorkEmail.confirmed,
-                                    'user_id': newWorkEmail.user_id,
-                                })
+                """ Modificación de teléfonos """
+                if len(person.phones) > 0:
+                    for ph in person.phones:
+                        if ph.type.value == 'LANDLINE' and not ph.deleted:
+                            if self.land_line.data != ph.number:
+                                landLinePhone = Phone()
+                                landLinePhone.type = PhoneTypes.LANDLINE
+                                landLinePhone.number = self.land_line.data
+                                landLinePhone.user_id = person.id
+                                session.add(landLinePhone)
+                                toLog.append({  'id': landLinePhone.id,
+                                                'created': landLinePhone.created,
+                                                'updated': landLinePhone.updated,
+                                                'deleted': landLinePhone.deleted,
+                                                'type': landLinePhone.type.value,
+                                                'number': landLinePhone.number,
+                                                'user_id': landLinePhone.user_id,
+                                            })
+                        if ph.type.value == 'CELLPHONE' and not ph.deleted:
+                            if self.land_line.data != ph.number:
+                                landLinePhone = Phone()
+                                landLinePhone.type = PhoneTypes.LANDLINE
+                                landLinePhone.number = self.land_line.data
+                                landLinePhone.user_id = person.id
+                                session.add(landLinePhone)
+                                toLog.append({  'id': landLinePhone.id,
+                                            'created': landLinePhone.created,
+                                            'updated': landLinePhone.updated,
+                                            'deleted': landLinePhone.deleted,
+                                            'type': landLinePhone.type.value,
+                                            'number': landLinePhone.number,
+                                            'user_id': landLinePhone.user_id,
+                                        })
 
-                """ Se genera correo personal """
-                if self.personal_email.data:
-                    newPersonalMail = Mail()
-                    newPersonalMail.type = MailTypes.ALTERNATIVE
-                    newPersonalMail.email = self.personal_email.data
-                    newPersonalMail.user_id = uid
-                    session.add(newPersonalMail)
-                    toLog.append({  'id': newPersonalMail.id,
-                                    'created': newPersonalMail.created,
-                                    'updated': newPersonalMail.updated,
-                                    'deleted': newPersonalMail.deleted,
-                                    'type': newPersonalMail.type.value,
-                                    'email': newPersonalMail.email,
-                                    'confirmed': newPersonalMail.confirmed,
-                                    'user_id': newPersonalMail.user_id,
-                                })
-
-                """ Se genera telefono fijo """
-                if self.land_line.data:
-                    landLinePhone = Phone()
-                    landLinePhone.type = PhoneTypes.LANDLINE
-                    landLinePhone.number = self.land_line.data
-                    landLinePhone.user_id = uid
-                    session.add(landLinePhone)
-                    toLog.append({  'id': landLinePhone.id,
-                                    'created': landLinePhone.created,
-                                    'updated': landLinePhone.updated,
-                                    'deleted': landLinePhone.deleted,
-                                    'type': landLinePhone.type.value,
-                                    'number': landLinePhone.number,
-                                    'user_id': landLinePhone.user_id,
-                                })
-
-                """ Se genera telefono movil """
-                if self.mobile_number.data:
-                    mobileNumber = Phone()
-                    mobileNumber.type = PhoneTypes.CELLPHONE
-                    mobileNumber.number = self.mobile_number.data
-                    mobileNumber.user_id = uid
-                    session.add(mobileNumber)
-                    toLog.append({  'id': mobileNumber.id,
-                                    'created': mobileNumber.created,
-                                    'updated': mobileNumber.updated,
-                                    'deleted': mobileNumber.deleted,
-                                    'type': mobileNumber.type.value,
-                                    'number': mobileNumber.number,
-                                    'user_id': mobileNumber.user_id,
-                                })
-
-                #if self.laboral_number.data:
-                #    cid = str(uuid.uuid4())
-                #    cuil = IdentityNumber()
-                #    cuil.id = cid
-                #    cuil.type = IdentityNumberTypes.CUIL
-                #    cuil.number = self.laboral_number.data
-                #    cuil.user_id = uid
-                #
-                #    """ Se genera archivo de cuil """
-                #    cfid = None
-                #    if self.laboral_numberFile.data:
-                #        cfid = str(uuid.uuid4())
-                #        laboralNumberFile = File()
-                #        laboralNumberFile.id = cfid
-                #        laboralNumberFile.mimetype = self.laboral_numberFile.data.mimetype
-                #        laboralNumberFile.content = base64.b64encode(self.laboral_numberFile.data.read()).decode()
-                #        session.add(laboralNumberFile)
-                #        toLog.append({  'id': laboralNumberFile.id,
-                #                        'created': laboralNumberFile.created,
-                #                        'updated': laboralNumberFile.updated,
-                #                        'deleted': laboralNumberFile.deleted,
-                #                        'mimetype': laboralNumberFile.mimetype,
-                #                        'content': laboralNumberFile.content,
-                #                        'identityNumber': cid,
-                #                    })
-                #    if cfid:
-                #        cuil.file_id = cfid
-                #    session.add(cuil)  
 
                 newLog = UsersLog()
-                newLog.entity_id = newUser.id
+                newLog.entity_id = person.id
                 newLog.authorizer_id = authorizer_id
-                newLog.type = UserLogTypes.CREATE
+                newLog.type = UserLogTypes.UPDATE
                 newLog.data = json.dumps(toLog, default=str)
                 session.add(newLog)
                 session.commit()
@@ -557,6 +480,6 @@ class PersonModifyForm(FlaskForm):
                     'seniority_external_days' : self.seniority_external_days.data
                 }
 
-                return self.person_number.data
+                return person.id
             else:
                 return None
