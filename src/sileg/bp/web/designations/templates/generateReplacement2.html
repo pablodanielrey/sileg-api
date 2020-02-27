@@ -10,7 +10,7 @@
                             <h5>Original</h5>
                             <p>Nombre: {{person.firstname}}</p>
                             <p>Apellido: {{person.lastname}}</p>
-                            <p>DNI: {{person.person_number}}</p>
+                            <p>Documento: {{person.identity_numbers[0].number}}</p>
                     </div>
                     <div class="col m3">
                             <h5>Designación</h5>
@@ -23,7 +23,7 @@
                     <h5>Suplente</h5>
                     <p>Nombre: {{replacement.firstname}}</p>
                     <p>Apellido: {{replacement.lastname}}</p>
-                    <p>DNI: {{replacement.person_number}}</p>
+                    <p>Documento: {{replacement.identity_numbers[0].number}}</p>
                 </div>
             </div>
             <div class="divider"></div>
