@@ -25,7 +25,7 @@ def calculate_end(d:Designation):
             if not d2.deleted:
                 if not end or (d2.type is DesignationTypes.EXTENSION and d2.end and d2.end > end):
                     end = d2.end
-    return end
+    return end if end else ''
 
 def det2s(det: DesignationEndTypes):
     if det == DesignationEndTypes.INDETERMINATE:
@@ -63,7 +63,7 @@ def dt2s(dt: DesignationTypes):
 """
 
 
-@bp.route('/replacement_select_person/<did>')
+@bp.route('/suplencia_seleccionar_persona/<did>')
 @require_user
 def replacement_select_person(user, did):
     """
@@ -81,7 +81,7 @@ def replacement_select_person(user, did):
             persons = usersModel.get_users(session, uids)
     return render_template('generateReplacement1.html', user=user, persons=persons, did=did, form=form)
 
-@bp.route('/replacement_create/<did>/<uid>')
+@bp.route('/suplencia_crear/<did>/<uid>')
 @require_user
 def replacement_create_designation(user, did, uid):
     """
@@ -103,7 +103,7 @@ def replacement_create_designation(user, did, uid):
 
         return render_template('generateReplacement2.html', user=user, person=person, replacement=replacement, designation=designation, form=form)
 
-@bp.route('/replacement_create/<did>/<uid>', methods=['POST'])
+@bp.route('/suplencia_crear/<did>/<uid>', methods=['POST'])
 @require_user
 def replacement_create_designation_post(user, did, uid):
     """
@@ -133,7 +133,7 @@ def replacement_create_designation_post(user, did, uid):
     ##################################################
 """
 
-@bp.route('/convalidate/<did>')
+@bp.route('/convalidar/<did>')
 @require_user
 def convalidate(user, did):
     """
@@ -154,7 +154,7 @@ def convalidate(user, did):
 
     
 
-@bp.route('/convalidate/<did>', methods=['POST'])
+@bp.route('/convalidar/<did>', methods=['POST'])
 @require_user
 def convalidate_post(user, did):
     assert user is not None
