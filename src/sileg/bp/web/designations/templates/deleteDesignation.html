@@ -19,7 +19,10 @@
                     <p>Cargo: {{designation.function.name}}</p>
                     <p>Ubicación: {{designation.place.name}}</p>
                     <p>Resolución: {{designation.res}} {{designation.exp}} / {{designation.cor}} </p>
-                    <p>Inicio: {{designation.start}} Fin: {{designation.end}} </p>
+                    <p>
+                        Inicio: {%if designation.start%}{{designation.start.strftime('%d-%m-%Y')}}{%endif%}
+                        Fin: {%if designation.end%}{{designation.end.strftime('%d-%m-%Y')}}{%endif%}
+                    </p>
                 </div>                
             </div>
             <div class="divider"></div>
