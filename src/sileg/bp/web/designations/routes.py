@@ -63,7 +63,7 @@ def dt2s(dt: DesignationTypes):
 """
 
 
-@bp.route('/replacement_select_person/<did>')
+@bp.route('/suplencia_seleccionar_persona/<did>')
 @require_user
 def replacement_select_person(user, did):
     """
@@ -79,9 +79,11 @@ def replacement_select_person(user, did):
         with open_users_session() as session:
             uids = usersModel.search_user(session, query)
             persons = usersModel.get_users(session, uids)
+    else:
+        persons = None
     return render_template('generateReplacement1.html', user=user, persons=persons, did=did, form=form)
 
-@bp.route('/replacement_create/<did>/<uid>')
+@bp.route('/suplencia_crear/<did>/<uid>')
 @require_user
 def replacement_create_designation(user, did, uid):
     """
@@ -103,7 +105,7 @@ def replacement_create_designation(user, did, uid):
 
         return render_template('generateReplacement2.html', user=user, person=person, replacement=replacement, designation=designation, form=form)
 
-@bp.route('/replacement_create/<did>/<uid>', methods=['POST'])
+@bp.route('/suplencia_crear/<did>/<uid>', methods=['POST'])
 @require_user
 def replacement_create_designation_post(user, did, uid):
     """
@@ -121,10 +123,10 @@ def replacement_create_designation_post(user, did, uid):
             print(form.errors)
             abort(404)
 
-        form.save(session, silegModel, uid, did)
+        form.save(session, silegModel, uid, did, user['sub'])
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=original_uid))
+    return redirect(url_for('designations.personDesignations', uid=original_uid))
     
 
 """
@@ -133,7 +135,7 @@ def replacement_create_designation_post(user, did, uid):
     ##################################################
 """
 
-@bp.route('/convalidate/<did>')
+@bp.route('/convalidar/<did>')
 @require_user
 def convalidate(user, did):
     """
@@ -154,7 +156,7 @@ def convalidate(user, did):
 
     
 
-@bp.route('/convalidate/<did>', methods=['POST'])
+@bp.route('/convalidar/<did>', methods=['POST'])
 @require_user
 def convalidate_post(user, did):
     assert user is not None
@@ -169,10 +171,10 @@ def convalidate_post(user, did):
             print(form.errors)
             abort(404)
 
-        form.save(session, original_designation)
+        form.save(session, original_designation, user['sub'])
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
+    return redirect(url_for('designations.personDesignations', uid=uid))
 
 """
     ##################################################
@@ -217,10 +219,10 @@ def promote_post(user, did):
             print(form.errors)
             abort(404)
 
-        form.save(session, designation)
+        form.save(session, designation, user['sub'])
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
+    return redirect(url_for('designations.personDesignations', uid=uid))
 
 """
     ########################################
@@ -266,10 +268,10 @@ def extend_post(user, did):
             print(form.errors)
             abort(404)
 
-        form.save(session, designation)
+        form.save(session, designation, user['sub'])
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
+    return redirect(url_for('designations.personDesignations', uid=uid))
 
 
 """
@@ -313,10 +315,10 @@ def discharge_post(user, did):
             print(form.errors)
             abort(404)
 
-        form.save(session, designation_to_discharge=designation)
+        form.save(session, user['sub'], designation_to_discharge=designation)
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
+    return redirect(url_for('designations.personDesignations', uid=uid))
 
 
 
@@ -331,7 +333,7 @@ def undelete(user, did):
         d.historic = False
         session.commit()
     
-    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))        
+    return redirect(url_for('designations.personDesignations', uid=uid))        
 
 
 @bp.route('/eliminar/<did>')
@@ -369,10 +371,10 @@ def delete_post(user, did):
             print(form.errors)
             abort(404)
 
-        form.save(session, designation)
+        form.save(session, designation, user['sub'])
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
+    return redirect(url_for('designations.personDesignations', uid=uid))
 
 
 """
@@ -503,7 +505,7 @@ def create_post(user, uid):
         form.save(session, silegModel, uid, user['sub'])
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
+    return redirect(url_for('designations.personDesignations', uid=uid))
 
 
 @bp.route('/buscar')

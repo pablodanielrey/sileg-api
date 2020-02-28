@@ -71,7 +71,7 @@ def create_personal_leave_post(user, uid):
         form.save(session, silegModel, uid)
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))
+    return redirect(url_for('designations.personDesignations', uid=uid))
 
 @bp.route('/designacion/<did>')
 @require_user
@@ -110,4 +110,4 @@ def create_designation_leave_license_post(user, did):
         form.save(session, silegModel, did)
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', dt2s=dt2s, uid=uid))    
+    return redirect(url_for('designations.personDesignations', uid=uid))    
