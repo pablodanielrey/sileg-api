@@ -327,25 +327,30 @@ class PersonSearchForm(FlaskForm):
 class PersonModifyForm(FlaskForm):
     lastname = StringField('Apellidos', validators=[DataRequired()])
     firstname = StringField('Nombres', validators=[DataRequired()])
+    person_number_type = SelectField('Tipo de Documento', coerce=str)
+    person_number = StringField('Nro. de Documento', validators=[DataRequired()])
     gender = SelectField('Género', coerce=str)
     marital_status = SelectField('Estado Civil', coerce=str)
     birthplace = StringField('Ciudad de Nacimiento')
     birthdate = StringField('Fecha de Nacimiento')
     residence = StringField('Ciudad de Residencia')
     address = StringField('Dirección')
-    personal_email = EmailField('Correo Personal',validators=[DataRequired()])
-    land_line = StringField('Teléfono Fijo')
-    mobile_number =StringField('Teléfono Móvil')
+    email_type = SelectField('Tipo de correo electrónico', coerce=str)
+    email = EmailField('Correo electrónico',validators=[DataRequired()])
+    phone_type = SelectField('Tipo de número telefónico', coerce=str)
+    phone_number =StringField('Número de teléfono')
     seniority_external_years = StringField('Años')
     seniority_external_months = StringField('Meses')
     seniority_external_days = StringField('Días')
         
     def __init__(self):
         super(PersonModifyForm,self).__init__()
+        self.person_number_type.choices = [('0','Seleccione una opción...'),('DNI','DNI'),('LC','LC'),('LE','LE'),('PASSPORT','Pasaporte'),('CUIT','CUIT'),('CUIL','CUIL')]
         self.gender.choices = [('0','Seleccione una opción...'),('Femenino','Femenino'),('Masculino','Masculino'),('Autopercibido','Autopercibido')]
         self.marital_status.choices = [('0','Seleccione una opción...'),('Casado/a','Casado/a'),('Soltero/a','Soltero/a'),('Conviviente','Conviviente'),('Divorciado/a','Divorciado/a'),('Viudo/a','Viudo/a')]
+        self.phone_type.choices = [('0','Seleccione una opción...'),('CELLPHONE','Móvil'),('LANDLINE','Fijo')]
+        self.email_type.choices = [('0','Seleccione una opción...'),('INSTITUTIONAL','Institucional'),('ALTERNATIVE','Personal')]
  
-
     def validate_seniority_external_years(self,seniority_external_years):
         if self.seniority_external_years.data:
             try:
@@ -405,59 +410,57 @@ class PersonModifyForm(FlaskForm):
                                 'address': person.address,
                                 })
 
-                """ Modificacion de correo personal """
-                if len(person.mails) > 0:
-                    for pm in person.mails:
-                        if pm.type.value == 'ALTERNATIVE' and not pm.deleted:
-                            if self.personal_email.data != pm.email:
-                                newPersonalMail = Mail()
-                                newPersonalMail.type = MailTypes.ALTERNATIVE
-                                newPersonalMail.email = self.personal_email.data
-                                newPersonalMail.user_id = person.id
-                                session.add(newPersonalMail)
-                                toLog.append({  'id': newPersonalMail.id,
-                                                'created': newPersonalMail.created,
-                                                'updated': newPersonalMail.updated,
-                                                'deleted': newPersonalMail.deleted,
-                                                'type': newPersonalMail.type.value,
-                                                'email': newPersonalMail.email,
-                                                'confirmed': newPersonalMail.confirmed,
-                                                'user_id': newPersonalMail.user_id,
-                                            })
+                """ Agregar correo personal """
+                if self.email.data and self.email_type == 'ALTERNATIVE':
+                    newPersonalMail = Mail()
+                    newPersonalMail.type = MailTypes.ALTERNATIVE
+                    newPersonalMail.email = self.email.data
+                    newPersonalMail.user_id = person.id
+                    session.add(newPersonalMail)
+                    toLog.append({  'id': newPersonalMail.id,
+                                    'created': newPersonalMail.created,
+                                    'updated': newPersonalMail.updated,
+                                    'deleted': newPersonalMail.deleted,
+                                    'type': newPersonalMail.type.value,
+                                    'email': newPersonalMail.email,
+                                    'confirmed': newPersonalMail.confirmed,
+                                    'user_id': newPersonalMail.user_id,
+                                })
+                
+                """ Eliminar correo personal """
+                #TODO
 
-                """ Modificación de teléfonos """
-                if len(person.phones) > 0:
-                    for ph in person.phones:
-                        if ph.type.value == 'LANDLINE' and not ph.deleted:
-                            if self.land_line.data != ph.number:
-                                landLinePhone = Phone()
-                                landLinePhone.type = PhoneTypes.LANDLINE
-                                landLinePhone.number = self.land_line.data
-                                landLinePhone.user_id = person.id
-                                session.add(landLinePhone)
-                                toLog.append({  'id': landLinePhone.id,
-                                                'created': landLinePhone.created,
-                                                'updated': landLinePhone.updated,
-                                                'deleted': landLinePhone.deleted,
-                                                'type': landLinePhone.type.value,
-                                                'number': landLinePhone.number,
-                                                'user_id': landLinePhone.user_id,
-                                            })
-                        if ph.type.value == 'CELLPHONE' and not ph.deleted:
-                            if self.land_line.data != ph.number:
-                                landLinePhone = Phone()
-                                landLinePhone.type = PhoneTypes.LANDLINE
-                                landLinePhone.number = self.land_line.data
-                                landLinePhone.user_id = person.id
-                                session.add(landLinePhone)
-                                toLog.append({  'id': landLinePhone.id,
-                                            'created': landLinePhone.created,
-                                            'updated': landLinePhone.updated,
-                                            'deleted': landLinePhone.deleted,
-                                            'type': landLinePhone.type.value,
-                                            'number': landLinePhone.number,
-                                            'user_id': landLinePhone.user_id,
-                                        })
+                """ Agregar teléfono """
+                """ telefono fijo"""
+                if self.phone_number.data and self.phone_type == 'LANDLINE':
+                    landLinePhone = Phone()
+                    landLinePhone.type = PhoneTypes.LANDLINE
+                    landLinePhone.number = self.phone_number.data
+                    landLinePhone.user_id = person.id
+                    session.add(landLinePhone)
+                    toLog.append({  'id': landLinePhone.id,
+                                    'created': landLinePhone.created,
+                                    'updated': landLinePhone.updated,
+                                    'deleted': landLinePhone.deleted,
+                                    'type': landLinePhone.type.value,
+                                    'number': landLinePhone.number,
+                                    'user_id': landLinePhone.user_id,
+                                })
+                """ telefono movil """
+                if self.phone_number.data and self.phone_type == 'CELLPHONE':
+                    mobileNumber = Phone()
+                    mobileNumber.type = PhoneTypes.CELLPHONE
+                    mobileNumber.number = self.phone_number.data
+                    mobileNumber.user_id = person.id
+                    session.add(mobileNumber)
+                    toLog.append({  'id': mobileNumber.id,
+                                    'created': mobileNumber.created,
+                                    'updated': mobileNumber.updated,
+                                    'deleted': mobileNumber.deleted,
+                                    'type': mobileNumber.type.value,
+                                    'number': mobileNumber.number,
+                                    'user_id': mobileNumber.user_id,
+                                })
 
 
                 newLog = UsersLog()

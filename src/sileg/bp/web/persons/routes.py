@@ -147,6 +147,11 @@ def modifyPersonData(user,uid):
             form.lastname.data = person.lastname
         if person.firstname:
             form.firstname.data = person.firstname
+        if len(person.identity_numbers) > 0:
+            for pi in person.identity_numbers:
+                form.person_number_type.choices.remove((pi.type.value,pi.type.value))
+                if pi.type.value == 'PASSPORT':
+                    form.person_number_type.choices.remove((pi.type.value,'Pasaporte'))        
         if person.gender:
             form.gender.data = person.gender
         if person.marital_status:
@@ -161,15 +166,8 @@ def modifyPersonData(user,uid):
             form.residence.data = person.residence
         if len(person.mails) > 0:
             for pm in person.mails:
-                if pm.type.value == 'ALTERNATIVE':
-                    form.personal_email.data = pm.email
-        if len(person.phones) > 0:
-            for ph in person.phones:
-                if ph.type.value == 'LANDLINE':
-                    form.land_line.data = ph.number
-                if ph.type.value == 'CELLPHONE':
-                    form.mobile_number.data = ph.number
+                if pm.type.value == 'INSTITUTIONAL':
+                    form.email_type.choices.remove((pm.type.value,'Institucional'))
         if form.validate_on_submit():
-            form.save(person.id,user['sub'])
-
+            form.save(person.id,user['sub'])    
     return render_template('modifyPerson.html', user=user, person=person, form=form)

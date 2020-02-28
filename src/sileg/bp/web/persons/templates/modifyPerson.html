@@ -40,33 +40,71 @@
                     </div>
                     <div class="col m1"></div>
                 </div>
-                <div class="row">
-                    <div class="col m1"></div>
-                    <div class="col m5">
-                        <p>Tipo de documento</p>
-                        {% if person.identity_numbers|length > 0 %}
-                        {% for pi in person.identity_numbers if pi.type.value != 'CUIL' and pi.type.value != 'CUIT' %}
-                        <h6><strong>{{pi.type.value}}</strong></h6>
-                        {% else %}
-                        <h6><strong>No se encuentra registrado</strong></h6>
-                        {% endfor %}
-                        {% else %}
-                        <h6><strong>No se encuentra registrado</strong></h6>
-                        {% endif %}
-                    </div>
-                    <div class="col m5">
-                        <p>Número de documento</p>
-                        {% if person.identity_numbers|length > 0 %}
-                        {% for pi in person.identity_numbers if pi.type.value != 'CUIL' and pi.type.value != 'CUIT' %}
-                        <h6><strong>{{pi.number}}</strong></h6>
-                        {% else %}
-                        <h6><strong>No se encuentra registrado</strong></h6>
-                        {% endfor %}
-                        {% else %}
-                        <h6><strong>No se encuentra registrado</strong></h6>
-                        {% endif %}
+                <div class="divider"></div>
+                <div class="row center">
+                    <div class="col m12">
+                        <h5>Documentos de identidad</h5>
                     </div>
                 </div>
+                <div class="row" style="margin-bottom: 0px;">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        {{ form.person_number_type.label }}
+                        {% if form.person_number_type.errors %}
+                        {{ form.person_number_type(class="validate invalid") }}
+                        <span class="helper-text" data-error="{{form.gender.errors[0]}}"></span>
+                        {% else %}
+                        {{ form.person_number_type(class="validate") }}
+                        {% endif %}
+                    </div>
+                    <div class="col m4">
+                        <div class="input-field">
+                            {{ form.person_number.label }}
+                            {% if form.person_number.errors %}
+                            {{ form.person_number(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.lastname.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.person_number(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m1 center">
+                        <a class="btn-floating waves-effect waves-light green" href="#agregar"><i class="material-icons">add</i></a>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                {% if person.identity_numbers|length > 0 %}
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <table class="centered striped responsive-table">
+                            <thead>
+                                <tr>
+                                    <th style="padding-top: 5px; padding-bottom: 5px;">Tipo de documento</th>
+                                    <th style="padding-top: 5px; padding-bottom: 5px;">Número</th>
+                                    <th style="padding-top: 5px; padding-bottom: 5px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pi in person.identity_numbers %}
+                                <tr>
+                                    <td style="padding-top: 5px; padding-bottom: 5px;">{{pi.type.value}}</td>
+                                    <td style="padding-top: 5px; padding-bottom: 5px;">{{pi.number}}</td>
+                                    {% if pi.type.value != 'DNI' %}
+                                    <td style="padding-top: 5px; padding-bottom: 5px;"><a class="btn-floating btn-small waves-effect waves-light red" href="#eliminar#{{pi.id}}"><i class="material-icons">delete</i></a></td>
+                                    {% else %}
+                                    <td style="padding-top: 5px; padding-bottom: 5px;"></td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                {% endif %}
+                <div class="divider"></div>
+                <br>
                 <div class="row center">
                     <div class="col m1"></div>
                     <div class="col m3">
@@ -153,80 +191,134 @@
                         <h5>Contacto</h5>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row center">
+                    <div class="col m12">
+                        <h5>Correos electrónicos</h5>
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: 0px;">
                     <div class="col m1"></div>
-                    <div class="col m5">
-                        <p>Correo de trabajo</p>
-                        {% if person.mails|length > 0 %}
-                        {% for pm in person.mails if pm.type.value == 'INSTITUTIONAL' or pm.type.value == 'NOTIFICATION' %}
-                        <h6><strong>{{pm.email}}</strong></h6>
+                    <div class="col m4">
+                        {{ form.email_type.label }}
+                        {% if form.email_type.errors %}
+                        {{ form.email_type(class="validate invalid") }}
+                        <span class="helper-text" data-error="{{form.gender.errors[0]}}"></span>
                         {% else %}
-                        <h6><strong>No se encuentra registrado</strong></h6>
-                        {% endfor %}
-                        {% else %}
-                        <h6><strong>No se encuentra registrado</strong></h6>
+                        {{ form.email_type(class="validate") }}
                         {% endif %}
                     </div>
                     <div class="col m5">
                         <div class="input-field">
-                            {{ form.personal_email.label }}
-                            {% if form.personal_email.errors %}
-                            {{ form.personal_email(class="validate invalid") }}
-                            <span class="helper-text" data-error="{{form.personal_email.errors[0]}}"></span>
-                            {% else %}                       
-                            {{ form.personal_email(class="validate") }}
+                            {{ form.email.label }}
+                            {% if form.email.errors %}
+                            {{ form.email(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.lastname.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.email(class="validate") }}
                             {% endif %}
                         </div>
                     </div>
+                    <div class="col m1 center">
+                        <a class="btn-floating waves-effect waves-light green" href="#agregar"><i class="material-icons">add</i></a>
+                    </div>
                     <div class="col m1"></div>
                 </div>
+                {% if person.mails|length > 0 %}
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <table class="centered striped responsive-table small">
+                            <thead>
+                                <tr>
+                                    <th style="padding-top: 5px; padding-bottom: 5px;">Correos electrónicos</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pm in person.mails %}
+                                <tr>
+                                    <td style="padding-top: 5px; padding-bottom: 5px;">{{pm.email}}</td>
+                                    {% if pm.type.value != 'INSTITUTIONAL' %}
+                                    <td style="padding-top: 5px; padding-bottom: 5px;"><a class="btn-floating btn-small waves-effect waves-light red" href="#eliminar#{{pm.id}}"><i class="material-icons">delete</i></a></td>
+                                    {% else %}
+                                    <td style="padding-top: 5px; padding-bottom: 5px;"></td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>                    
+                    <div class="col m1"></div>
+                </div>
+                {% endif %}
+                <div class="divider"></div>
                 <div class="row center">
+                    <div class="col m12">
+                        <h5>Teléfonos</h5>
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: 0px;">
                     <div class="col m1"></div>
                     <div class="col m4">
+                        {{ form.phone_type.label }}
+                        {% if form.phone_type.errors %}
+                        {{ form.phone_type(class="validate invalid") }}
+                        <span class="helper-text" data-error="{{form.gender.errors[0]}}"></span>
+                        {% else %}
+                        {{ form.phone_type(class="validate") }}
+                        {% endif %}
+                    </div>
+                    <div class="col m5">
                         <div class="input-field">
-                            {{ form.land_line.label }}
-                            {% if form.land_line.errors %}
-                            {{ form.land_line(class="validate invalid") }}
-                            <span class="helper-text" data-error="{{form.land_line.errors[0]}}"></span>
-                            {% else %}                         
-                            {{ form.land_line(class="validate") }}
+                            {{ form.phone_number.label }}
+                            {% if form.phone_number.errors %}
+                            {{ form.phone_number(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.lastname.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.phone_number(class="validate") }}
                             {% endif %}
                         </div>
                     </div>
-                    <div class="col m4">
-                        <div class="input-field">
-                            {{ form.mobile_number.label }}
-                            {% if form.mobile_number.errors %}
-                            {{ form.mobile_number(class="validate invalid") }}
-                            <span class="helper-text" data-error="{{form.mobile_number.errors[0]}}"></span>
-                            {% else %}                        
-                            {{ form.mobile_number(class="validate") }}
-                            {% endif %}
-                        </div>
+                    <div class="col m1 center">
+                        <a class="btn-floating waves-effect waves-light green" href="#agregar"><i class="material-icons">add</i></a>
                     </div>
                     <div class="col m1"></div>
                 </div>
+                {% if person.phones|length > 0 %}
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <table class="centered striped responsive-table small">
+                            <thead>
+                                <tr>
+                                    <th style="padding-top: 5px; padding-bottom: 5px;"></th>
+                                    <th style="padding-top: 5px; padding-bottom: 5px;">Numeros telefónicos</th>
+                                    <th style="padding-top: 5px; padding-bottom: 5px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ph in person.phones %}
+                                <tr>
+                                    {% if ph.type.value == 'LANDLINE' %}
+                                    <td style="padding-top: 5px; padding-bottom: 5px;"><i class="material-icons">phone</i></td>
+                                    {% else %}
+                                    <td style="padding-top: 5px; padding-bottom: 5px;"><i class="material-icons">phone_android</i></td>
+                                    {% endif %}
+                                    <td style="padding-top: 5px; padding-bottom: 5px;">{{ph.number}}</td>
+                                    <td style="padding-top: 5px; padding-bottom: 5px;"><a class="btn-floating btn-small waves-effect waves-light red" href="#eliminar#{{ph.id}}"><i class="material-icons">delete</i></a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>                    
+                    <div class="col m1"></div>
+                </div>
+                {% endif %}
                 <div class="divider"></div>
                 <div class="row">
                     <div class="col m5">
                         <h5>Datos Laborales</h5>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col m1"></div>
-                    <div class="col m5">
-                        <p>CUIL / CUIT</p>
-                        {% if person.identity_numbers|length > 0 %}
-                        {% for pi in person.identity_numbers if pi.type.value == 'CUIL' or pi.type.value == 'CUIT' %}
-                        <h6><strong>{{pi.number}}</strong></h6>
-                        {% else %}
-                        <h6><strong>No se encuentra registrado</strong></h6>
-                        {% endfor %}
-                        {% else %}
-                        <h6><strong>No se encuentra registrado</strong></h6>
-                        {% endif %}
-                    </div>
-                    <div class="col m1"></div>
                 </div>
                 <div class="row">
                     <div class="col m1"></div>
@@ -276,7 +368,7 @@
                 <div class="row">
                     <div class="col m3"></div>
                     <div class="col m1">
-                        <button class="btn red lighten-2" type="reset">Limpiar</button>
+                        <button class="btn red lighten-2" type="reset">limpiar</button>
                     </div>
                     <div class="col m3"></div>
                     <div class="col m3">
