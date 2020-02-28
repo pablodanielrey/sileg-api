@@ -5,15 +5,15 @@
     <div class="col m10">
         <div class="card-panel grey lighten-5">
             <div class="row">
-                <div class="col m8">
+                <div class="col m2"></div>
+                <div class="col m8 center">
                     <h4>Baja de Designación</h4>
                 </div>
-                <div class="col m3">
-                    <p>Nombre: {{person.firstname}}</p>
-                    <p>Apellido: {{person.lastname}}</p>
-                    <p>Documento: {{person.identity_numbers[0].number}}</p>
-                </div>
-                <div class="col m3">
+                <div class="col m2"></div>
+            </div>
+            <div class="row">
+                <div class="col m2"></div>
+                <div class="col m6">
                     <h5>Designación</h5>
                     <p>Tipo: {{designation.type.value}}</p>
                     <p>Cargo: {{designation.function.name}}</p>
@@ -21,17 +21,24 @@
                     <p>Resolución: {{designation.res}} {{designation.exp}} / {{designation.cor}} </p>
                     <p>Inicio: {{designation.start}} Fin: {{designation.end}} </p>
                 </div>                
+                <div class="col m3">
+                    <h5>Persona</h5>
+                    <p>Nombre: {{person.firstname}}</p>
+                    <p>Apellido: {{person.lastname}}</p>
+                    <p>Documento: {{person.identity_numbers[0].number}}</p>
+                </div>
+                <div class="col m1"></div>
             </div>
             <div class="divider"></div>
+            <br>
             <form action="" method="post">
                 {{ form.csrf_token }}
                 <div class="row">
                     <div class="col m1"></div>
-                    <div class="col m2 input-field">
+                    <div class="col m3 input-field">
                         {{ form.res.label }}
                         {{ form.res }}
                     </div>
-                    <div class="col m1"></div>
                     <div class="col m3 input-field">
                         {{ form.exp.label }}
                         {{ form.exp }}
@@ -58,11 +65,11 @@
                 <div class="divider"></div>
                 <br>
                 <div class="row">
-                    <div class="col m3"></div>
-                    <div class="col m3">
+                    <div class="col m2"></div>
+                    <div class="col m8 center">
                         <button class="btn light-blue darken-3">Generar Baja</button>
                     </div>
-                    <div class="col m3"></div>
+                    <div class="col m2"></div>
                 </div>
             </form>
         </div>
