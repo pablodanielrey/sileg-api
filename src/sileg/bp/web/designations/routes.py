@@ -79,6 +79,8 @@ def replacement_select_person(user, did):
         with open_users_session() as session:
             uids = usersModel.search_user(session, query)
             persons = usersModel.get_users(session, uids)
+    else:
+        persons = None
     return render_template('generateReplacement1.html', user=user, persons=persons, did=did, form=form)
 
 @bp.route('/suplencia_crear/<did>/<uid>')

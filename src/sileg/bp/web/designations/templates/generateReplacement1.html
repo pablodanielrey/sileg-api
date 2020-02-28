@@ -26,6 +26,7 @@
             <div class="divider"></div>
             <br>
             <div>
+                {% if persons %}
                 <table class="responsive-table highlight">
                     <thead>
                         <tr>
@@ -48,6 +49,11 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                {% elif persons != None %}
+                <div class="center">
+                    <h4> No se encontraron resultados </h4>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
