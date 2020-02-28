@@ -31,11 +31,12 @@
             <div class="divider"></div>
             <br>
             <div class="row">
-                <div class="col m2"></div>
+                <div class="col m2">
+                {% if designation.designation_id %}
+                    <p><a class="btn blue lighten-1" href="{{url_for('designations.designation_detail', did=designation.designation_id)}}">Designación Padre</a></p>
+                {% endif %}
+                </div>
                 <div class="col m4">
-                    {% if designation.designation_id %}
-                        <p><a class="red-text darken-4" href="{{url_for('designations.designation_detail', did=designation.designation_id)}}">Padre</a></p>
-                    {% endif %}
                     <p>Tipo: {{ dt2s(designation.type) }}</p>
                     <p>Inicio: {{ designation.start }}</p>
                     <p>Fin Original: {% if designation.end %}{{ designation.end }}{% endif %} </p>
