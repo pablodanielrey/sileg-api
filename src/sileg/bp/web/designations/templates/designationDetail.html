@@ -8,10 +8,15 @@
                 <h4> Designación </h4>
             </div>
             <div class="divider"></div>
+            <br>
             <div class="row">
-                <div class="col m2">
-                    <p><a class="red-text darken-4" href="{{url_for('designations.personDesignations', uid=person.id)}}">Designaciones</a></p>
+                <div class="col m6">
+                    <a class="btn blue lighten-1" href="{{url_for('designations.personDesignations', uid=person.id)}}">Ver designaciones de {{person.firstname}} {{person.lastname}}</a>
                 </div>
+                <div class="col m6"></div>
+            </div>
+            <div class="row">
+                <div class="col m2"></div>
                 <div class="col m4">
                     <p>Nombre: {{person.firstname}}</p>
                     <p>Apellido: {{person.lastname}}</p>
@@ -19,28 +24,22 @@
                 </div>
                 <div class="col m4">
                     <p>Fecha de Nacimiento: {% if person.birthdate %}{{person.birthdate.strftime('%d-%m-%Y')}}{% endif %}</p>
-                    <p>Direccion: {{person.address}}</p>
+                    <p>Direccion: {% if person.address %}{{person.address}}{% endif %}</p>
                 </div>
                 <div class="col m2"></div>
             </div>
-
             <div class="divider"></div>
             <br>
-
             <div class="row">
+                <div class="col m2"></div>
                 <div class="col m4">
-
                     {% if designation.designation_id %}
                         <p><a class="red-text darken-4" href="{{url_for('designations.designation_detail', did=designation.designation_id)}}">Padre</a></p>
                     {% endif %}
                     <p>Tipo: {{ dt2s(designation.type) }}</p>
-                    <p>Ubicación: {{ designation.place.name }}, ({{designation.place.type.value}})</p>
-                    <p>Cargo: {{ designation.function.name }}</p>
                     <p>Inicio: {{ designation.start }}</p>
-                    <p>Fin Original: {{ designation.end }} </p>
+                    <p>Fin Original: {% if designation.end %}{{ designation.end }}{% endif %} </p>
                     <p>Tipo de Fin: {{ det2s(designation.end_type) }}</p>
-                    <p>Expediente: {{designation.exp}} / {{designation.cor}}</p>
-                    <p>Resolución: {{designation.res}}</p>
                     {% if designation.deleted %}
                         <p>Eliminada: {{designation.deleted}}</p>
                     {% else %}
@@ -52,31 +51,37 @@
                         <p>Baja: NO </p>
                     {% endif %}                    
                 </div>
-
                 <div class="col m4">
+                    <p>Ubicación: {{ designation.place.name }}, ({{designation.place.type.value}})</p>
+                    <p>Cargo: {{ designation.function.name }}</p>
+                    <p>Expediente: {{designation.exp}} / {{designation.cor}}</p>
+                    <p>Resolución: {{designation.res}}</p>
+                </div>
+                <div class="col m2"></div>
+            </div>
+            <div class="row">
+                <div class="col m2"></div>
+                <div class="col m8 center">
                     <a class="btn waves-effect blue lighten-1" href="{{url_for('designations.extend', did=designation.id)}}">Prorrogar</a>
                     <a class="btn waves-effect blue lighten-1" href="{{url_for('designations.promote', did=designation.id)}}">Extender</a>
                     <a class="btn waves-effect blue lighten-1" href="{{url_for('leavelicense.create_designation_leave_license', did=designation.id)}}">Licencia</a>
                     <a class="btn waves-effect blue lighten-1" href="{{url_for('designations.replacement_select_person', did=designation.id)}}">Suplencia</a>
                     <a class="btn waves-effect blue lighten-1" href="{{url_for('designations.discharge', did=designation.id)}}">Baja</a>
-
                     {% if designation.deleted %}
                         <a class="btn waves-effect blue lighten-1" href="{{url_for('designations.undelete', did=designation.id)}}">Restaurar</a>
                     {% endif %}
                 </div>
-        
-            </div>            
-
+                <div class="col m2"></div>
+            </div>
             <div class="divider"></div>
             <br>
-
+            <br>
             <!-- bajas -->
             {% if designation.historic %}
                 <div>
-                        <div class="center">
-                                <h4> Bajas </h4>
-                        </div>
-
+                    <div class="center">
+                        <h4> Bajas </h4>
+                    </div>
                     <table class="responsive-table highlight">
                         <thead>
                             <tr>
@@ -85,10 +90,11 @@
                                 <th class="center">Cargo</th>
                                 <th class="center">Carácter</th>
                                 <th class="center">Dedicacion</th>
-                                <th clasS="center">Fecha</th>
-                                <th clasS="center">Expediente</th>
-                                <th clasS="center">Resolución</th>
-                                <th clasS="center">Razón</th>
+                                <th class="center">Fecha</th>
+                                <th class="center">Expediente</th>
+                                <th class="center">Resolución</th>
+                                <th class="center">Razón</th>
+                                <th class="center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -115,7 +121,6 @@
                                 </tr>
                                 <ul id='dropdown-{{d.id}}' class='dropdown-content'>
                                         <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
-                                        <li class="divider" tabindex="-1"></li>
                                         <li><a class="blue-text darken-4" href="#!">Baja</a></li>
                                         <li><a class="blue-text darken-4" href="{{url_for('designations.convalidate', did=d.id)}}">Convalidar</a></li>
                                         <li><a class="red-text darken-4" href="{{url_for('designations.delete', did=d.id)}}">Eliminar</a></li>
@@ -125,18 +130,12 @@
                     </table>
                 </div>
             {% endif %}
-
-            <div class="divider"></div>
-            <br>
-
             <!-- prorrogas -->
             {% if not ie(designation) %}
-
             <div>
-                    <div class="center">
-                            <h4> Prorrogas </h4>
-                    </div>
-
+                <div class="center">
+                    <h4> Prorrogas </h4>
+                </div>
                 <table class="responsive-table highlight">
                     <thead>
                         <tr>
@@ -145,10 +144,11 @@
                             <th class="center">Cargo</th>
                             <th class="center">Carácter</th>
                             <th class="center">Dedicacion</th>
-                            <th clasS="center">Inicio</th>
-                            <th clasS="center">Fin</th>
-                            <th clasS="center">Expediente</th>
-                            <th clasS="center">Resolución</th>
+                            <th class="center">Inicio</th>
+                            <th class="center">Fin</th>
+                            <th class="center">Expediente</th>
+                            <th class="center">Resolución</th>
+                            <th class="center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -175,12 +175,10 @@
                             </tr>
                             <ul id='dropdown-{{d.id}}' class='dropdown-content'>
                                     <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
-                                    <li class="divider" tabindex="-1"></li>
                                     <li><a class="blue-text darken-4" href="#!">Baja</a></li>
                                     <li><a class="blue-text darken-4" href="{{url_for('designations.convalidate', did=d.id)}}">Convalidar</a></li>
                                     <li><a class="red-text darken-4" href="{{url_for('designations.delete', did=d.id)}}">Eliminar</a></li>
                             </ul>
-
                             <!-- bajas de prorrogas -->
                             {% for dp in d.designations %}
                                 {% if dp.historic %}
@@ -205,27 +203,20 @@
                                 </tr>
                                 <ul id='dropdown-{{dp.id}}' class='dropdown-content'>
                                         <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
-                                        <li class="divider" tabindex="-1"></li>
                                         <li><a class="red-text darken-4" href="{{url_for('designations.delete', did=dp.id)}}">Eliminar</a></li>
                                 </ul>
                             {% endfor %}
-
-
                         {% endfor %}
-
                     </tbody>
                 </table>
             </div>
             {% endif %}
-
             <!-- extensiones -->
             {% if not ie(designation) and not ip(designation) %}
-
             <div>
-                    <div class="center">
-                            <h4> Extensiones </h4>
-                    </div>
-
+                <div class="center">
+                    <h4> Extensiones </h4>
+                </div>
                 <table class="responsive-table highlight">
                     <thead>
                         <tr>
@@ -234,10 +225,11 @@
                             <th class="center">Cargo</th>
                             <th class="center">Carácter</th>
                             <th class="center">Dedicacion</th>
-                            <th clasS="center">Inicio</th>
-                            <th clasS="center">Fin</th>
-                            <th clasS="center">Expediente</th>
-                            <th clasS="center">Resolución</th>
+                            <th class="center">Inicio</th>
+                            <th class="center">Fin</th>
+                            <th class="center">Expediente</th>
+                            <th class="center">Resolución</th>
+                            <th class="center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -264,14 +256,12 @@
                             </tr>
                             <ul id='dropdown-{{d.id}}' class='dropdown-content'>
                                     <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
-                                    <li class="divider" tabindex="-1"></li>
                                     <li><a class="blue-text darken-4" href="{{url_for('designations.extend', did=d.id)}}">Prorrogar</a></li>
                                     <li><a class="blue-text darken-4" href="#!">Baja</a></li>
                                     <li><a class="blue-text darken-4" href="{{url_for('designations.replacement_select_person', did=d.id)}}">Suplencia</a></li>
                                     <li><a class="blue-text darken-4" href="{{url_for('leavelicense.create_designation_leave_license', did=d.id)}}">Licencia</a></li>
                                     <li><a class="red-text darken-4" href="{{url_for('designations.delete', did=d.id)}}">Eliminar</a></li>
                             </ul>
-
                             <!-- bajas de extension -->
                             {% for dp in d.designations %}
                                 {% if dp.historic %}
@@ -296,25 +286,20 @@
                                 </tr>
                                 <ul id='dropdown-{{dp.id}}' class='dropdown-content'>
                                         <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
-                                        <li class="divider" tabindex="-1"></li>
                                         <li><a class="red-text darken-4" href="{{url_for('designations.delete', did=dp.id)}}">Eliminar</a></li>
                                 </ul>
                             {% endfor %}                            
-
-
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
             {% endif %}
-
             <!-- prorrogas de extensiones -->
             {% if not ip(designation) and not ie(designation) %}
             <div>
-                    <div class="center">
-                            <h4> Prorrogas de Extensiones </h4>
-                    </div>
-
+                <div class="center">
+                    <h4> Prorrogas de Extensiones </h4>
+                </div>
                 <table class="responsive-table highlight">
                     <thead>
                         <tr>
@@ -323,10 +308,11 @@
                             <th class="center">Cargo</th>
                             <th class="center">Carácter</th>
                             <th class="center">Dedicacion</th>
-                            <th clasS="center">Inicio</th>
-                            <th clasS="center">Fin</th>
-                            <th clasS="center">Expediente</th>
-                            <th clasS="center">Resolución</th>
+                            <th class="center">Inicio</th>
+                            <th class="center">Fin</th>
+                            <th class="center">Expediente</th>
+                            <th class="center">Resolución</th>
+                            <th class="center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -354,7 +340,6 @@
                             </tr>
                             <ul id='dropdown-{{d.id}}' class='dropdown-content'>
                                     <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
-                                    <li class="divider" tabindex="-1"></li>
                                     <li><a class="blue-text darken-4" href="#!">Baja</a></li>
                                     <li><a class="red-text darken-4" href="{{url_for('designations.delete', did=d.id)}}">Eliminar</a></li>
                             </ul>
@@ -363,9 +348,7 @@
                     </tbody>
                 </table>
             </div>
-
             {% endif %}
-
         </div>
     </div>
 </div>
