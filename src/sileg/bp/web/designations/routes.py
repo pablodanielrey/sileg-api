@@ -25,7 +25,7 @@ def calculate_end(d:Designation):
             if not d2.deleted:
                 if not end or (d2.type is DesignationTypes.EXTENSION and d2.end and d2.end > end):
                     end = d2.end
-    return end if end else ''
+    return end
 
 def det2s(det: DesignationEndTypes):
     if det == DesignationEndTypes.INDETERMINATE:
