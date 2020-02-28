@@ -4,7 +4,7 @@ import sys
 import os
 from dateutil import parser
 
-from werkzeug.contrib.fixers import ProxyFix
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from flask import Flask, abort, make_response, jsonify, url_for, request, json
 from flask_jsontools import jsonapi
