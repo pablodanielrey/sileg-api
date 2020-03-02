@@ -84,7 +84,7 @@ class SilegModel:
         filtrados = [ u for u in usuarios if r.match(u['nombre'] + ' ' + u['apellido'] + ' ' + u['dni'])]
         return filtrados        
         """
-        usr = _USERS_API._search_user(search)
+        usr = _USERS_API._search_users(search)
         return usr
 
     @classmethod
