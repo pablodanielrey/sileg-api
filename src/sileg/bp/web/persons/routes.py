@@ -131,7 +131,7 @@ def downloadIdNumberFile(user,uid,iid):
             return send_file(io.BytesIO(binary), attachment_filename=fileName, as_attachment=True ,mimetype=data.mimetype)
         return redirect(url_for('persons.personData', uid=uid))
 
-@bp.route('<uid>/modificar')
+@bp.route('<uid>/modificar',methods=['GET','POST'])
 @require_user
 def modifyPersonData(user,uid):
     """
@@ -149,8 +149,9 @@ def modifyPersonData(user,uid):
             form.firstname.data = person.firstname
         if len(person.identity_numbers) > 0:
             for pi in person.identity_numbers:
-                form.person_number_type.choices.remove((pi.type.value,pi.type.value))
-                if pi.type.value == 'PASSPORT':
+                if pi.type.value != 'PASSPORT':
+                    form.person_number_type.choices.remove((pi.type.value,pi.type.value))
+                else:
                     form.person_number_type.choices.remove((pi.type.value,'Pasaporte'))        
         if person.gender:
             form.gender.data = person.gender
@@ -168,6 +169,19 @@ def modifyPersonData(user,uid):
             for pm in person.mails:
                 if pm.type.value == 'INSTITUTIONAL':
                     form.email_type.choices.remove((pm.type.value,'Institucional'))
-        if form.validate_on_submit():
-            form.save(person.id,user['sub'])    
+        if 'personData' in request.form:
+            form.saveModifyPerson(person.id,user['sub'])
+            return redirect(url_for('persons.modifyPersonData', uid=uid))
+        elif 'idNumber' in request.form:
+            form.saveModifyIdNumber(person.id,user['sub'])
+            return redirect(url_for('persons.modifyPersonData', uid=uid))
+        elif 'mail' in request.form:
+            form.saveModifyMail(person.id,user['sub'])
+            return redirect(url_for('persons.modifyPersonData', uid=uid)) 
+        elif 'phone' in request.form:
+            form.saveModifyPhone(person.id,user['sub'])
+            return redirect(url_for('persons.modifyPersonData', uid=uid))
+        
+                   
+        
     return render_template('modifyPerson.html', user=user, person=person, form=form)

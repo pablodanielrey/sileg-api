@@ -178,7 +178,7 @@
                     </div>
                     <div class="col m3"></div>
                     <div class="col m3">
-                        <button class="btn light-blue darken-3">guardar cambios</button>
+                        <button class="btn light-blue darken-3" name="personData">guardar cambios</button>
                     </div>
                     <div class="col m3"></div>
                 </div>
@@ -195,7 +195,7 @@
                         {{ form.person_number_type.label }}
                         {% if form.person_number_type.errors %}
                         {{ form.person_number_type(class="validate invalid") }}
-                        <span class="helper-text" data-error="{{form.gender.errors[0]}}"></span>
+                        <span class="helper-text" data-error="{{form.person_number_type.errors[0]}}"></span>
                         {% else %}
                         {{ form.person_number_type(class="validate") }}
                         {% endif %}
@@ -205,14 +205,14 @@
                             {{ form.person_number.label }}
                             {% if form.person_number.errors %}
                             {{ form.person_number(class="validate invalid") }}
-                            <span class="helper-text" data-error="{{form.lastname.errors[0]}}"></span>
+                            <span class="helper-text" data-error="{{form.person_number.errors[0]}}"></span>
                             {% else %}
                             {{ form.person_number(class="validate") }}
                             {% endif %}
                         </div>
                     </div>
                     <div class="col m1 center">
-                        <a class="btn-floating waves-effect waves-light green" href="#agregar"><i class="material-icons">add</i></a>
+                        <button class="btn-floating waves-effect waves-light green" name="idNumber"><i class="material-icons">add</i></button>
                     </div>
                     <div class="col m1"></div>
                 </div>
@@ -234,7 +234,7 @@
                                     <td style="padding-top: 5px; padding-bottom: 5px;">{{pi.type.value}}</td>
                                     <td style="padding-top: 5px; padding-bottom: 5px;">{{pi.number}}</td>
                                     {% if pi.type.value != 'DNI' %}
-                                    <td style="padding-top: 5px; padding-bottom: 5px;"><a class="btn-floating btn-small waves-effect waves-light red" href="#eliminar#{{pi.id}}"><i class="material-icons">delete</i></a></td>
+                                    <td style="padding-top: 5px; padding-bottom: 5px;"><button class="btn-floating waves-effect waves-light red"><i class="material-icons">delete</i></button></td>
                                     {% else %}
                                     <td style="padding-top: 5px; padding-bottom: 5px;"></td>
                                     {% endif %}
@@ -263,7 +263,7 @@
                         {{ form.email_type.label }}
                         {% if form.email_type.errors %}
                         {{ form.email_type(class="validate invalid") }}
-                        <span class="helper-text" data-error="{{form.gender.errors[0]}}"></span>
+                        <span class="helper-text" data-error="{{form.email_type.errors[0]}}"></span>
                         {% else %}
                         {{ form.email_type(class="validate") }}
                         {% endif %}
@@ -273,14 +273,14 @@
                             {{ form.email.label }}
                             {% if form.email.errors %}
                             {{ form.email(class="validate invalid") }}
-                            <span class="helper-text" data-error="{{form.lastname.errors[0]}}"></span>
+                            <span class="helper-text" data-error="{{form.email.errors[0]}}"></span>
                             {% else %}
                             {{ form.email(class="validate") }}
                             {% endif %}
                         </div>
                     </div>
                     <div class="col m1 center">
-                        <a class="btn-floating waves-effect waves-light green" href="#agregar"><i class="material-icons">add</i></a>
+                        <button class="btn-floating waves-effect waves-light green" name="mail"><i class="material-icons">add</i></button>
                     </div>
                     <div class="col m1"></div>
                 </div>
@@ -300,7 +300,7 @@
                                 <tr>
                                     <td style="padding-top: 5px; padding-bottom: 5px;">{{pm.email}}</td>
                                     {% if pm.type.value != 'INSTITUTIONAL' %}
-                                    <td style="padding-top: 5px; padding-bottom: 5px;"><a class="btn-floating btn-small waves-effect waves-light red" href="#eliminar#{{pm.id}}"><i class="material-icons">delete</i></a></td>
+                                    <td style="padding-top: 5px; padding-bottom: 5px;"><button class="btn-floating waves-effect waves-light red"><i class="material-icons">delete</i></button></td>
                                     {% else %}
                                     <td style="padding-top: 5px; padding-bottom: 5px;"></td>
                                     {% endif %}
@@ -324,7 +324,7 @@
                         {{ form.phone_type.label }}
                         {% if form.phone_type.errors %}
                         {{ form.phone_type(class="validate invalid") }}
-                        <span class="helper-text" data-error="{{form.gender.errors[0]}}"></span>
+                        <span class="helper-text" data-error="{{form.phone_type.errors[0]}}"></span>
                         {% else %}
                         {{ form.phone_type(class="validate") }}
                         {% endif %}
@@ -334,14 +334,14 @@
                             {{ form.phone_number.label }}
                             {% if form.phone_number.errors %}
                             {{ form.phone_number(class="validate invalid") }}
-                            <span class="helper-text" data-error="{{form.lastname.errors[0]}}"></span>
+                            <span class="helper-text" data-error="{{form.phone_number.errors[0]}}"></span>
                             {% else %}
                             {{ form.phone_number(class="validate") }}
                             {% endif %}
                         </div>
                     </div>
                     <div class="col m1 center">
-                        <a class="btn-floating waves-effect waves-light green" href="#agregar"><i class="material-icons">add</i></a>
+                        <button class="btn-floating waves-effect waves-light green" name="phone"><i class="material-icons">add</i></button>
                     </div>
                     <div class="col m1"></div>
                 </div>
@@ -366,7 +366,7 @@
                                     <td style="padding-top: 5px; padding-bottom: 5px;"><i class="material-icons">phone_android</i></td>
                                     {% endif %}
                                     <td style="padding-top: 5px; padding-bottom: 5px;">{{ph.number}}</td>
-                                    <td style="padding-top: 5px; padding-bottom: 5px;"><a class="btn-floating btn-small waves-effect waves-light red" href="#eliminar#{{ph.id}}"><i class="material-icons">delete</i></a></td>
+                                    <td style="padding-top: 5px; padding-bottom: 5px;"><button class="btn-floating waves-effect waves-light red"><i class="material-icons">delete</i></button></td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -381,55 +381,6 @@
     <div class="col m1"></div>
 </div>
 <script type="text/javascript">
-    $(document).ready(function () {
-        $('input.autocomplete').autocomplete({
-            data: {},
-            minLength: 4
-        });
-        $("#birthplace").keyup(function () {
-            var query = $(this).val();
-            if ((query != '') && (query.length > 3)) {
-                $.ajax({
-                    dataType: "json",
-                    url: "http://localhost:10202/api/v0.1/ciudades/buscar",
-                    xhrFields: { withCredentials: true },
-                    method: "GET",
-                    data: { query: query },
-                    success: function (data) {
-                        let options = {};
-                        for (d in data) {
-                            options[data[d]["name"]] = null;
-                        }
-                        $("#birthplace").autocomplete("updateData", options);
-                    }
-                });
-            } else {
-                $("#birthplace").autocomplete({ data: {} })
-            }
-        });
-        $("#residence").keyup(function () {
-            var query = $(this).val();
-            if ((query != '') && (query.length > 3)) {
-                $.ajax({
-                    dataType: "json",
-                    url: "http://localhost:10202/api/v0.1/ciudades/buscar",
-                    xhrFields: { withCredentials: true },
-                    method: "GET",
-                    data: { query: query },
-                    success: function (data) {
-                        let options = {};
-                        for (d in data) {
-                            options[data[d]["name"]] = null;
-                        }
-                        $("#residence").autocomplete("updateData", options);
-                    }
-                });
-            } else {
-                $("#residence").autocomplete({ data: {} })
-            }
-        });
-    });
-
     $(function () {
         $('select').formSelect();
         $('.datepicker').datepicker({

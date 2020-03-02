@@ -328,7 +328,7 @@ class PersonModifyForm(FlaskForm):
     lastname = StringField('Apellidos', validators=[DataRequired()])
     firstname = StringField('Nombres', validators=[DataRequired()])
     person_number_type = SelectField('Tipo de Documento', coerce=str)
-    person_number = StringField('Nro. de Documento', validators=[DataRequired()])
+    person_number = StringField('Nro. de Documento')
     gender = SelectField('Género', coerce=str)
     marital_status = SelectField('Estado Civil', coerce=str)
     birthplace = StringField('Ciudad de Nacimiento')
@@ -336,7 +336,7 @@ class PersonModifyForm(FlaskForm):
     residence = StringField('Ciudad de Residencia')
     address = StringField('Dirección')
     email_type = SelectField('Tipo de correo electrónico', coerce=str)
-    email = EmailField('Correo electrónico',validators=[DataRequired()])
+    email = EmailField('Correo electrónico')
     phone_type = SelectField('Tipo de número telefónico', coerce=str)
     phone_number =StringField('Número de teléfono')
     seniority_external_years = StringField('Años')
@@ -378,7 +378,7 @@ class PersonModifyForm(FlaskForm):
             if number < 0:
                 raise ValidationError('El número debe ser mayor a 0')
 
-    def save(self,uid,authorizer_id):
+    def saveModifyPerson(self,uid,authorizer_id):
         """
         Actualización de datos en DB
         """
@@ -410,8 +410,54 @@ class PersonModifyForm(FlaskForm):
                                 'address': person.address,
                                 })
 
-                """ Agregar correo personal """
-                if self.email.data and self.email_type == 'ALTERNATIVE':
+                newLog = UsersLog()
+                newLog.entity_id = person.id
+                newLog.authorizer_id = authorizer_id
+                newLog.type = UserLogTypes.UPDATE
+                newLog.data = json.dumps(toLog, default=str)
+                #session.add(newLog)
+                #session.commit()
+
+                """
+
+                MODELO DE SILEG ---> ALTA DE ANTIGUEDAD DE PERSONA
+
+                """
+                #TODO Agregar a Sileg model la antiguedad de la persona
+                newSeniority = {
+                    'seniority_external_years' : self.seniority_external_years.data,
+                    'seniority_external_months'  : self.seniority_external_months.data,
+                    'seniority_external_days' : self.seniority_external_days.data
+                }
+    
+    def saveModifyIdNumber(self,uid,authorizer_id):
+        """
+        Agregar documento
+        """
+        toLog = []
+        with open_users_session() as session:
+            persons = usersModel.get_users(session, [uid])
+            if len(persons) == 1:
+                person = persons[0]
+                if self.person_number.data and self.person_number_type.data:
+                    if self.person_number_type.data != 'DNI' or self.person_number_type.data != 'LC' or self.person_number_type.data != 'LE':
+                        idNumber = IdentityNumber()
+                        idNumber.type = self.person_number_type.data
+                        idNumber.number = self.person_number.data
+                        idNumber.user_id = person.id
+                        session.add(idNumber)
+                        session.commit()
+    
+    def saveModifyMail(self,uid,authorizer_id):
+        """ 
+        Agregar correo personal
+        """
+        toLog = []
+        with open_users_session() as session:
+            persons = usersModel.get_users(session, [uid])
+            if len(persons) == 1:
+                person = persons[0]
+                if self.email.data and self.email_type.data == 'ALTERNATIVE':
                     newPersonalMail = Mail()
                     newPersonalMail.type = MailTypes.ALTERNATIVE
                     newPersonalMail.email = self.email.data
@@ -426,63 +472,66 @@ class PersonModifyForm(FlaskForm):
                                     'confirmed': newPersonalMail.confirmed,
                                     'user_id': newPersonalMail.user_id,
                                 })
-                
-                """ Eliminar correo personal """
-                #TODO
+                    newLog = UsersLog()
+                    newLog.entity_id = person.id
+                    newLog.authorizer_id = authorizer_id
+                    newLog.type = UserLogTypes.UPDATE
+                    newLog.data = json.dumps(toLog, default=str)
+                    session.add(newLog)
+                    session.commit()
 
-                """ Agregar teléfono """
-                """ telefono fijo"""
-                if self.phone_number.data and self.phone_type == 'LANDLINE':
-                    landLinePhone = Phone()
-                    landLinePhone.type = PhoneTypes.LANDLINE
-                    landLinePhone.number = self.phone_number.data
-                    landLinePhone.user_id = person.id
-                    session.add(landLinePhone)
-                    toLog.append({  'id': landLinePhone.id,
-                                    'created': landLinePhone.created,
-                                    'updated': landLinePhone.updated,
-                                    'deleted': landLinePhone.deleted,
-                                    'type': landLinePhone.type.value,
-                                    'number': landLinePhone.number,
-                                    'user_id': landLinePhone.user_id,
-                                })
-                """ telefono movil """
-                if self.phone_number.data and self.phone_type == 'CELLPHONE':
-                    mobileNumber = Phone()
-                    mobileNumber.type = PhoneTypes.CELLPHONE
-                    mobileNumber.number = self.phone_number.data
-                    mobileNumber.user_id = person.id
-                    session.add(mobileNumber)
-                    toLog.append({  'id': mobileNumber.id,
-                                    'created': mobileNumber.created,
-                                    'updated': mobileNumber.updated,
-                                    'deleted': mobileNumber.deleted,
-                                    'type': mobileNumber.type.value,
-                                    'number': mobileNumber.number,
-                                    'user_id': mobileNumber.user_id,
-                                })
-
-
-                newLog = UsersLog()
-                newLog.entity_id = person.id
-                newLog.authorizer_id = authorizer_id
-                newLog.type = UserLogTypes.UPDATE
-                newLog.data = json.dumps(toLog, default=str)
-                session.add(newLog)
-                session.commit()
-
-                """
-
-                MODELO DE SILEG ---> ALTA DE ANTIGUEDAD DE PERSONA
-
-                """
-                #TODO Agregar a Sileg model la antiguedad de la persona
-                newSeniority = {
-                    'seniority_external_years' : self.seniority_external_years.data,
-                    'seniority_external_months'  : self.seniority_external_months.data,
-                    'seniority_external_days' : self.seniority_external_days.data
-                }
-
-                return person.id
-            else:
-                return None
+    def saveModifyPhone(self,uid,authorizer_id):
+        """
+        Agregar teléfono
+        """
+        toLog = []
+        with open_users_session() as session:
+            persons = usersModel.get_users(session, [uid])
+            if len(persons) == 1:
+                person = persons[0]
+                if self.phone_number.data:
+                    """ telefono fijo""" 
+                    if self.phone_type.data == 'LANDLINE':
+                        landLinePhone = Phone()
+                        landLinePhone.type = PhoneTypes.LANDLINE
+                        landLinePhone.number = self.phone_number.data
+                        landLinePhone.user_id = person.id
+                        session.add(landLinePhone)
+                        toLog.append({  'id': landLinePhone.id,
+                                        'created': landLinePhone.created,
+                                        'updated': landLinePhone.updated,
+                                        'deleted': landLinePhone.deleted,
+                                        'type': landLinePhone.type.value,
+                                        'number': landLinePhone.number,
+                                        'user_id': landLinePhone.user_id,
+                                    })
+                        newLog = UsersLog()
+                        newLog.entity_id = person.id
+                        newLog.authorizer_id = authorizer_id
+                        newLog.type = UserLogTypes.UPDATE
+                        newLog.data = json.dumps(toLog, default=str)
+                        session.add(newLog)
+                        session.commit()
+                    
+                    """ telefono movil """
+                    if self.phone_type.data == 'CELLPHONE':
+                        mobileNumber = Phone()
+                        mobileNumber.type = PhoneTypes.CELLPHONE
+                        mobileNumber.number = self.phone_number.data
+                        mobileNumber.user_id = person.id
+                        session.add(mobileNumber)
+                        toLog.append({  'id': mobileNumber.id,
+                                        'created': mobileNumber.created,
+                                        'updated': mobileNumber.updated,
+                                        'deleted': mobileNumber.deleted,
+                                        'type': mobileNumber.type.value,
+                                        'number': mobileNumber.number,
+                                        'user_id': mobileNumber.user_id,
+                                    })
+                        newLog = UsersLog()
+                        newLog.entity_id = person.id
+                        newLog.authorizer_id = authorizer_id
+                        newLog.type = UserLogTypes.UPDATE
+                        newLog.data = json.dumps(toLog, default=str)
+                        session.add(newLog)
+                        session.commit()
