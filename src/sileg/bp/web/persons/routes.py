@@ -135,7 +135,7 @@ def downloadIdNumberFile(user,uid,iid):
 @require_user
 def modifyPersonData(user,uid):
     """
-    Pagina de vista de datos personales
+    Pagina de modificacion de datos personales
     """
     with open_users_session() as session:
         persons = usersModel.get_users(session, [uid])

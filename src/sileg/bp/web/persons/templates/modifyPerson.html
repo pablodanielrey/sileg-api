@@ -40,71 +40,6 @@
                     </div>
                     <div class="col m1"></div>
                 </div>
-                <div class="divider"></div>
-                <div class="row center">
-                    <div class="col m12">
-                        <h5>Documentos de identidad</h5>
-                    </div>
-                </div>
-                <div class="row" style="margin-bottom: 0px;">
-                    <div class="col m1"></div>
-                    <div class="col m5">
-                        {{ form.person_number_type.label }}
-                        {% if form.person_number_type.errors %}
-                        {{ form.person_number_type(class="validate invalid") }}
-                        <span class="helper-text" data-error="{{form.gender.errors[0]}}"></span>
-                        {% else %}
-                        {{ form.person_number_type(class="validate") }}
-                        {% endif %}
-                    </div>
-                    <div class="col m4">
-                        <div class="input-field">
-                            {{ form.person_number.label }}
-                            {% if form.person_number.errors %}
-                            {{ form.person_number(class="validate invalid") }}
-                            <span class="helper-text" data-error="{{form.lastname.errors[0]}}"></span>
-                            {% else %}
-                            {{ form.person_number(class="validate") }}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col m1 center">
-                        <a class="btn-floating waves-effect waves-light green" href="#agregar"><i class="material-icons">add</i></a>
-                    </div>
-                    <div class="col m1"></div>
-                </div>
-                {% if person.identity_numbers|length > 0 %}
-                <div class="row center">
-                    <div class="col m1"></div>
-                    <div class="col m5">
-                        <table class="centered striped responsive-table">
-                            <thead>
-                                <tr>
-                                    <th style="padding-top: 5px; padding-bottom: 5px;">Tipo de documento</th>
-                                    <th style="padding-top: 5px; padding-bottom: 5px;">Número</th>
-                                    <th style="padding-top: 5px; padding-bottom: 5px;"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for pi in person.identity_numbers %}
-                                <tr>
-                                    <td style="padding-top: 5px; padding-bottom: 5px;">{{pi.type.value}}</td>
-                                    <td style="padding-top: 5px; padding-bottom: 5px;">{{pi.number}}</td>
-                                    {% if pi.type.value != 'DNI' %}
-                                    <td style="padding-top: 5px; padding-bottom: 5px;"><a class="btn-floating btn-small waves-effect waves-light red" href="#eliminar#{{pi.id}}"><i class="material-icons">delete</i></a></td>
-                                    {% else %}
-                                    <td style="padding-top: 5px; padding-bottom: 5px;"></td>
-                                    {% endif %}
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col m1"></div>
-                </div>
-                {% endif %}
-                <div class="divider"></div>
-                <br>
                 <div class="row center">
                     <div class="col m1"></div>
                     <div class="col m3">
@@ -185,6 +120,132 @@
                     </div>
                     <div class="col m1"></div>
                 </div>
+                <div class="row">
+                    <div class="col m5">
+                        <h5>Datos Laborales</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <h6>Antigüedad Externa</h6>
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m2">
+                        <div class="input-field">
+                            {{ form.seniority_external_years.label }}
+                            {% if form.seniority_external_years.errors %}
+                            {{ form.seniority_external_years(class="validate invalid", type="number") }}
+                            <span class="helper-text" data-error="{{form.seniority_external_years.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.seniority_external_years(class="validate", type="number") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m2">
+                        <div class="input-field">
+                            {{ form.seniority_external_months.label }}
+                            {% if form.seniority_external_months.errors %}
+                            {{ form.seniority_external_months(class="validate invalid", type="number") }}
+                            <span class="helper-text" data-error="{{form.seniority_external_months.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.seniority_external_months(class="validate", type="number") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m2">
+                        <div class="input-field">
+                            {{ form.seniority_external_days.label }}
+                            {% if form.seniority_external_days.errors %}
+                            {{ form.seniority_external_days(class="validate invalid", type="number") }}
+                            <span class="helper-text" data-error="{{form.seniority_external_days.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.seniority_external_days(class="validate", type="number") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="divider"></div>
+                <br>
+                <div class="row">
+                    <div class="col m3"></div>
+                    <div class="col m1">
+                        <button class="btn red lighten-2" type="reset">limpiar</button>
+                    </div>
+                    <div class="col m3"></div>
+                    <div class="col m3">
+                        <button class="btn light-blue darken-3">guardar cambios</button>
+                    </div>
+                    <div class="col m3"></div>
+                </div>
+                <div class="divider"></div>
+                
+                <div class="row center">
+                    <div class="col m12">
+                        <h5>Documentos de identidad</h5>
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: 0px;">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        {{ form.person_number_type.label }}
+                        {% if form.person_number_type.errors %}
+                        {{ form.person_number_type(class="validate invalid") }}
+                        <span class="helper-text" data-error="{{form.gender.errors[0]}}"></span>
+                        {% else %}
+                        {{ form.person_number_type(class="validate") }}
+                        {% endif %}
+                    </div>
+                    <div class="col m4">
+                        <div class="input-field">
+                            {{ form.person_number.label }}
+                            {% if form.person_number.errors %}
+                            {{ form.person_number(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.lastname.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.person_number(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m1 center">
+                        <a class="btn-floating waves-effect waves-light green" href="#agregar"><i class="material-icons">add</i></a>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                {% if person.identity_numbers|length > 0 %}
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <table class="centered striped responsive-table">
+                            <thead>
+                                <tr>
+                                    <th style="padding-top: 5px; padding-bottom: 5px;">Tipo de documento</th>
+                                    <th style="padding-top: 5px; padding-bottom: 5px;">Número</th>
+                                    <th style="padding-top: 5px; padding-bottom: 5px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pi in person.identity_numbers %}
+                                <tr>
+                                    <td style="padding-top: 5px; padding-bottom: 5px;">{{pi.type.value}}</td>
+                                    <td style="padding-top: 5px; padding-bottom: 5px;">{{pi.number}}</td>
+                                    {% if pi.type.value != 'DNI' %}
+                                    <td style="padding-top: 5px; padding-bottom: 5px;"><a class="btn-floating btn-small waves-effect waves-light red" href="#eliminar#{{pi.id}}"><i class="material-icons">delete</i></a></td>
+                                    {% else %}
+                                    <td style="padding-top: 5px; padding-bottom: 5px;"></td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                {% endif %}
                 <div class="divider"></div>
                 <div class="row">
                     <div class="col m5">
@@ -314,68 +375,6 @@
                     <div class="col m1"></div>
                 </div>
                 {% endif %}
-                <div class="divider"></div>
-                <div class="row">
-                    <div class="col m5">
-                        <h5>Datos Laborales</h5>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col m1"></div>
-                    <div class="col m5">
-                        <h6>Antigüedad Externa</h6>
-                    </div>
-                </div>
-                <div class="row center">
-                    <div class="col m1"></div>
-                    <div class="col m2">
-                        <div class="input-field">
-                            {{ form.seniority_external_years.label }}
-                            {% if form.seniority_external_years.errors %}
-                            {{ form.seniority_external_years(class="validate invalid", type="number") }}
-                            <span class="helper-text" data-error="{{form.seniority_external_years.errors[0]}}"></span>
-                            {% else %}
-                            {{ form.seniority_external_years(class="validate", type="number") }}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col m2">
-                        <div class="input-field">
-                            {{ form.seniority_external_months.label }}
-                            {% if form.seniority_external_months.errors %}
-                            {{ form.seniority_external_months(class="validate invalid", type="number") }}
-                            <span class="helper-text" data-error="{{form.seniority_external_months.errors[0]}}"></span>
-                            {% else %}
-                            {{ form.seniority_external_months(class="validate", type="number") }}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col m2">
-                        <div class="input-field">
-                            {{ form.seniority_external_days.label }}
-                            {% if form.seniority_external_days.errors %}
-                            {{ form.seniority_external_days(class="validate invalid", type="number") }}
-                            <span class="helper-text" data-error="{{form.seniority_external_days.errors[0]}}"></span>
-                            {% else %}
-                            {{ form.seniority_external_days(class="validate", type="number") }}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col m1"></div>
-                </div>
-                <div class="divider"></div>
-                <br>
-                <div class="row">
-                    <div class="col m3"></div>
-                    <div class="col m1">
-                        <button class="btn red lighten-2" type="reset">limpiar</button>
-                    </div>
-                    <div class="col m3"></div>
-                    <div class="col m3">
-                        <button class="btn light-blue darken-3">guardar cambios</button>
-                    </div>
-                    <div class="col m3"></div>
-                </div>
             </form>
         </div>
     </div>
