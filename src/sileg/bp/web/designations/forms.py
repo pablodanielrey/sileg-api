@@ -33,6 +33,8 @@ def ds2s(s:DesignationStatus):
         return 'Efectivo'
     if s == DesignationStatus.PENDING:
         return 'Pendiente'
+    if s == DesignationStatus.IMPORTED:
+        return 'Importada'
 
 class DesignationCreateForm(FlaskForm):
     # Datos del cargo
