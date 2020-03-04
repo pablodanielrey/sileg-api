@@ -147,7 +147,7 @@ def create_designation_leave_license_post(user, did):
             print(form.errors)
             abort(404)
 
-        form.save(session, silegModel, did)
+        form.save(session, silegModel, did, user['sub'])
         session.commit()
 
     return redirect(url_for('leavelicense.list_leave_licenses', uid=uid))    

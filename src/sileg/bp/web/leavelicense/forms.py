@@ -19,7 +19,7 @@ def lt2s(t:LicenseTypes):
     if t == LicenseTypes.RS:
         return 'Renta Suspendida'
     if t == LicenseTypes.S:
-        return ''
+        return '---Consultar---S---'
     return ''
 
 def et2s(t:LicenseEndTypes):
@@ -45,7 +45,7 @@ class LeaveLicensePersonalCreateForm(FlaskForm):
         super().__init__()
         self.type.choices = [ (t.value, lt2s(t)) for t in LicenseTypes ]
         self.end_type.choices = [ (t.value, et2s(t)) for t in LicenseEndTypes ]
-        self.article.choices = [('0','Seleccione una opción...')]
+        self.article.choices = [('0','Seleccione una opción...'),('0','CONSULTAR ARTICULOS')]
 
     def save(self, session, silegModel:SilegModel, uid, authorizer_id):
         l = PersonalLeaveLicense()
@@ -99,10 +99,11 @@ class DesignationLeaveLicenseCreateForm(FlaskForm):
         super().__init__()
         self.type.choices = [ (t.value, lt2s(t)) for t in LicenseTypes ]
         self.end_type.choices = [ (t.value, et2s(t)) for t in LicenseEndTypes ]
-        self.article.choices = [('0','Seleccione una opción...'),('0','Ejemplo 1'),('0','Ejemplo 2'),('0','Ejemplo 3')]
+        self.article.choices = [('0','Seleccione una opción...'),('0','CONSULTAR ARTICULOS')]
 
-    def save(self, session, silegModel:SilegModel, did):
+    def save(self, session, silegModel:SilegModel, did, authorizer_id):
         l = DesignationLeaveLicense()
+        l.id = str(uuid.uuid4())
         l.designation_id = did
         l.type = self.type.data
         l.start = self.start.data
@@ -113,3 +114,24 @@ class DesignationLeaveLicenseCreateForm(FlaskForm):
         l.res = self.res.data
         session.add(l)
 
+        leaveToLog = {
+            'id': l.id,
+            'created': l.created,
+            'updated': l.updated,
+            'deleted': l.deleted,
+            'designation_id': l.designation_id,
+            'type' : l.type,
+            'start' : l.start,
+            'end' : l.end,
+            'end_type' : l.end_type,
+            'cor' : l.cor,
+            'exp' : l.exp,
+            'res' : l.res,
+        }
+
+        log = SilegLog()
+        log.type = SilegLogTypes.CREATE
+        log.entity_id = l.id
+        log.authorizer_id = authorizer_id
+        log.data = json.dumps([leaveToLog], default=str)
+        session.add(log)
