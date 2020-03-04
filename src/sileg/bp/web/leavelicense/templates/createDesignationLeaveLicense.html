@@ -5,19 +5,26 @@
     <div class="col m10">
         <div class="card-panel grey lighten-5">
             <div class="row">
-                <div class="col m8">
+                <div class="col m2"></div>
+                <div class="col m8 center">
                     <h4>Alta de Licencia de Designación</h4>
                 </div>
-                <div class="col m3">
-                    <p>Nombre: {{person.firstname}}</p>
-                    <p>Apellido: {{person.lastname}}</p>
-                    <p>Documento: {{person.identity_numbers[0].number}}</p>
-                </div>
-                <div class="col m3">
+                <div class="col m2"></div>
+            </div>
+            <div class="row">
+                <div class="col m2"></div>
+                <div class="col m4">
                     <h5>Designación</h5>
                     <p>Cargo: {{designation.function.name}}</p>
                     <p>Ubicación: {{designation.place.name}}</p>
                 </div>                
+                <div class="col m4">
+                    <h5>Persona</h5>
+                    <p>Nombre: {{person.firstname}}</p>
+                    <p>Apellido: {{person.lastname}}</p>
+                    <p>Documento: {{person.identity_numbers[0].number}}</p>
+                </div>
+                <div class="col m2"></div>
             </div>
             <div class="divider"></div>
             <form action="" method="post">
