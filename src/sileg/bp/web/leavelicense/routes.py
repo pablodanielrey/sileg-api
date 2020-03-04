@@ -3,7 +3,7 @@ import json
 from flask import render_template, flash, redirect,request, Markup, url_for, abort
 from . import bp
 
-from .forms import LeaveLicensePersonalCreateForm, DesignationLeaveLicenseCreateForm, LeaveLicensePersonalEndForm
+from .forms import LeaveLicensePersonalCreateForm, DesignationLeaveLicenseCreateForm
 from .forms import lt2s
 
 from sileg.auth import require_user
