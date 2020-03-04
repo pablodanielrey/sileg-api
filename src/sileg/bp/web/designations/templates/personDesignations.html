@@ -95,12 +95,12 @@
                             </td>
                             <td class="center">
                                 <a class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3"
-                                    href="#" data-target='dropdown-{{d.id}}'>
+                                    href="#" data-target="dropdown-{{d.id}}">
                                     <i class="material-icons">edit</i>
                                 </a>
                             </td>
                         </tr>
-                        <ul id='dropdown-{{d.id}}' class='dropdown-content'>
+                        <ul id="dropdown-{{d.id}}" class="dropdown-content">
                             <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
                             <li><a class="blue-text darken-4"
                                     href="{{url_for('designations.designation_detail', did=d.id)}}">Detalle</a></li>
@@ -124,8 +124,8 @@
 
                         <!-- prorrogas, bajas de prorrogas -->
                         {% if d.designations %}
-                        <tr id='prorrogas-{{d.id}}' style='visibility: collapse;'>
-                            <td colspan='6'>
+                        <tr id="prorrogas-{{d.id}}" style="visibility: collapse;">
+                            <td colspan="6">
                                 <table class="responsive-table highlight">
                                     <thead class="deep-purple darken-4">
                                         <tr>
@@ -146,10 +146,10 @@
                                                 {% if d2.end %}{{ d2.end.strftime('%d-%m-%Y')}}{% endif %}</td>
                                             <td class="center"><a
                                                     class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3"
-                                                    href="#" data-target='dropdown-{{d2.id}}'><i
+                                                    href="#" data-target="dropdown-{{d2.id}}"><i
                                                         class="material-icons">edit</i></a></td>
                                         </tr>
-                                        <ul id='dropdown-{{d2.id}}' class='dropdown-content'>
+                                        <ul id="dropdown-{{d2.id}}" class="dropdown-content">
                                             <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
                                             <li class="divider" tabindex="-1"></li>
                                             <li><a class="blue-text darken-4"
@@ -166,8 +166,8 @@
                             </td>
                         </tr>
                         <!-- suplencias -->
-                        <tr id='suplencia-{{d.id}}' style='visibility: collapse;'>
-                            <td colspan='6'>
+                        <tr id="suplencia-{{d.id}}" style="visibility: collapse;">
+                            <td colspan="6">
                                 <table class="responsive-table highlight">
                                     <thead class="teal darken-4">
                                         <tr>
@@ -186,10 +186,10 @@
                                             <td class="center blue-text darken-4">{{ find_user(d2) }}</td>
                                             <td class="center"><a
                                                     class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3"
-                                                    href="#" data-target='dropdown-{{d2.id}}'><i
+                                                    href="#" data-target="dropdown-{{d2.id}}"><i
                                                         class="material-icons">edit</i></a></td>
                                         </tr>
-                                        <ul id='dropdown-{{d2.id}}' class='dropdown-content'>
+                                        <ul id="dropdown-{{d2.id}}" class="dropdown-content">
                                             <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
                                             <li class="divider" tabindex="-1"></li>
                                             <li><a class="blue-text darken-4"
@@ -209,8 +209,8 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                {% endfor %}
             </div>
+            {% endfor %}
         </div>
     </div>
 </div>
