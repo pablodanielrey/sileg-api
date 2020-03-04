@@ -1,9 +1,13 @@
+import uuid
+import json
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, DateTimeField, SelectField
 from wtforms.validators import ValidationError, DataRequired, Optional
 
 from sileg_model.model.SilegModel import SilegModel
 from sileg_model.model.entities.LeaveLicense import PersonalLeaveLicense, DesignationLeaveLicense, LicenseTypes, LicenseEndTypes
+from sileg_model.model.entities.Log import SilegLog, SilegLogTypes
 
 def lt2s(t:LicenseTypes):
     if t == LicenseTypes.INDETERMINATE:
@@ -14,6 +18,8 @@ def lt2s(t:LicenseTypes):
         return 'Retención Cargo'
     if t == LicenseTypes.RS:
         return 'Renta Suspendida'
+    if t == LicenseTypes.S:
+        return ''
     return ''
 
 def et2s(t:LicenseEndTypes):
@@ -39,10 +45,11 @@ class LeaveLicensePersonalCreateForm(FlaskForm):
         super().__init__()
         self.type.choices = [ (t.value, lt2s(t)) for t in LicenseTypes ]
         self.end_type.choices = [ (t.value, et2s(t)) for t in LicenseEndTypes ]
-        self.article.choices = [('0','Seleccione una opción...'),('0','Ejemplo 1'),('0','Ejemplo 2'),('0','Ejemplo 3')]
+        self.article.choices = [('0','Seleccione una opción...')]
 
-    def save(self, session, silegModel:SilegModel, uid):
+    def save(self, session, silegModel:SilegModel, uid, authorizer_id):
         l = PersonalLeaveLicense()
+        l.id = str(uuid.uuid4())
         l.user_id = uid
         l.type = self.type.data
         l.start = self.start.data
@@ -52,6 +59,26 @@ class LeaveLicensePersonalCreateForm(FlaskForm):
         l.exp = self.exp.data
         l.res = self.res.data
         session.add(l)
+        licenseToLog = {
+            'id': l.id,
+            'created': l.created,
+            'updated': l.updated,
+            'deleted': l.deleted,
+            'user_id': l.user_id,
+            'type': l.type,
+            'start': l.start,
+            'end': l.end,
+            'end_type': l.end_type,
+            'exp': l.exp,
+            'res': l.res,
+            'cor': l.cor
+        }
+        log = SilegLog()
+        log.type = SilegLogTypes.CREATE
+        log.entity_id = l.id
+        log.authorizer_id = authorizer_id
+        log.data = json.dumps([licenseToLog], default=str)
+        session.add(log)
 
 
 class DesignationLeaveLicenseCreateForm(FlaskForm):

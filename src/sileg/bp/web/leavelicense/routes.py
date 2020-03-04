@@ -1,3 +1,5 @@
+import datetime
+import json
 from flask import render_template, flash, redirect,request, Markup, url_for, abort
 from . import bp
 
@@ -8,6 +10,7 @@ from sileg.auth import require_user
 from sileg.models import usersModel, open_users_session, silegModel, open_sileg_session
 
 from sileg_model.model.entities.Designation import DesignationTypes
+from sileg_model.model.entities.Log import SilegLog, SilegLogTypes
 
 
 
@@ -68,10 +71,47 @@ def create_personal_leave_post(user, uid):
             print(form.errors)
             abort(404)
 
-        form.save(session, silegModel, uid)
+        form.save(session, silegModel, uid,user['sub'])
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', uid=uid))
+    return redirect(url_for('leavelicense.list_leave_licenses', uid=uid))
+
+@bp.route('/personal/<uid>/eliminar/<lid>')
+@require_user
+def delete_personal_leave(user, uid, lid):
+    """
+        Pagina de eliminacion de Licencia Personal
+    """
+    assert uid is not None
+    assert lid is not None
+
+    with open_sileg_session() as session:
+        l = silegModel.get_ulicenses(session,[lid])[0]
+        if l and l.deleted is None:
+            l.deleted = datetime.datetime.utcnow()
+            session.add(l)
+            deleteToLog = {
+                'id': l.id,
+                'created': l.created,
+                'updated': l.updated,
+                'deleted': l.deleted,
+                'user_id': l.user_id,
+                'type': l.type,
+                'start': l.start,
+                'end': l.end,
+                'end_type': l.end_type,
+                'exp': l.exp,
+                'res': l.res,
+                'cor': l.cor
+            }
+            log = SilegLog()
+            log.type = SilegLogTypes.DELETE
+            log.entity_id = l.id
+            log.authorizer_id = user['sub']
+            log.data = json.dumps([deleteToLog], default=str)
+            session.add(log)
+            session.commit()
+    return redirect(url_for('leavelicense.list_leave_licenses', uid=uid))
 
 @bp.route('/designacion/<did>')
 @require_user
@@ -110,4 +150,4 @@ def create_designation_leave_license_post(user, did):
         form.save(session, silegModel, did)
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', uid=uid))    
+    return redirect(url_for('leavelicense.list_leave_licenses', uid=uid))    
