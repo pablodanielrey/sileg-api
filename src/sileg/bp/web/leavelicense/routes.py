@@ -150,4 +150,4 @@ def create_designation_leave_license_post(user, did):
         form.save(session, silegModel, did)
         session.commit()
 
-    return redirect(url_for('designations.personDesignations', uid=uid))    
+    return redirect(url_for('leavelicense.list_leave_licenses', uid=uid))    
