@@ -140,7 +140,8 @@ def modifyPersonData(user,uid):
     with open_users_session() as session:
         persons = usersModel.get_users(session, [uid])
         if not persons or len(persons) <= 0:
-            abort(404)
+            if persons[0].deleted:
+                abort(404)
         person = persons[0]
         form = PersonModifyForm()
         if person.lastname:
@@ -149,10 +150,11 @@ def modifyPersonData(user,uid):
             form.firstname.data = person.firstname
         if len(person.identity_numbers) > 0:
             for pi in person.identity_numbers:
-                if pi.type.value != 'PASSPORT':
-                    form.person_number_type.choices.remove((pi.type.value,pi.type.value))
-                else:
-                    form.person_number_type.choices.remove((pi.type.value,'Pasaporte'))        
+                if not pi.deleted:
+                    if pi.type.value != 'PASSPORT':
+                        form.person_number_type.choices.remove((pi.type.value,pi.type.value))
+                    else:
+                        form.person_number_type.choices.remove((pi.type.value,'Pasaporte'))        
         if person.gender:
             form.gender.data = person.gender
         if person.marital_status:
@@ -160,15 +162,16 @@ def modifyPersonData(user,uid):
         if person.birthplace:
             form.birthplace.data = person.birthplace
         if person.birthdate:
-            form.birthdate.data = person.birthdate.strftime('%d/%m/%Y')
+            form.birthdate.data = person.birthdate.strftime('%d-%m-%Y')
         if person.address:
             form.address.data = person.address
         if person.residence:
             form.residence.data = person.residence
         if len(person.mails) > 0:
             for pm in person.mails:
-                if pm.type.value == 'INSTITUTIONAL':
-                    form.email_type.choices.remove((pm.type.value,'Institucional'))
+                if not pm.deleted:
+                    if pm.type.value == 'INSTITUTIONAL':
+                        form.email_type.choices.remove((pm.type.value,'Institucional'))
         if 'personData' in request.form:
             form.saveModifyPerson(person.id,user['sub'])
             return redirect(url_for('persons.modifyPersonData', uid=uid))
@@ -180,8 +183,47 @@ def modifyPersonData(user,uid):
             return redirect(url_for('persons.modifyPersonData', uid=uid)) 
         elif 'phone' in request.form:
             form.saveModifyPhone(person.id,user['sub'])
-            return redirect(url_for('persons.modifyPersonData', uid=uid))
-        
-                   
-        
+            return redirect(url_for('persons.modifyPersonData', uid=uid))   
     return render_template('modifyPerson.html', user=user, person=person, form=form)
+
+@bp.route('<uid>/documento/<pidnumberid>/eliminar')
+@require_user
+def deleteIdentityNumber(user,uid,pidnumberid):
+    """
+    Metodo de baja de documento
+    """
+    with open_users_session() as session:
+        identityNumber = usersModel.delete_person_idnumber(session,uid,pidnumberid,user['sub'])
+        if not identityNumber:
+            abort(404)
+        elif identityNumber == pidnumberid:
+            session.commit()
+        return redirect(url_for('persons.modifyPersonData', uid=uid))
+
+@bp.route('<uid>/correo/<pmid>/eliminar')
+@require_user
+def deleteMail(user,uid,pmid):
+    """
+    Metodo de baja de email
+    """
+    with open_users_session() as session:
+        mail = usersModel.delete_person_mail(session,uid,pmid,user['sub'])
+        if not mail:
+            abort(404)
+        elif mail == pmid:
+            session.commit()
+        return redirect(url_for('persons.modifyPersonData', uid=uid))
+
+@bp.route('<uid>/telefono/<phid>/eliminar')
+@require_user
+def deletePhone(user,uid,phid):
+    """
+    Metodo de baja de teléfono
+    """
+    with open_users_session() as session:
+        phone = usersModel.delete_person_phone(session,uid,phid,user['sub'])
+        if not phone:
+            abort(404)
+        elif phone == phid:
+            session.commit()
+        return redirect(url_for('persons.modifyPersonData', uid=uid))

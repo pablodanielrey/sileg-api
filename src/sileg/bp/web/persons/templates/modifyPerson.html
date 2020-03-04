@@ -230,15 +230,29 @@
                             </thead>
                             <tbody>
                                 {% for pi in person.identity_numbers %}
+                                {% if not pi.deleted %}
                                 <tr>
                                     <td style="padding-top: 5px; padding-bottom: 5px;">{{pi.type.value}}</td>
                                     <td style="padding-top: 5px; padding-bottom: 5px;">{{pi.number}}</td>
                                     {% if pi.type.value != 'DNI' %}
-                                    <td style="padding-top: 5px; padding-bottom: 5px;"><button class="btn-floating waves-effect waves-light red"><i class="material-icons">delete</i></button></td>
+                                    <td style="padding-top: 5px; padding-bottom: 5px;"><a class="modal-trigger btn-floating waves-effect waves-light red" href="#eliminarDocumento{{pi.id}}"><i class="material-icons">delete</i></a></td>
+                                    <!-- Modal eliminar documento -->
+                                    <div id="eliminarDocumento{{pi.id}}" class="modal">
+                                        <div class="modal-content">
+                                            <h4>Eliminar documento</h4>
+                                            <p>Confirmar la eliminación del <strong>{{pi.type.value}}</strong> <strong>{{pi.number}}</strong> que pertenece al usuario {{person.lastname}}, {{person.firstname}}</p>
+                                        </div>
+                                        <div class="divider"></div>
+                                        <div class="modal-footer">
+                                            <a href="#!" class="modal-close waves-effect waves-green btn-flat">cancelar</a>
+                                            <a href="{{url_for('persons.deleteIdentityNumber',uid=person.id,pidnumberid=pi.id)}}" class="modal-close waves-effect waves-green btn-flat red-text">eliminar</a>
+                                        </div>
+                                    </div>
                                     {% else %}
                                     <td style="padding-top: 5px; padding-bottom: 5px;"></td>
                                     {% endif %}
                                 </tr>
+                                {% endif %}
                                 {% endfor %}
                             </tbody>
                         </table>
@@ -288,7 +302,7 @@
                 <div class="row">
                     <div class="col m1"></div>
                     <div class="col m5">
-                        <table class="centered striped responsive-table small">
+                        <table class="centered striped responsive-table">
                             <thead>
                                 <tr>
                                     <th style="padding-top: 5px; padding-bottom: 5px;">Correos electrónicos</th>
@@ -297,14 +311,28 @@
                             </thead>
                             <tbody>
                                 {% for pm in person.mails %}
+                                {% if not pm.deleted%}
                                 <tr>
                                     <td style="padding-top: 5px; padding-bottom: 5px;">{{pm.email}}</td>
                                     {% if pm.type.value != 'INSTITUTIONAL' %}
-                                    <td style="padding-top: 5px; padding-bottom: 5px;"><button class="btn-floating waves-effect waves-light red"><i class="material-icons">delete</i></button></td>
+                                    <td style="padding-top: 5px; padding-bottom: 5px;"><a class="modal-trigger btn-floating waves-effect waves-light red" href="#eliminarCorreo{{pm.id}}"><i class="material-icons">delete</i></a></td>
+                                    <!-- Modal eliminar correo -->
+                                    <div id="eliminarCorreo{{pm.id}}" class="modal">
+                                        <div class="modal-content">
+                                            <h4>Eliminar correo electrónico</h4>
+                                            <p>Confirmar la eliminación del correo eléctronico <strong>{{pm.email}}</strong> que pertenece al usuario {{person.lastname}}, {{person.firstname}}</p>
+                                        </div>
+                                        <div class="divider"></div>
+                                        <div class="modal-footer">
+                                            <a href="#!" class="modal-close waves-effect waves-green btn-flat">cancelar</a>
+                                            <a href="{{url_for('persons.deleteMail',uid=person.id,pmid=pm.id)}}" class="modal-close waves-effect waves-green btn-flat red-text">eliminar</a>
+                                        </div>
+                                    </div>
                                     {% else %}
                                     <td style="padding-top: 5px; padding-bottom: 5px;"></td>
                                     {% endif %}
                                 </tr>
+                                {% endif %}
                                 {% endfor %}
                             </tbody>
                         </table>
@@ -349,7 +377,7 @@
                 <div class="row">
                     <div class="col m1"></div>
                     <div class="col m5">
-                        <table class="centered striped responsive-table small">
+                        <table class="centered striped responsive-table">
                             <thead>
                                 <tr>
                                     <th style="padding-top: 5px; padding-bottom: 5px;"></th>
@@ -359,6 +387,7 @@
                             </thead>
                             <tbody>
                                 {% for ph in person.phones %}
+                                {% if not ph.deleted %}
                                 <tr>
                                     {% if ph.type.value == 'LANDLINE' %}
                                     <td style="padding-top: 5px; padding-bottom: 5px;"><i class="material-icons">phone</i></td>
@@ -366,8 +395,21 @@
                                     <td style="padding-top: 5px; padding-bottom: 5px;"><i class="material-icons">phone_android</i></td>
                                     {% endif %}
                                     <td style="padding-top: 5px; padding-bottom: 5px;">{{ph.number}}</td>
-                                    <td style="padding-top: 5px; padding-bottom: 5px;"><button class="btn-floating waves-effect waves-light red"><i class="material-icons">delete</i></button></td>
+                                    <td style="padding-top: 5px; padding-bottom: 5px;"><a class="modal-trigger btn-floating waves-effect waves-light red" href="#eliminarTel{{ph.id}}"><i class="material-icons">delete</i></a></td>
+                                    <!-- Modal eliminar teléfono -->
+                                    <div id="eliminarTel{{ph.id}}" class="modal">
+                                        <div class="modal-content">
+                                            <h4>Eliminar número telefónico</h4>
+                                            <p>Confirmar la eliminación del número telefónico <strong>{{ph.number}}</strong> que pertenece al usuario {{person.lastname}}, {{person.firstname}}</p>
+                                        </div>
+                                        <div class="divider"></div>
+                                        <div class="modal-footer">
+                                            <a href="#!" class="modal-close waves-effect waves-green btn-flat">cancelar</a>
+                                            <a href="{{url_for('persons.deletePhone',uid=person.id,phid=ph.id)}}" class="modal-close waves-effect waves-green btn-flat red-text">eliminar</a>
+                                        </div>
+                                    </div>
                                 </tr>
+                                {% endif %}
                                 {% endfor %}
                             </tbody>
                         </table>
@@ -380,6 +422,21 @@
     </div>
     <div class="col m1"></div>
 </div>
+
+
+<!-- Modal eliminar correo -->
+<div id="eliminarCorreo" class="modal">
+    <div class="modal-content">
+        <h4>Eliminar correo electrónico</h4>
+        <p>Está seguro que desea eliminar el correo correo@servidor.com de {{person.lastname}}, {{person.firstname}}</p>
+    </div>
+    <div class="divider"></div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-green btn-flat">cancelar</a>
+        <a href="#!" class="modal-close waves-effect waves-green btn-flat red-text">eliminar</a>
+    </div>
+</div>
+
 <script type="text/javascript">
     $(function () {
         $('select').formSelect();
@@ -401,6 +458,7 @@
                 cancel: 'Cancelar',
             }
         });
+        $('.modal').modal();
     });
 </script>
 {% endblock %}

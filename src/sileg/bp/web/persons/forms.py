@@ -387,14 +387,14 @@ class PersonModifyForm(FlaskForm):
             persons = usersModel.get_users(session, [uid])
             if len(persons) == 1:
                 person = persons[0]
-                person.lastname = self.lastname.data
-                person.firstname = self.firstname.data
-                person.gender = self.gender.data if self.gender.data != '0' else None
-                person.marital_status = self.marital_status.data if self.marital_status.data != '0' else None
-                person.birthplace = self.birthplace.data
-                person.birthdate = self.birthdate.data if self.birthdate.data else None
-                person.residence = self.residence.data
-                person.address = self.address.data
+                person.lastname = self.lastname.raw_data[0]
+                person.firstname = self.firstname.raw_data[0]
+                person.gender = self.gender.raw_data[0] if self.gender.raw_data[0] != '0' else None
+                person.marital_status = self.marital_status.raw_data[0] if self.marital_status.raw_data[0] != '0' else None
+                person.birthplace = self.birthplace.raw_data[0]
+                person.birthdate = self.birthdate.raw_data[0] if self.birthdate.raw_data[0] else None
+                person.residence = self.residence.raw_data[0]
+                person.address = self.address.raw_data[0]
                 session.add(person)
                 toLog.append({  'id': person.id,
                                 'created': person.created,
@@ -409,14 +409,13 @@ class PersonModifyForm(FlaskForm):
                                 'residence': person.residence,
                                 'address': person.address,
                                 })
-
                 newLog = UsersLog()
                 newLog.entity_id = person.id
                 newLog.authorizer_id = authorizer_id
                 newLog.type = UserLogTypes.UPDATE
                 newLog.data = json.dumps(toLog, default=str)
-                #session.add(newLog)
-                #session.commit()
+                session.add(newLog)
+                session.commit()
 
                 """
 
