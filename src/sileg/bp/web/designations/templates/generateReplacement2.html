@@ -5,37 +5,43 @@
     <div class="col m10">
         <div class="card-panel grey lighten-5">
             <div class="row">
-                <div class="col m8">
-                    <div class="col m3">
-                            <h5>Original</h5>
-                            <p>Nombre: {{person.firstname}}</p>
-                            <p>Apellido: {{person.lastname}}</p>
-                            <p>DNI: {{person.person_number}}</p>
-                    </div>
-                    <div class="col m3">
-                            <h5>Designación</h5>
-                            <p>Cargo: {{designation.function.name}}</p>
-                            <p>Ubicación: {{designation.place.name}}</p>
-                    </div>
+                <div class="col m2"></div>
+                <div class="col m8 center">
+                    <h4>Crear Suplencia</h4>
                 </div>
-
+                <div class="col m2"></div>
+            </div>
+            <div class="row">
+                <div class="col m1"></div>
                 <div class="col m3">
-                    <h5>Suplente</h5>
+                    <h5>Designado Original</h5>
+                    <p>Nombre: {{person.firstname}}</p>
+                    <p>Apellido: {{person.lastname}}</p>
+                    <p>Documento: {{person.identity_numbers[0].number}}</p>
+                </div>
+                <div class="col m3">
+                    <h5>Designación</h5>
+                    <p>Cargo: {{designation.function.name}}</p>
+                    <p>Ubicación: {{designation.place.name}}</p>
+                </div>
+                <div class="col m3">
+                    <h5>Suplente Seleccionado</h5>
                     <p>Nombre: {{replacement.firstname}}</p>
                     <p>Apellido: {{replacement.lastname}}</p>
-                    <p>DNI: {{replacement.person_number}}</p>
+                    <p>Documento: {{replacement.identity_numbers[0].number}}</p>
                 </div>
+                <div class="col m1"></div>
             </div>
             <div class="divider"></div>
+            <br>
             <form action="" method="post">
                 {{ form.csrf_token }}
                 <div class="row">
                     <div class="col m1"></div>
-                    <div class="col m2 input-field">
+                    <div class="col m3 input-field">
                         {{ form.res.label }}
                         {{ form.res }}
                     </div>
-                    <div class="col m1"></div>
                     <div class="col m3 input-field">
                         {{ form.exp.label }}
                         {{ form.exp }}
@@ -113,11 +119,11 @@
                 <div class="divider"></div>
                 <br>
                 <div class="row">
-                    <div class="col m3"></div>
-                    <div class="col m3">
+                    <div class="col m2"></div>
+                    <div class="col m8 center">
                         <button class="btn light-blue darken-3">crear suplencia</button>
                     </div>
-                    <div class="col m3"></div>
+                    <div class="col m2"></div>
                 </div>
             </form>
         </div>

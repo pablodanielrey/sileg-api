@@ -26,6 +26,7 @@
             <div class="divider"></div>
             <br>
             <div>
+                {% if persons %}
                 <table class="responsive-table highlight">
                     <thead>
                         <tr>
@@ -38,7 +39,7 @@
                         {% for p in persons %}
                         <tr>
                             <td><a class="blue-text darken-4" href="#userId">{{ p.firstname }}, {{ p.lastname }}</a> </td>
-                            <td><a class="blue-text darken-4" href="#">{{ p.person_number }}</a></td>
+                            <td><a class="blue-text darken-4" href="#">{{ p.identity_numbers[0].number }}</a></td>
                             <td class="center">
                                 <a class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3" href="{{url_for('designations.replacement_create_designation', did=did, uid=p.id)}}" data-target="{{p.id}}">
                                     <i class="material-icons">done</i>
@@ -48,6 +49,11 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                {% elif persons != None %}
+                <div class="center">
+                    <h4> No se encontraron resultados </h4>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
