@@ -1,6 +1,7 @@
 import json
 import uuid
 import base64
+import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, DateTimeField, SelectField, SubmitField
 from flask_wtf.file import FileField
@@ -353,7 +354,7 @@ class PersonDataModifyForm(FlaskForm):
                 person.gender = self.gender.raw_data[0] if self.gender.raw_data[0] != '0' else None
                 person.marital_status = self.marital_status.raw_data[0] if self.marital_status.raw_data[0] != '0' else None
                 person.birthplace = self.birthplace.raw_data[0]
-                person.birthdate = self.birthdate.raw_data[0] if self.birthdate.raw_data[0] else None
+                person.birthdate = datetime.datetime.strptime(self.birthdate.raw_data[0],'%d-%m-%Y' ) if self.birthdate.raw_data[0] else None
                 person.residence = self.residence.raw_data[0]
                 person.address = self.address.raw_data[0]
                 session.add(person)
