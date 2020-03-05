@@ -431,7 +431,13 @@ def _is_suplencia(d:Designation):
     return d.type == DesignationTypes.REPLACEMENT
 
 def _find_user(d:Designation):
-    return 'Walter'
+    uid = d.user_id
+    fullname = ''
+    with open_users_session() as session:
+        user = usersModel.get_users(session,[uid])[0]
+    if user:
+        fullname = f'{user.lastname}, {user.firstname}'
+    return fullname
 
 
 @bp.route('/listado/<uid>')
