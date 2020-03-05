@@ -4,7 +4,7 @@ import io
 from flask import render_template, flash, redirect,request, Markup, url_for, abort, send_file
 from . import bp
 
-from .forms import PersonCreateForm, PersonSearchForm, DegreeAssignForm, PersonModifyForm
+from .forms import PersonCreateForm, PersonSearchForm, DegreeAssignForm, PersonDataModifyForm, PersonIdNumberModifyForm, PersonMailModifyForm, PersonPhoneModifyForm, PersonSeniorityModifyForm
 
 from sileg.helpers.namesHandler import id2sDegrees
 
@@ -143,48 +143,61 @@ def modifyPersonData(user,uid):
             if persons[0].deleted:
                 abort(404)
         person = persons[0]
-        form = PersonModifyForm()
+        formModifyPersonData = PersonDataModifyForm()
+        formModifyIdNumber = PersonIdNumberModifyForm()
+        formModifyMail = PersonMailModifyForm()
+        formModifyPhone = PersonPhoneModifyForm()
+        formModifySeniority = PersonSeniorityModifyForm()
+        
+        ### formModifyPersonData ###
         if person.lastname:
-            form.lastname.data = person.lastname
+            formModifyPersonData.lastname.data = person.lastname
         if person.firstname:
-            form.firstname.data = person.firstname
-        if len(person.identity_numbers) > 0:
-            for pi in person.identity_numbers:
-                if not pi.deleted:
-                    if pi.type.value != 'PASSPORT':
-                        form.person_number_type.choices.remove((pi.type.value,pi.type.value))
-                    else:
-                        form.person_number_type.choices.remove((pi.type.value,'Pasaporte'))        
+            formModifyPersonData.firstname.data = person.firstname        
         if person.gender:
-            form.gender.data = person.gender
+            formModifyPersonData.gender.data = person.gender
         if person.marital_status:
-            form.marital_status.data = person.marital_status
+            formModifyPersonData.marital_status.data = person.marital_status
         if person.birthplace:
-            form.birthplace.data = person.birthplace
+            formModifyPersonData.birthplace.data = person.birthplace
         if person.birthdate:
-            form.birthdate.data = person.birthdate.strftime('%d-%m-%Y')
+            formModifyPersonData.birthdate.data = person.birthdate.strftime('%d-%m-%Y')
         if person.address:
-            form.address.data = person.address
+            formModifyPersonData.address.data = person.address
         if person.residence:
-            form.residence.data = person.residence
+            formModifyPersonData.residence.data = person.residence
+        if formModifyPersonData.validate_on_submit() and formModifyPersonData.personDataModify.data and (formModifyPersonData.lastname.data != formModifyPersonData.lastname.raw_data[0] or formModifyPersonData.firstname.data != formModifyPersonData.firstname.raw_data[0] or formModifyPersonData.gender.data != formModifyPersonData.gender.raw_data[0] or formModifyPersonData.marital_status.data != formModifyPersonData.marital_status.raw_data[0] or formModifyPersonData.birthplace.data != formModifyPersonData.birthplace.raw_data[0] or formModifyPersonData.birthdate.data != formModifyPersonData.birthdate.raw_data[0] or formModifyPersonData.residence.data != formModifyPersonData.residence.raw_data[0] or formModifyPersonData.address.data != formModifyPersonData.address.raw_data[0]):
+            formModifyPersonData.saveModifyPersonData(person.id,user['sub'])
+            return redirect(url_for('persons.modifyPersonData', uid=uid))
+        
+        ### formModifyIdNumber
+        if len(person.identity_numbers) > 0:
+           for pi in person.identity_numbers:
+               if not pi.deleted:
+                   if pi.type.value != 'PASSPORT':
+                       formModifyIdNumber.person_number_type.choices.remove((pi.type.value,pi.type.value))
+                   else:
+                       formModifyIdNumber.person_number_type.choices.remove((pi.type.value,'Pasaporte'))
+        if formModifyIdNumber.validate_on_submit and 'idNumber' in request.form:
+            formModifyIdNumber.saveModifyIdNumber(person.id,user['sub'])
+            return redirect(url_for('persons.modifyPersonData', uid=uid))
+
+        ### formModifyMail
         if len(person.mails) > 0:
             for pm in person.mails:
                 if not pm.deleted:
                     if pm.type.value == 'INSTITUTIONAL':
-                        form.email_type.choices.remove((pm.type.value,'Institucional'))
-        if 'personData' in request.form:
-            form.saveModifyPerson(person.id,user['sub'])
+                        formModifyMail.email_type.choices.remove((pm.type.value,'Institucional'))
+        if formModifyMail.validate_on_submit and 'mail' in request.form:
+            formModifyMail.saveModifyMail(person.id,user['sub'])
             return redirect(url_for('persons.modifyPersonData', uid=uid))
-        elif 'idNumber' in request.form:
-            form.saveModifyIdNumber(person.id,user['sub'])
+
+        ### formModifyPhone
+        if formModifyPhone.validate_on_submit and 'phone' in request.form:
+            formModifyPhone.saveModifyPhone(person.id,user['sub'])
             return redirect(url_for('persons.modifyPersonData', uid=uid))
-        elif 'mail' in request.form:
-            form.saveModifyMail(person.id,user['sub'])
-            return redirect(url_for('persons.modifyPersonData', uid=uid)) 
-        elif 'phone' in request.form:
-            form.saveModifyPhone(person.id,user['sub'])
-            return redirect(url_for('persons.modifyPersonData', uid=uid))   
-    return render_template('modifyPerson.html', user=user, person=person, form=form)
+
+    return render_template('modifyPerson.html', user=user, person=person, formModifyPersonData=formModifyPersonData, formModifyIdNumber=formModifyIdNumber, formModifyMail=formModifyMail, formModifyPhone=formModifyPhone, formModifySeniority=formModifySeniority)
 
 @bp.route('<uid>/documento/<pidnumberid>/eliminar')
 @require_user

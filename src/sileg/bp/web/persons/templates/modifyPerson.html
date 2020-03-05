@@ -8,7 +8,7 @@
                 <h4> Modificación de datos de la persona </h4>
             </div>
             <form action="" enctype="multipart/form-data" method="post">
-                {{ form.hidden_tag() }}
+                {{ formModifyPersonData.hidden_tag() }}
                 <div class="row">
                     <div class="col m5">
                         <h5>Datos Personales</h5>
@@ -18,23 +18,23 @@
                     <div class="col m1"></div>
                     <div class="col m5">
                         <div class="input-field">
-                            {{ form.lastname.label }}
-                            {% if form.lastname.errors %}
-                            {{ form.lastname(class="validate invalid") }}
-                            <span class="helper-text" data-error="{{form.lastname.errors[0]}}"></span>
+                            {{ formModifyPersonData.lastname.label }}
+                            {% if formModifyPersonData.lastname.errors %}
+                            {{ formModifyPersonData.lastname(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{formModifyPersonData.lastname.errors[0]}}"></span>
                             {% else %}
-                            {{ form.lastname(class="validate") }}
+                            {{ formModifyPersonData.lastname(class="validate") }}
                             {% endif %}
                         </div>
                     </div>
                     <div class="col m5">
                         <div class="input-field">
-                            {{ form.firstname.label }}
-                            {% if form.firstname.errors %}
-                            {{ form.firstname(class="validate invalid") }}
-                            <span class="helper-text" data-error="{{form.firstname.errors[0]}}"></span>
+                            {{ formModifyPersonData.firstname.label }}
+                            {% if formModifyPersonData.firstname.errors %}
+                            {{ formModifyPersonData.firstname(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{formModifyPersonData.firstname.errors[0]}}"></span>
                             {% else %}
-                            {{ form.firstname(class="validate") }}
+                            {{ formModifyPersonData.firstname(class="validate") }}
                             {% endif %}
                         </div>
                     </div>
@@ -43,21 +43,21 @@
                 <div class="row center">
                     <div class="col m1"></div>
                     <div class="col m3">
-                        {{ form.gender.label }}
-                        {% if form.gender.errors %}
-                        {{ form.gender(class="validate invalid") }}
-                        <span class="helper-text" data-error="{{form.gender.errors[0]}}"></span>
+                        {{ formModifyPersonData.gender.label }}
+                        {% if formModifyPersonData.gender.errors %}
+                        {{ formModifyPersonData.gender(class="validate invalid") }}
+                        <span class="helper-text" data-error="{{formModifyPersonData.gender.errors[0]}}"></span>
                         {% else %}
-                        {{ form.gender(class="validate") }}
+                        {{ formModifyPersonData.gender(class="validate") }}
                         {% endif %}
                     </div>
                     <div class="col m3">
-                        {{ form.marital_status.label }}
-                        {% if form.marital_status.errors %}
-                        {{ form.marital_status(class="validate invalid") }}
-                        <span class="helper-text" data-error="{{form.marital_status.errors[0]}}"></span>
+                        {{ formModifyPersonData.marital_status.label }}
+                        {% if formModifyPersonData.marital_status.errors %}
+                        {{ formModifyPersonData.marital_status(class="validate invalid") }}
+                        <span class="helper-text" data-error="{{formModifyPersonData.marital_status.errors[0]}}"></span>
                         {% else %}
-                        {{ form.marital_status(class="validate") }}
+                        {{ formModifyPersonData.marital_status(class="validate") }}
                         {% endif %}
                     </div>
                 </div>
@@ -65,23 +65,23 @@
                     <div class="col m1"></div>
                     <div class="col m3">
                         <div class="input-field">
-                            {{ form.birthplace.label }}
-                            {% if form.birthplace.errors %}
-                            {{ form.birthplace(class="validate invalid form-control autocomplete") }}
-                            <span class="helper-text" data-error="{{form.birthplace.errors[0]}}"></span>
+                            {{ formModifyPersonData.birthplace.label }}
+                            {% if formModifyPersonData.birthplace.errors %}
+                            {{ formModifyPersonData.birthplace(class="validate invalid form-control autocomplete") }}
+                            <span class="helper-text" data-error="{{formModifyPersonData.birthplace.errors[0]}}"></span>
                             {% else %}
-                            {{ form.birthplace(class="validate") }}
+                            {{ formModifyPersonData.birthplace(class="validate") }}
                             {% endif %}
                         </div>
                     </div>
                     <div class="col m3">
                         <div class="input-field">
-                            {{ form.birthdate.label }}
-                            {% if form.birthdate.errors %}
-                            {{ form.birthdate(class="validate invalid datepicker") }}
-                            <span class="helper-text" data-error="{{form.birthdate.errors[0]}}"></span>
+                            {{ formModifyPersonData.birthdate.label }}
+                            {% if formModifyPersonData.birthdate.errors %}
+                            {{ formModifyPersonData.birthdate(class="validate invalid datepicker") }}
+                            <span class="helper-text" data-error="{{formModifyPersonData.birthdate.errors[0]}}"></span>
                             {% else %}
-                            {{ form.birthdate(class="validate datepicker") }}
+                            {{ formModifyPersonData.birthdate(class="validate datepicker") }}
                             {% endif %}
 
                         </div>
@@ -98,78 +98,28 @@
                     <div class="col m1"></div>
                     <div class="col m6">
                         <div class="input-field">
-                            {{ form.address.label }}
-                            {% if form.address.errors %}
-                            {{ form.address(class="validate invalid") }}
-                            <span class="helper-text" data-error="{{form.address.errors[0]}}"></span>
+                            {{ formModifyPersonData.address.label }}
+                            {% if formModifyPersonData.address.errors %}
+                            {{ formModifyPersonData.address(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{formModifyPersonData.address.errors[0]}}"></span>
                             {% else %}
-                            {{ form.address(class="validate") }}
+                            {{ formModifyPersonData.address(class="validate") }}
                             {% endif %}
                         </div>
                     </div>
                     <div class="col m4">
                         <div class="input-field">
-                            {{ form.residence.label }}
-                            {% if form.residence.errors %}
-                            {{ form.residence(class="validate invalid") }}
-                            <span class="helper-text" data-error="{{form.residence.errors[0]}}"></span>
+                            {{ formModifyPersonData.residence.label }}
+                            {% if formModifyPersonData.residence.errors %}
+                            {{ formModifyPersonData.residence(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{formModifyPersonData.residence.errors[0]}}"></span>
                             {% else %}
-                            {{ form.residence(class="validate") }}
+                            {{ formModifyPersonData.residence(class="validate") }}
                             {% endif %}
                         </div>
                     </div>
                     <div class="col m1"></div>
                 </div>
-                <div class="row">
-                    <div class="col m5">
-                        <h5>Datos Laborales</h5>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col m1"></div>
-                    <div class="col m5">
-                        <h6>Antigüedad Externa</h6>
-                    </div>
-                </div>
-                <div class="divider"></div>
-                <div class="row center">
-                    <div class="col m1"></div>
-                    <div class="col m2">
-                        <div class="input-field">
-                            {{ form.seniority_external_years.label }}
-                            {% if form.seniority_external_years.errors %}
-                            {{ form.seniority_external_years(class="validate invalid", type="number") }}
-                            <span class="helper-text" data-error="{{form.seniority_external_years.errors[0]}}"></span>
-                            {% else %}
-                            {{ form.seniority_external_years(class="validate", type="number") }}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col m2">
-                        <div class="input-field">
-                            {{ form.seniority_external_months.label }}
-                            {% if form.seniority_external_months.errors %}
-                            {{ form.seniority_external_months(class="validate invalid", type="number") }}
-                            <span class="helper-text" data-error="{{form.seniority_external_months.errors[0]}}"></span>
-                            {% else %}
-                            {{ form.seniority_external_months(class="validate", type="number") }}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col m2">
-                        <div class="input-field">
-                            {{ form.seniority_external_days.label }}
-                            {% if form.seniority_external_days.errors %}
-                            {{ form.seniority_external_days(class="validate invalid", type="number") }}
-                            <span class="helper-text" data-error="{{form.seniority_external_days.errors[0]}}"></span>
-                            {% else %}
-                            {{ form.seniority_external_days(class="validate", type="number") }}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col m1"></div>
-                </div>
-                <div class="divider"></div>
                 <br>
                 <div class="row">
                     <div class="col m3"></div>
@@ -178,12 +128,16 @@
                     </div>
                     <div class="col m3"></div>
                     <div class="col m3">
-                        <button class="btn light-blue darken-3" name="personData">guardar cambios</button>
+                        {{formModifyPersonData.personDataModify(class="btn light-blue darken-3")}}
                     </div>
                     <div class="col m3"></div>
                 </div>
-                <div class="divider"></div>
-                
+            </form>
+
+            <div class="divider"></div>
+            
+            <form action="" enctype="multipart/form-data" method="post">
+                {{ formModifyIdNumber.hidden_tag() }}
                 <div class="row center">
                     <div class="col m12">
                         <h5>Documentos de identidad</h5>
@@ -192,27 +146,27 @@
                 <div class="row" style="margin-bottom: 0px;">
                     <div class="col m1"></div>
                     <div class="col m5">
-                        {{ form.person_number_type.label }}
-                        {% if form.person_number_type.errors %}
-                        {{ form.person_number_type(class="validate invalid") }}
-                        <span class="helper-text" data-error="{{form.person_number_type.errors[0]}}"></span>
+                        {{ formModifyIdNumber.person_number_type.label }}
+                        {% if formModifyIdNumber.person_number_type.errors %}
+                        {{ formModifyIdNumber.person_number_type(class="validate invalid") }}
+                        <span class="helper-text" data-error="{{formModifyIdNumber.person_number_type.errors[0]}}"></span>
                         {% else %}
-                        {{ form.person_number_type(class="validate") }}
+                        {{ formModifyIdNumber.person_number_type(class="validate") }}
                         {% endif %}
                     </div>
                     <div class="col m4">
                         <div class="input-field">
-                            {{ form.person_number.label }}
-                            {% if form.person_number.errors %}
-                            {{ form.person_number(class="validate invalid") }}
-                            <span class="helper-text" data-error="{{form.person_number.errors[0]}}"></span>
+                            {{ formModifyIdNumber.person_number.label }}
+                            {% if formModifyIdNumber.person_number.errors %}
+                            {{ formModifyIdNumber.person_number(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{formModifyIdNumber.person_number.errors[0]}}"></span>
                             {% else %}
-                            {{ form.person_number(class="validate") }}
+                            {{ formModifyIdNumber.person_number(class="validate") }}
                             {% endif %}
                         </div>
                     </div>
                     <div class="col m1 center">
-                        <button class="btn-floating waves-effect waves-light green" name="idNumber"><i class="material-icons">add</i></button>
+                        <button class="btn-floating waves-effect waves-light green" name="idNumber" type="submit"><i class="material-icons">add</i></button>
                     </div>
                     <div class="col m1"></div>
                 </div>
@@ -236,7 +190,7 @@
                                     <td style="padding-top: 5px; padding-bottom: 5px;">{{pi.number}}</td>
                                     {% if pi.type.value != 'DNI' %}
                                     <td style="padding-top: 5px; padding-bottom: 5px;"><a class="modal-trigger btn-floating waves-effect waves-light red" href="#eliminarDocumento{{pi.id}}"><i class="material-icons">delete</i></a></td>
-                                    <!-- Modal eliminar documento -->
+                                    <!-- Modal eliminar documento --> 
                                     <div id="eliminarDocumento{{pi.id}}" class="modal">
                                         <div class="modal-content">
                                             <h4>Eliminar documento</h4>
@@ -260,7 +214,12 @@
                     <div class="col m1"></div>
                 </div>
                 {% endif %}
-                <div class="divider"></div>
+            </form>
+
+            <div class="divider"></div>
+
+            <form action="" enctype="multipart/form-data" method="post">
+                {{ formModifyMail.hidden_tag() }}
                 <div class="row">
                     <div class="col m5">
                         <h5>Contacto</h5>
@@ -274,27 +233,27 @@
                 <div class="row" style="margin-bottom: 0px;">
                     <div class="col m1"></div>
                     <div class="col m4">
-                        {{ form.email_type.label }}
-                        {% if form.email_type.errors %}
-                        {{ form.email_type(class="validate invalid") }}
-                        <span class="helper-text" data-error="{{form.email_type.errors[0]}}"></span>
+                        {{ formModifyMail.email_type.label }}
+                        {% if formModifyMail.email_type.errors %}
+                        {{ formModifyMail.email_type(class="validate invalid") }}
+                        <span class="helper-text" data-error="{{formModifyMail.email_type.errors[0]}}"></span>
                         {% else %}
-                        {{ form.email_type(class="validate") }}
+                        {{ formModifyMail.email_type(class="validate") }}
                         {% endif %}
                     </div>
                     <div class="col m5">
                         <div class="input-field">
-                            {{ form.email.label }}
-                            {% if form.email.errors %}
-                            {{ form.email(class="validate invalid") }}
-                            <span class="helper-text" data-error="{{form.email.errors[0]}}"></span>
+                            {{ formModifyMail.email.label }}
+                            {% if formModifyMail.email.errors %}
+                            {{ formModifyMail.email(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{formModifyMail.email.errors[0]}}"></span>
                             {% else %}
-                            {{ form.email(class="validate") }}
+                            {{ formModifyMail.email(class="validate") }}
                             {% endif %}
                         </div>
                     </div>
                     <div class="col m1 center">
-                        <button class="btn-floating waves-effect waves-light green" name="mail"><i class="material-icons">add</i></button>
+                        <button class="btn-floating waves-effect waves-light green" name="mail" type="submit"><i class="material-icons">add</i></button>
                     </div>
                     <div class="col m1"></div>
                 </div>
@@ -340,7 +299,12 @@
                     <div class="col m1"></div>
                 </div>
                 {% endif %}
-                <div class="divider"></div>
+            </form>
+
+            <div class="divider"></div>
+
+            <form action="" enctype="multipart/form-data" method="post">
+                {{ formModifyPhone.hidden_tag() }}
                 <div class="row center">
                     <div class="col m12">
                         <h5>Teléfonos</h5>
@@ -349,27 +313,27 @@
                 <div class="row" style="margin-bottom: 0px;">
                     <div class="col m1"></div>
                     <div class="col m4">
-                        {{ form.phone_type.label }}
-                        {% if form.phone_type.errors %}
-                        {{ form.phone_type(class="validate invalid") }}
-                        <span class="helper-text" data-error="{{form.phone_type.errors[0]}}"></span>
+                        {{ formModifyPhone.phone_type.label }}
+                        {% if formModifyPhone.phone_type.errors %}
+                        {{ form.formModifyPhone(class="validate invalid") }}
+                        <span class="helper-text" data-error="{{formModifyPhone.phone_type.errors[0]}}"></span>
                         {% else %}
-                        {{ form.phone_type(class="validate") }}
+                        {{ formModifyPhone.phone_type(class="validate") }}
                         {% endif %}
                     </div>
                     <div class="col m5">
                         <div class="input-field">
-                            {{ form.phone_number.label }}
-                            {% if form.phone_number.errors %}
-                            {{ form.phone_number(class="validate invalid") }}
-                            <span class="helper-text" data-error="{{form.phone_number.errors[0]}}"></span>
+                            {{ formModifyPhone.phone_number.label }}
+                            {% if formModifyPhone.phone_number.errors %}
+                            {{ formModifyPhone.phone_number(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{formModifyPhone.phone_number.errors[0]}}"></span>
                             {% else %}
-                            {{ form.phone_number(class="validate") }}
+                            {{ formModifyPhone.phone_number(class="validate") }}
                             {% endif %}
                         </div>
                     </div>
                     <div class="col m1 center">
-                        <button class="btn-floating waves-effect waves-light green" name="phone"><i class="material-icons">add</i></button>
+                        <button class="btn-floating waves-effect waves-light green" name="phone" type="submit"><i class="material-icons">add</i></button>
                     </div>
                     <div class="col m1"></div>
                 </div>
@@ -418,24 +382,65 @@
                 </div>
                 {% endif %}
             </form>
+
+            <div class="divider"></div>
+
+            <form action="" enctype="multipart/form-data" method="post">
+                {{ formModifySeniority.hidden_tag() }}
+                <div class="row">
+                    <div class="col m5">
+                        <h5>Datos Laborales</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <h6>Antigüedad Externa</h6>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m2">
+                        <div class="input-field">
+                            {{ formModifySeniority.seniority_external_years.label }}
+                            {% if formModifySeniority.seniority_external_years.errors %}
+                            {{ formModifySeniority.seniority_external_years(class="validate invalid", type="number") }}
+                            <span class="helper-text" data-error="{{formModifySeniority.seniority_external_years.errors[0]}}"></span>
+                            {% else %}
+                            {{ formModifySeniority.seniority_external_years(class="validate", type="number") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m2">
+                        <div class="input-field">
+                            {{ formModifySeniority.seniority_external_months.label }}
+                            {% if formModifySeniority.seniority_external_months.errors %}
+                            {{ formModifySeniority.seniority_external_months(class="validate invalid", type="number") }}
+                            <span class="helper-text" data-error="{{formModifySeniority.seniority_external_months.errors[0]}}"></span>
+                            {% else %}
+                            {{ formModifySeniority.seniority_external_months(class="validate", type="number") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m2">
+                        <div class="input-field">
+                            {{ formModifySeniority.seniority_external_days.label }}
+                            {% if formModifySeniority.seniority_external_days.errors %}
+                            {{ formModifySeniority.seniority_external_days(class="validate invalid", type="number") }}
+                            <span class="helper-text" data-error="{{formModifySeniority.seniority_external_days.errors[0]}}"></span>
+                            {% else %}
+                            {{ formModifySeniority.seniority_external_days(class="validate", type="number") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+            <form>
         </div>
     </div>
     <div class="col m1"></div>
 </div>
 
-
-<!-- Modal eliminar correo -->
-<div id="eliminarCorreo" class="modal">
-    <div class="modal-content">
-        <h4>Eliminar correo electrónico</h4>
-        <p>Está seguro que desea eliminar el correo correo@servidor.com de {{person.lastname}}, {{person.firstname}}</p>
-    </div>
-    <div class="divider"></div>
-    <div class="modal-footer">
-        <a href="#!" class="modal-close waves-effect waves-green btn-flat">cancelar</a>
-        <a href="#!" class="modal-close waves-effect waves-green btn-flat red-text">eliminar</a>
-    </div>
-</div>
 
 <script type="text/javascript">
     $(function () {

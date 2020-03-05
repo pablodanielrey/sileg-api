@@ -2,7 +2,7 @@ import json
 import uuid
 import base64
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, DateTimeField, SelectField
+from wtforms import StringField, PasswordField, BooleanField, DateTimeField, SelectField, SubmitField
 from flask_wtf.file import FileField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import ValidationError, DataRequired, EqualTo, Email
@@ -324,32 +324,188 @@ class PersonSearchForm(FlaskForm):
     class Meta:
         csrf = False
 
-class PersonModifyForm(FlaskForm):
+class PersonDataModifyForm(FlaskForm):
     lastname = StringField('Apellidos', validators=[DataRequired()])
     firstname = StringField('Nombres', validators=[DataRequired()])
-    person_number_type = SelectField('Tipo de Documento', coerce=str)
-    person_number = StringField('Nro. de Documento')
     gender = SelectField('Género', coerce=str)
     marital_status = SelectField('Estado Civil', coerce=str)
     birthplace = StringField('Ciudad de Nacimiento')
     birthdate = StringField('Fecha de Nacimiento')
     residence = StringField('Ciudad de Residencia')
     address = StringField('Dirección')
+    personDataModify = SubmitField('Guardar Cambios')
+        
+    def __init__(self):
+        super(PersonDataModifyForm,self).__init__()
+        self.gender.choices = [('0','Seleccione una opción...'),('Femenino','Femenino'),('Masculino','Masculino'),('Autopercibido','Autopercibido')]
+        self.marital_status.choices = [('0','Seleccione una opción...'),('Casado/a','Casado/a'),('Soltero/a','Soltero/a'),('Conviviente','Conviviente'),('Divorciado/a','Divorciado/a'),('Viudo/a','Viudo/a')]
+
+    def saveModifyPersonData(self,uid,authorizer_id):
+        """
+        Actualización de datos en DB
+        """
+        with open_users_session() as session:
+            persons = usersModel.get_users(session, [uid])
+            if len(persons) == 1:
+                person = persons[0]
+                person.lastname = self.lastname.raw_data[0]
+                person.firstname = self.firstname.raw_data[0]
+                person.gender = self.gender.raw_data[0] if self.gender.raw_data[0] != '0' else None
+                person.marital_status = self.marital_status.raw_data[0] if self.marital_status.raw_data[0] != '0' else None
+                person.birthplace = self.birthplace.raw_data[0]
+                person.birthdate = self.birthdate.raw_data[0] if self.birthdate.raw_data[0] else None
+                person.residence = self.residence.raw_data[0]
+                person.address = self.address.raw_data[0]
+                session.add(person)
+                personLog = {  'id': person.id,
+                                'created': person.created,
+                                'updated': person.updated,
+                                'deleted': person.deleted,
+                                'lastname': person.lastname,
+                                'firstname': person.firstname,
+                                'gender': person.gender,
+                                'marital_status': person.marital_status,
+                                'birthplace': person.birthplace,
+                                'birthdate': person.birthdate,
+                                'residence': person.residence,
+                                'address': person.address,
+                                }
+                newLog = UsersLog()
+                newLog.entity_id = person.id
+                newLog.authorizer_id = authorizer_id
+                newLog.type = UserLogTypes.UPDATE
+                newLog.data = json.dumps(personLog, default=str)
+                session.add(newLog)
+                session.commit()
+
+
+class PersonIdNumberModifyForm(FlaskForm):
+    person_number_type = SelectField('Tipo de Documento', coerce=str)
+    person_number = StringField('Nro. de Documento', validators=[DataRequired()])
+    def __init__(self):
+        super(PersonIdNumberModifyForm,self).__init__()
+        self.person_number_type.choices = [('0','Seleccione una opción...'),('DNI','DNI'),('LC','LC'),('LE','LE'),('PASSPORT','Pasaporte'),('CUIT','CUIT'),('CUIL','CUIL')]
+    
+    def saveModifyIdNumber(self,uid,authorizer_id):
+        """
+        Agregar documento
+        """
+        with open_users_session() as session:
+            persons = usersModel.get_users(session, [uid])
+            if len(persons) == 1:
+                person = persons[0]
+                if self.person_number.data and self.person_number_type.data:
+                    if self.person_number_type.data != 'DNI' or self.person_number_type.data != 'LC' or self.person_number_type.data != 'LE':
+                        idNumber = IdentityNumber()
+                        idNumber.type = self.person_number_type.data
+                        idNumber.number = self.person_number.data
+                        idNumber.user_id = person.id
+                        session.add(idNumber)
+                        idNumberLog = {  'id': idNumber.id,
+                                'created': idNumber.created,
+                                'updated': idNumber.updated,
+                                'deleted': idNumber.deleted,
+                                'type': idNumber.type,
+                                'number': idNumber.number,
+                                'user_id': idNumber.user_id,
+                                'file_id': idNumber.file_id,
+                                'file': idNumber.file_id
+                                }
+                        newLog = UsersLog()
+                        newLog.entity_id = person.id
+                        newLog.authorizer_id = authorizer_id
+                        newLog.type = UserLogTypes.UPDATE
+                        newLog.data = json.dumps(idNumberLog, default=str)
+                        session.add(newLog)
+                        session.commit()
+
+
+class PersonMailModifyForm(FlaskForm):
     email_type = SelectField('Tipo de correo electrónico', coerce=str)
-    email = EmailField('Correo electrónico')
+    email = EmailField('Correo electrónico',  validators=[DataRequired()])
+        
+    def __init__(self):
+        super(PersonMailModifyForm,self).__init__()
+        self.email_type.choices = [('0','Seleccione una opción...'),('INSTITUTIONAL','Institucional'),('ALTERNATIVE','Personal')]
+     
+    def saveModifyMail(self,uid,authorizer_id):
+        """ 
+        Agregar correo personal
+        """
+        with open_users_session() as session:
+            persons = usersModel.get_users(session, [uid])
+            if len(persons) == 1:
+                person = persons[0]
+                if self.email.data and self.email_type.data == 'ALTERNATIVE':
+                    newPersonalMail = Mail()
+                    newPersonalMail.type = MailTypes.ALTERNATIVE
+                    newPersonalMail.email = self.email.data
+                    newPersonalMail.user_id = person.id
+                    session.add(newPersonalMail)
+                    newPersonalMailLog = {  'id': newPersonalMail.id,
+                                    'created': newPersonalMail.created,
+                                    'updated': newPersonalMail.updated,
+                                    'deleted': newPersonalMail.deleted,
+                                    'type': newPersonalMail.type,
+                                    'email': newPersonalMail.email,
+                                    'confirmed': newPersonalMail.confirmed,
+                                    'user_id': newPersonalMail.user_id,
+                                }
+                    newLog = UsersLog()
+                    newLog.entity_id = person.id
+                    newLog.authorizer_id = authorizer_id
+                    newLog.type = UserLogTypes.UPDATE
+                    newLog.data = json.dumps(newPersonalMailLog, default=str)
+                    session.add(newLog)
+                    session.commit()
+
+class PersonPhoneModifyForm(FlaskForm):
     phone_type = SelectField('Tipo de número telefónico', coerce=str)
     phone_number =StringField('Número de teléfono')
+        
+    def __init__(self):
+        super(PersonPhoneModifyForm,self).__init__()
+        self.phone_type.choices = [('0','Seleccione una opción...'),('CELLPHONE','Móvil'),('LANDLINE','Fijo')]
+
+    def saveModifyPhone(self,uid,authorizer_id):
+        """
+        Agregar teléfono
+        """
+        with open_users_session() as session:
+            persons = usersModel.get_users(session, [uid])
+            if len(persons) == 1:
+                person = persons[0]
+                if self.phone_number.data:
+                    """ telefono fijo""" 
+                    phoneToAdd = Phone()
+                    if self.phone_type.data == 'LANDLINE':
+                        phoneToAdd.type = PhoneTypes.LANDLINE
+                    elif self.phone_type.data == 'CELLPHONE':
+                        phoneToAdd.type = PhoneTypes.CELLPHONE
+                    phoneToAdd.number = self.phone_number.data
+                    phoneToAdd.user_id = person.id
+                    session.add(phoneToAdd)
+                    phoneToAddLog = {  'id': phoneToAdd.id,
+                                    'created': phoneToAdd.created,
+                                    'updated': phoneToAdd.updated,
+                                    'deleted': phoneToAdd.deleted,
+                                    'type': phoneToAdd.type,
+                                    'number': phoneToAdd.number,
+                                    'user_id': phoneToAdd.user_id,
+                                }
+                    newLog = UsersLog()
+                    newLog.entity_id = person.id
+                    newLog.authorizer_id = authorizer_id
+                    newLog.type = UserLogTypes.UPDATE
+                    newLog.data = json.dumps(phoneToAddLog, default=str)
+                    session.add(newLog)
+                    session.commit()
+                    
+
+class PersonSeniorityModifyForm(FlaskForm):
     seniority_external_years = StringField('Años')
     seniority_external_months = StringField('Meses')
     seniority_external_days = StringField('Días')
-        
-    def __init__(self):
-        super(PersonModifyForm,self).__init__()
-        self.person_number_type.choices = [('0','Seleccione una opción...'),('DNI','DNI'),('LC','LC'),('LE','LE'),('PASSPORT','Pasaporte'),('CUIT','CUIT'),('CUIL','CUIL')]
-        self.gender.choices = [('0','Seleccione una opción...'),('Femenino','Femenino'),('Masculino','Masculino'),('Autopercibido','Autopercibido')]
-        self.marital_status.choices = [('0','Seleccione una opción...'),('Casado/a','Casado/a'),('Soltero/a','Soltero/a'),('Conviviente','Conviviente'),('Divorciado/a','Divorciado/a'),('Viudo/a','Viudo/a')]
-        self.phone_type.choices = [('0','Seleccione una opción...'),('CELLPHONE','Móvil'),('LANDLINE','Fijo')]
-        self.email_type.choices = [('0','Seleccione una opción...'),('INSTITUTIONAL','Institucional'),('ALTERNATIVE','Personal')]
  
     def validate_seniority_external_years(self,seniority_external_years):
         if self.seniority_external_years.data:
@@ -377,160 +533,14 @@ class PersonModifyForm(FlaskForm):
                 raise ValidationError('La antiguedad debe ser un número')
             if number < 0:
                 raise ValidationError('El número debe ser mayor a 0')
-
-    def saveModifyPerson(self,uid,authorizer_id):
+                
+    def saveModifySeniority(self,uid,authorizer_id):
         """
-        Actualización de datos en DB
+        MODELO DE SILEG ---> ALTA DE ANTIGUEDAD DE PERSONA
         """
-        toLog = []
-        with open_users_session() as session:
-            persons = usersModel.get_users(session, [uid])
-            if len(persons) == 1:
-                person = persons[0]
-                person.lastname = self.lastname.raw_data[0]
-                person.firstname = self.firstname.raw_data[0]
-                person.gender = self.gender.raw_data[0] if self.gender.raw_data[0] != '0' else None
-                person.marital_status = self.marital_status.raw_data[0] if self.marital_status.raw_data[0] != '0' else None
-                person.birthplace = self.birthplace.raw_data[0]
-                person.birthdate = self.birthdate.raw_data[0] if self.birthdate.raw_data[0] else None
-                person.residence = self.residence.raw_data[0]
-                person.address = self.address.raw_data[0]
-                session.add(person)
-                toLog.append({  'id': person.id,
-                                'created': person.created,
-                                'updated': person.updated,
-                                'deleted': person.deleted,
-                                'lastname': person.lastname,
-                                'firstname': person.firstname,
-                                'gender': person.gender,
-                                'marital_status': person.marital_status,
-                                'birthplace': person.birthplace,
-                                'birthdate': person.birthdate,
-                                'residence': person.residence,
-                                'address': person.address,
-                                })
-                newLog = UsersLog()
-                newLog.entity_id = person.id
-                newLog.authorizer_id = authorizer_id
-                newLog.type = UserLogTypes.UPDATE
-                newLog.data = json.dumps(toLog, default=str)
-                session.add(newLog)
-                session.commit()
-
-                """
-
-                MODELO DE SILEG ---> ALTA DE ANTIGUEDAD DE PERSONA
-
-                """
-                #TODO Agregar a Sileg model la antiguedad de la persona
-                newSeniority = {
-                    'seniority_external_years' : self.seniority_external_years.data,
-                    'seniority_external_months'  : self.seniority_external_months.data,
-                    'seniority_external_days' : self.seniority_external_days.data
-                }
-    
-    def saveModifyIdNumber(self,uid,authorizer_id):
-        """
-        Agregar documento
-        """
-        toLog = []
-        with open_users_session() as session:
-            persons = usersModel.get_users(session, [uid])
-            if len(persons) == 1:
-                person = persons[0]
-                if self.person_number.data and self.person_number_type.data:
-                    if self.person_number_type.data != 'DNI' or self.person_number_type.data != 'LC' or self.person_number_type.data != 'LE':
-                        idNumber = IdentityNumber()
-                        idNumber.type = self.person_number_type.data
-                        idNumber.number = self.person_number.data
-                        idNumber.user_id = person.id
-                        session.add(idNumber)
-                        session.commit()
-    
-    def saveModifyMail(self,uid,authorizer_id):
-        """ 
-        Agregar correo personal
-        """
-        toLog = []
-        with open_users_session() as session:
-            persons = usersModel.get_users(session, [uid])
-            if len(persons) == 1:
-                person = persons[0]
-                if self.email.data and self.email_type.data == 'ALTERNATIVE':
-                    newPersonalMail = Mail()
-                    newPersonalMail.type = MailTypes.ALTERNATIVE
-                    newPersonalMail.email = self.email.data
-                    newPersonalMail.user_id = person.id
-                    session.add(newPersonalMail)
-                    toLog.append({  'id': newPersonalMail.id,
-                                    'created': newPersonalMail.created,
-                                    'updated': newPersonalMail.updated,
-                                    'deleted': newPersonalMail.deleted,
-                                    'type': newPersonalMail.type.value,
-                                    'email': newPersonalMail.email,
-                                    'confirmed': newPersonalMail.confirmed,
-                                    'user_id': newPersonalMail.user_id,
-                                })
-                    newLog = UsersLog()
-                    newLog.entity_id = person.id
-                    newLog.authorizer_id = authorizer_id
-                    newLog.type = UserLogTypes.UPDATE
-                    newLog.data = json.dumps(toLog, default=str)
-                    session.add(newLog)
-                    session.commit()
-
-    def saveModifyPhone(self,uid,authorizer_id):
-        """
-        Agregar teléfono
-        """
-        toLog = []
-        with open_users_session() as session:
-            persons = usersModel.get_users(session, [uid])
-            if len(persons) == 1:
-                person = persons[0]
-                if self.phone_number.data:
-                    """ telefono fijo""" 
-                    if self.phone_type.data == 'LANDLINE':
-                        landLinePhone = Phone()
-                        landLinePhone.type = PhoneTypes.LANDLINE
-                        landLinePhone.number = self.phone_number.data
-                        landLinePhone.user_id = person.id
-                        session.add(landLinePhone)
-                        toLog.append({  'id': landLinePhone.id,
-                                        'created': landLinePhone.created,
-                                        'updated': landLinePhone.updated,
-                                        'deleted': landLinePhone.deleted,
-                                        'type': landLinePhone.type.value,
-                                        'number': landLinePhone.number,
-                                        'user_id': landLinePhone.user_id,
-                                    })
-                        newLog = UsersLog()
-                        newLog.entity_id = person.id
-                        newLog.authorizer_id = authorizer_id
-                        newLog.type = UserLogTypes.UPDATE
-                        newLog.data = json.dumps(toLog, default=str)
-                        session.add(newLog)
-                        session.commit()
-                    
-                    """ telefono movil """
-                    if self.phone_type.data == 'CELLPHONE':
-                        mobileNumber = Phone()
-                        mobileNumber.type = PhoneTypes.CELLPHONE
-                        mobileNumber.number = self.phone_number.data
-                        mobileNumber.user_id = person.id
-                        session.add(mobileNumber)
-                        toLog.append({  'id': mobileNumber.id,
-                                        'created': mobileNumber.created,
-                                        'updated': mobileNumber.updated,
-                                        'deleted': mobileNumber.deleted,
-                                        'type': mobileNumber.type.value,
-                                        'number': mobileNumber.number,
-                                        'user_id': mobileNumber.user_id,
-                                    })
-                        newLog = UsersLog()
-                        newLog.entity_id = person.id
-                        newLog.authorizer_id = authorizer_id
-                        newLog.type = UserLogTypes.UPDATE
-                        newLog.data = json.dumps(toLog, default=str)
-                        session.add(newLog)
-                        session.commit()
+        #TODO Agregar a Sileg model la antiguedad de la persona
+        newSeniority = {
+            'seniority_external_years' : self.seniority_external_years.data,
+            'seniority_external_months'  : self.seniority_external_months.data,
+            'seniority_external_days' : self.seniority_external_days.data
+        }
