@@ -6,7 +6,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, DateTimeField, SelectField, SubmitField
 from flask_wtf.file import FileField
 from wtforms.fields.html5 import EmailField
-from wtforms.validators import ValidationError, DataRequired, EqualTo, Email
+from wtforms.validators import ValidationError, DataRequired, EqualTo, Email, InputRequired
 
 from sileg.helpers.apiHandler import getStates
 from sileg.helpers.namesHandler import id2sDegrees, id2sIdentityNumber
@@ -326,8 +326,8 @@ class PersonSearchForm(FlaskForm):
         csrf = False
 
 class PersonDataModifyForm(FlaskForm):
-    lastname = StringField('Apellidos', validators=[DataRequired()])
-    firstname = StringField('Nombres', validators=[DataRequired()])
+    lastname = StringField('Apellidos', validators=[InputRequired()])
+    firstname = StringField('Nombres', validators=[InputRequired()])
     gender = SelectField('Género', coerce=str)
     marital_status = SelectField('Estado Civil', coerce=str)
     birthplace = StringField('Ciudad de Nacimiento')
@@ -382,10 +382,15 @@ class PersonDataModifyForm(FlaskForm):
 
 class PersonIdNumberModifyForm(FlaskForm):
     person_number_type = SelectField('Tipo de Documento', coerce=str)
-    person_number = StringField('Nro. de Documento', validators=[DataRequired()])
+    person_number = StringField('Nro. de Documento', validators=[InputRequired()])
+    
     def __init__(self):
         super(PersonIdNumberModifyForm,self).__init__()
         self.person_number_type.choices = [('0','Seleccione una opción...'),('DNI','DNI'),('LC','LC'),('LE','LE'),('PASSPORT','Pasaporte'),('CUIT','CUIT'),('CUIL','CUIL')]
+
+    def validate_person_number_type(self, person_number_type):
+        if self.person_number_type.raw_data[0] == '0':
+            raise ValidationError('Debe seleccionar una opción')
     
     def saveModifyIdNumber(self,uid,authorizer_id):
         """
@@ -423,11 +428,15 @@ class PersonIdNumberModifyForm(FlaskForm):
 
 class PersonMailModifyForm(FlaskForm):
     email_type = SelectField('Tipo de correo electrónico', coerce=str)
-    email = EmailField('Correo electrónico',  validators=[DataRequired()])
+    email = EmailField('Correo electrónico',  validators=[InputRequired()])
         
     def __init__(self):
         super(PersonMailModifyForm,self).__init__()
         self.email_type.choices = [('0','Seleccione una opción...'),('INSTITUTIONAL','Institucional'),('ALTERNATIVE','Personal')]
+
+    def validate_email_type(self, email_type):
+        if self.email_type.raw_data[0] == '0':
+            raise ValidationError('Debe seleccionar una opción')
      
     def saveModifyMail(self,uid,authorizer_id):
         """ 
@@ -462,11 +471,15 @@ class PersonMailModifyForm(FlaskForm):
 
 class PersonPhoneModifyForm(FlaskForm):
     phone_type = SelectField('Tipo de número telefónico', coerce=str)
-    phone_number =StringField('Número de teléfono')
+    phone_number =StringField('Número de teléfono', validators=[InputRequired()])
         
     def __init__(self):
         super(PersonPhoneModifyForm,self).__init__()
         self.phone_type.choices = [('0','Seleccione una opción...'),('CELLPHONE','Móvil'),('LANDLINE','Fijo')]
+
+    def validate_phone_type(self, phone_type):
+        if self.phone_type.data == '0':
+            raise ValidationError('Debe seleccionar una opción')
 
     def saveModifyPhone(self,uid,authorizer_id):
         """

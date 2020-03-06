@@ -171,9 +171,10 @@ def modifyPersonData(user,uid):
             formModifyPersonData.address.data = person.address
         if person.residence:
             formModifyPersonData.residence.data = person.residence
-        if formModifyPersonData.validate_on_submit() and formModifyPersonData.personDataModify.data and (formModifyPersonData.residence.data != formModifyPersonData.residence.raw_data[0] or formModifyPersonData.lastname.data != formModifyPersonData.lastname.raw_data[0] or formModifyPersonData.firstname.data != formModifyPersonData.firstname.raw_data[0] or formModifyPersonData.gender.data != formModifyPersonData.gender.raw_data[0] or formModifyPersonData.marital_status.data != formModifyPersonData.marital_status.raw_data[0] or formModifyPersonData.birthplace.data != formModifyPersonData.birthplace.raw_data[0] or formModifyPersonData.birthdate.data != formModifyPersonData.birthdate.raw_data[0] or formModifyPersonData.address.data != formModifyPersonData.address.raw_data[0]):
-            formModifyPersonData.saveModifyPersonData(person.id,user['sub'])
-            return redirect(url_for('persons.modifyPersonData', uid=uid))
+        if formModifyPersonData.personDataModify.data and (formModifyPersonData.residence.data != formModifyPersonData.residence.raw_data[0] or formModifyPersonData.lastname.data != formModifyPersonData.lastname.raw_data[0] or formModifyPersonData.firstname.data != formModifyPersonData.firstname.raw_data[0] or formModifyPersonData.gender.data != formModifyPersonData.gender.raw_data[0] or formModifyPersonData.marital_status.data != formModifyPersonData.marital_status.raw_data[0] or formModifyPersonData.birthplace.data != formModifyPersonData.birthplace.raw_data[0] or formModifyPersonData.birthdate.data != formModifyPersonData.birthdate.raw_data[0] or formModifyPersonData.address.data != formModifyPersonData.address.raw_data[0]):
+            if formModifyPersonData.validate_on_submit():
+                formModifyPersonData.saveModifyPersonData(person.id,user['sub'])
+                return redirect(url_for('persons.modifyPersonData', uid=uid))
         
         ### formModifyIdNumber
         if len(person.identity_numbers) > 0:
@@ -183,9 +184,10 @@ def modifyPersonData(user,uid):
                        formModifyIdNumber.person_number_type.choices.remove((pi.type.value,pi.type.value))
                    else:
                        formModifyIdNumber.person_number_type.choices.remove((pi.type.value,'Pasaporte'))
-        if formModifyIdNumber.validate_on_submit and 'idNumber' in request.form:
-            formModifyIdNumber.saveModifyIdNumber(person.id,user['sub'])
-            return redirect(url_for('persons.modifyPersonData', uid=uid))
+        if 'idNumber' in request.form:
+            if formModifyIdNumber.validate_on_submit():
+                formModifyIdNumber.saveModifyIdNumber(person.id,user['sub'])
+                return redirect(url_for('persons.modifyPersonData', uid=uid))
 
         ### formModifyMail
         if len(person.mails) > 0:
@@ -193,14 +195,16 @@ def modifyPersonData(user,uid):
                 if not pm.deleted:
                     if pm.type.value == 'INSTITUTIONAL':
                         formModifyMail.email_type.choices.remove((pm.type.value,'Institucional'))
-        if formModifyMail.validate_on_submit and 'mail' in request.form:
-            formModifyMail.saveModifyMail(person.id,user['sub'])
-            return redirect(url_for('persons.modifyPersonData', uid=uid))
+        if 'mail' in request.form:
+            if formModifyMail.validate_on_submit():
+                formModifyMail.saveModifyMail(person.id,user['sub'])
+                return redirect(url_for('persons.modifyPersonData', uid=uid))
 
         ### formModifyPhone
-        if formModifyPhone.validate_on_submit and 'phone' in request.form:
-            formModifyPhone.saveModifyPhone(person.id,user['sub'])
-            return redirect(url_for('persons.modifyPersonData', uid=uid))
+        if 'phone' in request.form:
+            if formModifyPhone.validate_on_submit():
+                formModifyPhone.saveModifyPhone(person.id,user['sub'])
+                return redirect(url_for('persons.modifyPersonData', uid=uid))
 
     return render_template('modifyPerson.html', user=user, person=person, formModifyPersonData=formModifyPersonData, formModifyIdNumber=formModifyIdNumber, formModifyMail=formModifyMail, formModifyPhone=formModifyPhone, formModifySeniority=formModifySeniority)
 

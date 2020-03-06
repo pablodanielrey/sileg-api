@@ -83,7 +83,6 @@
                             {% else %}
                             {{ formModifyPersonData.birthdate(class="validate datepicker") }}
                             {% endif %}
-
                         </div>
                     </div>
                     <div class="col m1"></div>
@@ -120,17 +119,12 @@
                     </div>
                     <div class="col m1"></div>
                 </div>
-                <br>
                 <div class="row">
-                    <div class="col m3"></div>
-                    <div class="col m1">
-                        <button class="btn red lighten-2" type="reset">limpiar</button>
-                    </div>
-                    <div class="col m3"></div>
-                    <div class="col m3">
+                    <div class="col m1"></div>
+                    <div class="col m10 center">
                         {{formModifyPersonData.personDataModify(class="btn light-blue darken-3")}}
                     </div>
-                    <div class="col m3"></div>
+                    <div class="col m1"></div>
                 </div>
             </form>
 
@@ -149,7 +143,7 @@
                         {{ formModifyIdNumber.person_number_type.label }}
                         {% if formModifyIdNumber.person_number_type.errors %}
                         {{ formModifyIdNumber.person_number_type(class="validate invalid") }}
-                        <span class="helper-text" data-error="{{formModifyIdNumber.person_number_type.errors[0]}}"></span>
+                        <span class="helper-text red-text">Debe seleccionar una opción</span>
                         {% else %}
                         {{ formModifyIdNumber.person_number_type(class="validate") }}
                         {% endif %}
@@ -171,10 +165,12 @@
                     <div class="col m1"></div>
                 </div>
                 {% if person.identity_numbers|length > 0 %}
+                <br>
                 <div class="row center">
                     <div class="col m1"></div>
                     <div class="col m5">
-                        <table class="centered striped responsive-table">
+                        <div class="divider"></div>
+                        <table class="centered responsive-table">
                             <thead>
                                 <tr>
                                     <th style="padding-top: 5px; padding-bottom: 5px;">Tipo de documento</th>
@@ -236,7 +232,7 @@
                         {{ formModifyMail.email_type.label }}
                         {% if formModifyMail.email_type.errors %}
                         {{ formModifyMail.email_type(class="validate invalid") }}
-                        <span class="helper-text" data-error="{{formModifyMail.email_type.errors[0]}}"></span>
+                        <span class="helper-text red-text">Debe seleccionar una opción</span>
                         {% else %}
                         {{ formModifyMail.email_type(class="validate") }}
                         {% endif %}
@@ -258,10 +254,12 @@
                     <div class="col m1"></div>
                 </div>
                 {% if person.mails|length > 0 %}
+                <br>
                 <div class="row">
                     <div class="col m1"></div>
                     <div class="col m5">
-                        <table class="centered striped responsive-table">
+                        <div class="divider"></div>
+                        <table class="centered responsive-table">
                             <thead>
                                 <tr>
                                     <th style="padding-top: 5px; padding-bottom: 5px;">Correos electrónicos</th>
@@ -315,8 +313,8 @@
                     <div class="col m4">
                         {{ formModifyPhone.phone_type.label }}
                         {% if formModifyPhone.phone_type.errors %}
-                        {{ form.formModifyPhone(class="validate invalid") }}
-                        <span class="helper-text" data-error="{{formModifyPhone.phone_type.errors[0]}}"></span>
+                        {{ formModifyPhone.phone_type(class="validate invalid") }}
+                        <span class="helper-text red-text">Debe seleccionar una opción</span>
                         {% else %}
                         {{ formModifyPhone.phone_type(class="validate") }}
                         {% endif %}
@@ -338,10 +336,12 @@
                     <div class="col m1"></div>
                 </div>
                 {% if person.phones|length > 0 %}
+                <br>
                 <div class="row">
                     <div class="col m1"></div>
                     <div class="col m5">
-                        <table class="centered striped responsive-table">
+                        <div class="divider"></div>
+                        <table class="centered responsive-table">
                             <thead>
                                 <tr>
                                     <th style="padding-top: 5px; padding-bottom: 5px;"></th>
