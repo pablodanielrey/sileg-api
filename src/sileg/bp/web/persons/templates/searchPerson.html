@@ -58,7 +58,6 @@
                     <li><a class="blue-text darken-4" href="{{url_for('persons.degrees', uid=p.id)}}">Títulos</a></li>
                     <li><a class="blue-text darken-4" href="{{url_for('leavelicense.create_personal_leave', uid=p.id)}}">Generar Licencia</a></li>
                     <li><a class="blue-text darken-4" href="{{url_for('leavelicense.list_leave_licenses', uid=p.id)}}">Ver Licencias</a></li>
-                    <li><a class="red-text" href="#">Eliminar</a></li>
                 </ul>
                 {% endfor %}
                 {% elif persons != None %}
