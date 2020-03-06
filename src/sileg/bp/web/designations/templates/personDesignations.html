@@ -101,7 +101,6 @@
                             </td>
                         </tr>
                         <ul id="dropdown-{{d.id}}" class="dropdown-content">
-                            <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
                             <li><a class="blue-text darken-4"
                                     href="{{url_for('designations.designation_detail', did=d.id)}}">Detalle</a></li>
                             <li><a class="blue-text darken-4"
@@ -125,8 +124,8 @@
                         <!-- prorrogas, bajas de prorrogas -->
                         {% if d.designations %}
                         <tr id="prorrogas-{{d.id}}" style="visibility: collapse;">
-                            <td colspan="6">
-                                <table class="responsive-table highlight">
+                            <td colspan="8">
+                                <table class="center responsive-table highlight">
                                     <thead class="deep-purple darken-4">
                                         <tr>
                                             <th class="center white-text">Tipo</th>
@@ -135,11 +134,12 @@
                                             <th class="center white-text">Acciones</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody>                                       
                                         {% for d2 in d.designations %}
                                         {% if not d2.historic and is_secondary(d2) %}
                                         <tr>
-                                            <td class="center blue-text darken-4">{{ dt2s(d2.type) }}</td>
+                                            <td class="center"><a class="blue-text darken-4" 
+                                                href="{{url_for('designations.designation_detail', did=d2.id)}}">{{ dt2s(d2.type) }}</a></td>
                                             <td class="center blue-text darken-4">
                                                 {%if d2.start%}{{d2.start.strftime('%d-%m-%Y')}}{%endif%}</td>
                                             <td class="center blue-text darken-4">
@@ -150,8 +150,6 @@
                                                         class="material-icons">edit</i></a></td>
                                         </tr>
                                         <ul id="dropdown-{{d2.id}}" class="dropdown-content">
-                                            <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
-                                            <li class="divider" tabindex="-1"></li>
                                             <li><a class="blue-text darken-4"
                                                     href="{{url_for('designations.discharge', did=d2.id)}}">Baja</a>
                                             </li>
@@ -167,7 +165,7 @@
                         </tr>
                         <!-- suplencias -->
                         <tr id="suplencia-{{d.id}}" style="visibility: collapse;">
-                            <td colspan="6">
+                            <td colspan="8">
                                 <table class="responsive-table highlight">
                                     <thead class="teal darken-4">
                                         <tr>
@@ -190,8 +188,6 @@
                                                         class="material-icons">edit</i></a></td>
                                         </tr>
                                         <ul id="dropdown-{{d2.id}}" class="dropdown-content">
-                                            <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
-                                            <li class="divider" tabindex="-1"></li>
                                             <li><a class="blue-text darken-4"
                                                     href="{{url_for('designations.discharge', did=d2.id)}}">Baja</a>
                                             </li>

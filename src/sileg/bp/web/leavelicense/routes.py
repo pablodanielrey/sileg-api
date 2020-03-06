@@ -68,11 +68,13 @@ def create_personal_leave_post(user, uid):
         form = LeaveLicensePersonalCreateForm()
 
         if not form.validate_on_submit():
+            flash(Markup('<span>¡Error al crear licencia!</span>'))
             print(form.errors)
             abort(404)
 
         form.save(session, silegModel, uid,user['sub'])
         session.commit()
+        flash(Markup('<span>¡Licencia Creada!</span>'))
 
     return redirect(url_for('leavelicense.list_leave_licenses', uid=uid))
 
@@ -111,6 +113,7 @@ def delete_personal_leave(user, uid, lid):
             log.data = json.dumps([deleteToLog], default=str)
             session.add(log)
             session.commit()
+            flash(Markup('<span>¡Suplencia Eliminada!</span>'))
     return redirect(url_for('leavelicense.list_leave_licenses', uid=uid))
 
 @bp.route('/designacion/<did>')
@@ -144,10 +147,12 @@ def create_designation_leave_license_post(user, did):
         form = DesignationLeaveLicenseCreateForm()
 
         if not form.validate_on_submit():
+            flash(Markup('<span>¡Error al crear licencia de designación!</span>'))
             print(form.errors)
             abort(404)
 
         form.save(session, silegModel, did, user['sub'])
         session.commit()
+        flash(Markup('<span>¡Licencia de designación creada!</span>'))
 
     return redirect(url_for('leavelicense.list_leave_licenses', uid=uid))    

@@ -1,5 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
+<script>
+    function toggle(id) {
+        var x = document.getElementById(id);
+        if (x.style.visibility === "collapse") {
+            x.style.visibility = "visible";
+        } else {
+            x.style.visibility = "collapse";
+        }
+    }
+</script>
+
 <div class="row">
     <div class="col m1"></div>
     <div class="col m10">
@@ -25,57 +36,106 @@
             <div class="divider"></div>
             <br>
             <div>
+                {% if persons %}
                 <table class="responsive-table highlight">
                     <thead>
                         <tr>
-                            <th>Apellido y Nombre del Docente</th>
-                            <th class="center">Lugar</th>
-                            <th class="center">Cargo</th>
-                            <th class="center">Carácter</th>
-                            <th class="center">Dedicación</th>
-                            <th class="center">Acciones</th>
-                            <th class="center">Eliminar</th>
+                            <th>Apellido y Nombre</th>
+                            <th class="center">Tipo de Documento</th>
+                            <th class="center">Documento</th>
+                            <th class="center">Designaciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for d in designations %}
-                        {% if d['relatedTo'] %}
-                        <tr class="blue-grey lighten-3">
-                        {% else %}
+                        {% for p in persons %}
                         <tr>
-                        {% endif %}
-                            <td><a class="blue-text darken-4" href="#userId">{{ d['lastname'] }}, {{ d['firstname'] }}</a></td>
-                            <td class="center"><a class="blue-text darken-4" href="#cargodocente">{{ d['place'] }}, {{d['placetype']}}</a></td>
-                            <td class="center"><a class="blue-text darken-4" href="#cargo">{{ d['positionType'] }}</a></td>
-                            <td class="center"><a class="blue-text darken-4" href="#caracter">{{ d['character'] }}</a></td>
-                            <td class="center"><a class="blue-text darken-4" href="#dedication">{{ d['dedication'] }}</a></td>
-                            <td class="center"><a class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3" href="#" data-target='dropdown1'><i class="material-icons">edit</i></a></td>
-                            <td class="center"><a class="btn-floating waves-effect waves-light red" href="#eliminar"><i class="material-icons">delete</i></a></td>
+                            <td><a class="blue-text darken-4" href="#">{{p['person'].lastname}},
+                                    {{p['person'].firstname}}</a></td>
+                            <td class="center"><a class="blue-text darken-4"
+                                    href="#">{{p['person'].identity_numbers[0].type.name}}</a></td>
+                            <td class="center"><a class="blue-text darken-4"
+                                    href="#">{{p['person'].identity_numbers[0].number}}</a></td>
+                            <td class="center"><button class="btn-floating waves-effect deep-purple darken-4"
+                                    onclick="toggle('designations-{{p["person"].id}}')">P</button></td>
+                        </tr>
+                        <tr id="designations-{{p['person'].id}}" style="visibility: collapse;">
+                            <td colspan="8">
+                                <table class="center responsive-table highlight">
+                                    <thead class="deep-purple darken-4">
+                                        <tr>
+                                            <th class="center white-text">Tipo</th>
+                                            <th class="center white-text">Lugar</th>
+                                            <th class="center white-text">Cargo</th>
+                                            <th class="center white-text">Carácter</th>
+                                            <th class="center white-text">Dedicacion</th>
+                                            <th class="center white-text">Inicio</th>
+                                            <th class="center white-text">Fin</th>
+                                            <th class="center white-text">Expediente</th>
+                                            <th class="center white-text">Resolucion</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for d in p['designations'] %}
+                                        {% if not d.historic %}
+                                        <tr>
+                                            <td class="center">
+                                                <a class="blue-text darken-4" href="{{url_for('designations.designation_detail', did=d.id)}}">
+                                                    {{ dt2s(d.type) }}
+                                                </a>
+                                            </td>
+                                            <td class="center">
+                                                <a class="blue-text darken-4" href="{{url_for('designations.designation_detail', did=d.id)}}">
+                                                    {{ d.place.name }}, ({{d.place.type.value}})
+                                                </a>
+                                            </td>
+                                            <td class="center">
+                                                <a class="blue-text darken-4" href="{{url_for('designations.designation_detail', did=d.id)}}">
+                                                    {{ d.function.name.split('-')[0] }}
+                                                </a>
+                                            </td>
+                                            <td class="center">
+                                                <a class="blue-text darken-4" href="{{url_for('designations.designation_detail', did=d.id)}}"">
+                                                    {{ d.function.name.split('-')[2] }}
+                                                </a>
+                                            </td>
+                                            <td class="center">
+                                                <a class="blue-text darken-4" href="{{url_for('designations.designation_detail', did=d.id)}}">
+                                                    {{ d.function.name.split('-')[1] }}
+                                                </a>
+                                            </td>
+                                            <td class="center blue-text darken-4">
+                                                {%if d.start%}{{d.start.strftime('%d-%m-%Y')}}{%endif%}
+                                            </td>
+                                            <td class="center blue-text darken-4">
+                                                {%if d.end%}{{d.end.strftime('%d-%m-%Y')}}{%endif%}
+                                            </td>
+                                            <td class="center">
+                                                <a class="blue-text darken-4" href="{{url_for('designations.designation_detail', did=d.id)}}">
+                                                    {{d.exp}}/{{d.cor}}
+                                                </a>
+                                            </td>
+                                            <td class="center">
+                                                <a class="blue-text darken-4" href="{{url_for('designations.designation_detail', did=d.id)}}">
+                                                    {{d.res}}
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-                <ul id='dropdown1' class='dropdown-content'>
-                    <li><a class="blue-text darken-4" href="#!">Modificar</a></li>
-                    <li class="divider" tabindex="-1"></li>
-                    <li><a class="blue-text darken-4" href="{{url_for('designations.extend')}}">Extender</a></li>
-                    <li><a class="blue-text darken-4" href="{{url_for('designations.renew')}}">Prorrogar</a></li>
-                    <li><a class="blue-text darken-4" href="#!">Baja</a></li>
-                    <li><a class="blue-text darken-4" href="{{url_for('leavelicense.createDesignationLeave')}}">Licencia</a></li>
-                </ul>
+                {% elif persons != None %}
+                <div class="center">
+                    <h4> No se encontraron resultados </h4>
+                </div>
+                {% endif %}
             </div>
             <br>
-            <div class="center">
-                <ul class="pagination">
-                    <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
-                    <li class="active teal"><a href="#!">1</a></li>
-                    <li class="waves-effect"><a href="#!">2</a></li>
-                    <li class="waves-effect"><a href="#!">3</a></li>
-                    <li class="waves-effect"><a href="#!">4</a></li>
-                    <li class="waves-effect"><a href="#!">5</a></li>
-                    <li class="waves-effect"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
-                </ul>
-            </div>
         </div>
     </div>
 </div>

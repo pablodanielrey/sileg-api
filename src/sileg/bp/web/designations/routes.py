@@ -120,11 +120,13 @@ def replacement_create_designation_post(user, did, uid):
         original_uid = original_designation.user_id
 
         if not form.is_submitted():
+            flash(Markup('<span>¡Error en la creación de suplencia!</span>'))
             print(form.errors)
             abort(404)
 
         form.save(session, silegModel, uid, did, user['sub'])
         session.commit()
+        flash(Markup('<span>¡Suplencia Creada!</span>'))
 
     return redirect(url_for('designations.personDesignations', uid=original_uid))
     
@@ -159,6 +161,10 @@ def convalidate(user, did):
 @bp.route('/convalidar/<did>', methods=['POST'])
 @require_user
 def convalidate_post(user, did):
+    """
+        Metodo post de generacion de convalidacion
+    """
+
     assert user is not None
     assert did is not None
 
@@ -168,11 +174,13 @@ def convalidate_post(user, did):
         uid = original_designation.user_id
 
         if not form.is_submitted():
+            flash(Markup('<span>¡Error al crear convalidación!</span>'))
             print(form.errors)
             abort(404)
 
         form.save(session, original_designation, user['sub'])
         session.commit()
+        flash(Markup('<span>¡Convalidación Creada!</span>'))
 
     return redirect(url_for('designations.personDesignations', uid=uid))
 
@@ -216,11 +224,13 @@ def promote_post(user, did):
         uid = designation.user_id
 
         if not form.is_submitted():
+            flash(Markup('<span>¡Error al crear extensión!</span>'))
             print(form.errors)
             abort(404)
 
         form.save(session, designation, user['sub'])
         session.commit()
+        flash(Markup('<span>¡Extensión Creada!</span>'))
 
     return redirect(url_for('designations.personDesignations', uid=uid))
 
@@ -265,11 +275,13 @@ def extend_post(user, did):
         uid = designation.user_id
 
         if not form.is_submitted():
+            flash(Markup('<span>¡Error al crear prorroga!</span>'))
             print(form.errors)
             abort(404)
 
         form.save(session, designation, user['sub'])
         session.commit()
+        flash(Markup('<span>¡Prórroga Creada!</span>'))
 
     return redirect(url_for('designations.personDesignations', uid=uid))
 
@@ -312,11 +324,13 @@ def discharge_post(user, did):
         uid = designation.user_id
 
         if not form.is_submitted():
+            flash(Markup('<span>¡Error en la baja!</span>'))
             print(form.errors)
             abort(404)
 
         form.save(session, user['sub'], designation_to_discharge=designation)
         session.commit()
+        flash(Markup('<span>¡Baja registrada correctamente!</span>'))
 
     return redirect(url_for('designations.personDesignations', uid=uid))
 
@@ -332,6 +346,7 @@ def undelete(user, did):
         d.deleted = None
         d.historic = False
         session.commit()
+        flash(Markup('<span>¡Designación Restaurada!</span>'))
     
     return redirect(url_for('designations.personDesignations', uid=uid))        
 
@@ -368,11 +383,13 @@ def delete_post(user, did):
         uid = designation.user_id
 
         if not form.is_submitted():
+            flash(Markup('<span>¡Error al eliminar designación!</span>'))
             print(form.errors)
             abort(404)
 
         form.save(session, designation, user['sub'])
         session.commit()
+        flash(Markup('<span>¡Designación Eliminada!</span>'))
 
     return redirect(url_for('designations.personDesignations', uid=uid))
 
@@ -431,7 +448,13 @@ def _is_suplencia(d:Designation):
     return d.type == DesignationTypes.REPLACEMENT
 
 def _find_user(d:Designation):
-    return 'Walter'
+    uid = d.user_id
+    fullname = ''
+    with open_users_session() as session:
+        user = usersModel.get_users(session,[uid])[0]
+    if user:
+        fullname = f'{user.lastname}, {user.firstname}'
+    return fullname
 
 
 @bp.route('/listado/<uid>')
@@ -499,11 +522,13 @@ def create_post(user, uid):
         form = DesignationCreateForm(session, silegModel)
 
         if not form.validate_on_submit():
+            flash(Markup('<span>Error al crear designación!</span>'))
             print(form.errors)
             abort(404)
 
         form.save(session, silegModel, uid, user['sub'])
         session.commit()
+        flash(Markup('<span>¡Designación Creada!</span>'))
 
     return redirect(url_for('designations.personDesignations', uid=uid))
 
@@ -514,63 +539,33 @@ def search(user):
     """
     Pagina de busqueda de desiganaciones
     """
-    designations = [{
-            'firstname':'Pablo',
-            'lastname':'Rey',
-            'place':'Ingles I',
-            'placetype':'Original',
-            'dedication': 'Exclusiva',
-            'observations': '-',
-            'positionType': 'A/D',
-            'character': 'INT',
-            'relatedTo': None
-        },
-        {
-            'firstname':'Pablo',
-            'lastname':'Rey',
-            'place':'Seminario de Ingles',
-            'placetype':'Original',
-            'dedication': 'Exclusiva',
-            'positionType': 'Cumpliendo funcion',
-            'character': 'INT',
-            'relatedTo': True
-        },
-        {
-            'firstname':'Emanuel',
-            'lastname':'Pais',
-            'place':'Contabilidad III',
-            'placetype':'Original',
-            'dedication': 'Semi-dedicación',
-            'observations': '-',
-            'positionType': 'ADJ',
-            'character': 'SUP',
-            'relatedTo': None
-        },
-        {
-            'firstname':'Miguel Angel Jesús',
-            'lastname':'Macagno',
-            'place':'Administración I',
-            'placetype':'B',
-            'dedication': 'Exclusiva',
-            'observations': '-',
-            'positionType': 'JAD',
-            'character': 'INT',
-            'relatedTo': None
-        },
-        {
-            'firstname':'Leonardo',
-            'lastname':'Consolini',
-            'place':'Administración I',
-            'placetype':'A',
-            'dedication': 'Exclusiva',
-            'observations': '-',
-            'positionType': 'TIT',
-            'character': 'INT',
-            'relatedTo': None
-        }
-    ]
     form = DesignationSearchForm()
-    return render_template('searchDesignations.html',user=user,designations=designations,form=form)
+    
+    query = request.args.get('query','',str)
+    persons = []
+    exist = []
+    if query:
+        with open_users_session() as session:
+            uids = usersModel.search_user(session, query)
+            #Filtro uids repetidos
+            for uid in uids:
+                if uid not in exist:
+                    exist.append(uid)
+        with open_sileg_session() as ssession:
+            for uid in exist:
+                personDesignIds = silegModel.get_designations_by_uuid(ssession,uid)
+                if len(personDesignIds) > 0:
+                    with open_users_session() as session:
+                        person = usersModel.get_users(session, [uid])[0]
+                        personDesignations = silegModel.get_designations(ssession,personDesignIds)
+                        persons.append({
+                            'person': person,
+                            'designations': personDesignations
+                        })
+            return render_template('searchDesignations.html',user=user, persons=persons,form=form, dt2s=dt2s)
+    else:
+        persons = None
+    return render_template('searchDesignations.html',user=user, persons=persons,form=form, dt2s=dt2s)
 
 
 
