@@ -275,7 +275,7 @@ def extend_post(user, did):
         uid = designation.user_id
 
         if not form.is_submitted():
-            flash(Markup('<span>¡Error al crear prorroga!</span>'))
+            flash(Markup('<span>¡Error al crear prórroga!</span>'))
             print(form.errors)
             abort(404)
 
@@ -531,41 +531,5 @@ def create_post(user, uid):
         flash(Markup('<span>¡Designación Creada!</span>'))
 
     return redirect(url_for('designations.personDesignations', uid=uid))
-
-
-@bp.route('/buscar')
-@require_user
-def search(user):
-    """
-    Pagina de busqueda de desiganaciones
-    """
-    form = DesignationSearchForm()
-    
-    query = request.args.get('query','',str)
-    persons = []
-    exist = []
-    if query:
-        with open_users_session() as session:
-            uids = usersModel.search_user(session, query)
-            #Filtro uids repetidos
-            for uid in uids:
-                if uid not in exist:
-                    exist.append(uid)
-        with open_sileg_session() as ssession:
-            for uid in exist:
-                personDesignIds = silegModel.get_designations_by_uuid(ssession,uid)
-                if len(personDesignIds) > 0:
-                    with open_users_session() as session:
-                        person = usersModel.get_users(session, [uid])[0]
-                        personDesignations = silegModel.get_designations(ssession,personDesignIds)
-                        persons.append({
-                            'person': person,
-                            'designations': personDesignations
-                        })
-            return render_template('searchDesignations.html',user=user, persons=persons,form=form, dt2s=dt2s)
-    else:
-        persons = None
-    return render_template('searchDesignations.html',user=user, persons=persons,form=form, dt2s=dt2s)
-
 
 
