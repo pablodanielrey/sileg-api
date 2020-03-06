@@ -32,51 +32,70 @@
             });
         });
     </script>
-
-
+    <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        .main {
+          flex: 1 0 auto;
+        }
+    </style>
     <title>SILEG</title>
 </head>
-
 <body class="light-blue lighten-5">
     <div class="navbar-fixed">
         <nav>
             <div class="nav-wrapper blue lighten-1">
                 <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
                 <ul class="left hide-on-med-and-down">
-                    <li><a href="#" data-target="slide-out" class="sidenav-trigger show-on-large"><i class="material-icons">menu</i></a></li>
+                    <li><a href="#" data-target="slide-out" class="sidenav-trigger show-on-large"><i
+                                class="material-icons">menu</i></a></li>
                 </ul>
                 <ul class="right">
-                    <a class="right" href="#"><i class="material-icons right">lock</i>{{user.given_name}} {{user.family_name}}</a>
+                    <a class="right" href="#"><i class="material-icons right">lock</i>{{user.given_name}}
+                        {{user.family_name}}</a>
                 </ul>
             </div>
         </nav>
     </div>
-    <div>
-    <br>
-    <br>
-    <br>
-    {% block content %} {% endblock %}
+    <div class="main">
+        <br>
+        <br>
+        <br>
+        {% block content %} {% endblock %}
     </div>
     <!-- Contenido de Footer -->
-    <footer>
-        
+    <footer class="page-footer blue lighten-1">
+        <div class="row">
+            <div class="col m11 grey-text text-lighten-4">
+                © 2020 DiTESI | Dirección de tecnologías y Sistemas Informáticos | Facultad de Ciencias Económicas | UNLP | Calle 6 Nº 777
+            </div>
+            <div class="col m1 grey-text text-lighten-4">
+                v0.2.1
+            </div>
+        </div>
     </footer>
     <!-- Contenido de Sidenav-->
     <ul id="slide-out" class="sidenav">
         <div class='row'>
             <div class="center">
-                <h2>Sileg</h2>    
+                <h2>Sileg</h2>
             </div>
             <div class="center">
                 <h6>Sistema de Legajos</h6>
             </div>
         </div>
         <div class="collection">
-            <a class="waves-effect collection-item green-text text-darken-2" href="{{url_for('persons.create')}}">Crear Persona</a>
-            <a class="waves-effect collection-item green-text text-darken-2" href="{{url_for('persons.search')}}">Buscar Persona</a>
+            <a class="waves-effect collection-item green-text text-darken-2" href="{{url_for('persons.create')}}">Crear
+                Persona</a>
+            <a class="waves-effect collection-item green-text text-darken-2" href="{{url_for('persons.search')}}">Buscar
+                Persona</a>
             <!--a class="waves-effect collection-item amber-text text-darken-2" href="{{url_for('places.create')}}">Crear Lugar</a>
             <a class="waves-effect collection-item amber-text text-darken-2" href="{{url_for('places.search')}}">Buscar Lugar</a-->
-            <a class="waves-effect collection-item indigo-text text-darken-2" href="{{url_for('designations.search')}}">Buscar Designaciones</a>
+            <a class="waves-effect collection-item indigo-text text-darken-2"
+                href="{{url_for('designations.search')}}">Buscar Designaciones</a>
             <!--a class="waves-effect collection-item indigo-text text-darken-2 dropdown-trigger" href="#!" data-target="fastfind">Consultas rápidas de Designaciones</a-->
         </div>
     </ul>
@@ -86,7 +105,7 @@
         <li><a href="#!">Por personal docente</a></li>
         <li><a href="#!">Por materia</a></li>
     </ul-->
-    
+
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script type="text/javascript">
@@ -103,5 +122,4 @@
     {% endif %}
     {% endwith %}
 </body>
-
 </html>

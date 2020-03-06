@@ -8,6 +8,7 @@
                 <h4> Listado de Licencias </h4>
             </div>
             <div class="divider"></div>
+            <br>
             <div class="row">
                 <div class="col m2"></div>
                 <div class="col m4">
@@ -55,12 +56,12 @@
                         {% for l in plicenses %}
                             <tr>
                                 <td class="center"><a class="blue-text darken-4" href="#type">{{ lt2s(l.type) }}</a></td>
-                                <td class="center"><a class="blue-text darken-4" href="#type">{{ l.start }}</a></td>
-                                <td class="center"><a class="blue-text darken-4" href="#type">{{ l.end }}</a></td>
-                                <td class="center"><a class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3" href="#" data-target='dropdown1'><i class="material-icons">edit</i></a></td>
+                                <td class="center"><a class="blue-text darken-4" href="#type">{%if l.start%}{{l.start.strftime('%d-%m-%Y')}}{%endif%}</a></td>
+                                <td class="center"><a class="blue-text darken-4" href="#type">{%if l.end%}{{l.end.strftime('%d-%m-%Y')}}{%endif%}</a></td>
+                                <td class="center"><a class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3" href="#" data-target="dropdown-{{l.id}}"><i class="material-icons">edit</i></a></td>
                             </tr>
-                            <ul id='dropdown1' class='dropdown-content'>
-                                    <li><a class="red-text darken-4" href="#">Eliminar</a></li>
+                            <ul id='dropdown-{{l.id}}' class='dropdown-content'>
+                                    <li><a class="red-text darken-4" href="{{url_for('leavelicense.delete_personal_leave', uid=person.id, lid=l.id)}}">Eliminar</a></li>
                             </ul>
                         {% endfor %}
                     </tbody>
@@ -107,8 +108,8 @@
                                 <td class="center"><a class="blue-text darken-4" href="#cargo">{{ l.designation.function.name.split('-')[0] }}</a></td>
                                 <td class="center"><a class="blue-text darken-4" href="#caracter">{{ l.designation.function.name.split('-')[2] }}</a></td>
                                 <td class="center"><a class="blue-text darken-4" href="#dedicacion">{{ l.designation.function.name.split('-')[1] }}</a></td>
-                                <td class="center"><a class="blue-text darken-4" href="#type">{{ l.start }}</a></td>
-                                <td class="center"><a class="blue-text darken-4" href="#type">{{ l.end }}</a></td>
+                                <td class="center"><a class="blue-text darken-4" href="#type">{%if l.start%}{{l.start.strftime('%d-%m-%Y')}}{%endif%}</a></td>
+                                <td class="center"><a class="blue-text darken-4" href="#type">{%if l.end%}{{l.end.strftime('%d-%m-%Y')}}{%endif%}</a></td>
                                 <td class="center"><a class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3" href="#" data-target='dropdown1'><i class="material-icons">edit</i></a></td>
                             </tr>
                             <ul id='dropdown1' class='dropdown-content'>

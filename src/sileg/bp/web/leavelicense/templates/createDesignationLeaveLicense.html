@@ -5,21 +5,29 @@
     <div class="col m10">
         <div class="card-panel grey lighten-5">
             <div class="row">
-                <div class="col m8">
+                <div class="col m2"></div>
+                <div class="col m8 center">
                     <h4>Alta de Licencia de Designación</h4>
                 </div>
-                <div class="col m3">
-                    <p>Nombre: {{person.firstname}}</p>
-                    <p>Apellido: {{person.lastname}}</p>
-                    <p>Documento: {{person.identity_numbers[0].number}}</p>
-                </div>
-                <div class="col m3">
+                <div class="col m2"></div>
+            </div>
+            <div class="row">
+                <div class="col m2"></div>
+                <div class="col m4">
                     <h5>Designación</h5>
                     <p>Cargo: {{designation.function.name}}</p>
                     <p>Ubicación: {{designation.place.name}}</p>
                 </div>                
+                <div class="col m4">
+                    <h5>Persona</h5>
+                    <p>Nombre: {{person.firstname}}</p>
+                    <p>Apellido: {{person.lastname}}</p>
+                    <p>Documento: {{person.identity_numbers[0].number}}</p>
+                </div>
+                <div class="col m2"></div>
             </div>
             <div class="divider"></div>
+            <br>
             <form action="" method="post">
                 {{ form.csrf_token }}
                 <div class="row">
@@ -76,7 +84,7 @@
                 <div class="divider"></div>
                 <div class="row">
                     <div class="col m5">
-                        <h5 class="grey-text text-darken-2">Resolución Alta</h5>
+                        <h5 class="grey-text text-darken-2">Resolución</h5>
                     </div>
                 </div>
                 <div class="row">
@@ -85,7 +93,6 @@
                         {{ form.res.label }}
                         {{ form.res }}
                     </div>
-                    <div class="col m1"></div>
                     <div class="col m3 input-field">
                         {{ form.exp.label }}
                         {{ form.exp }}
@@ -98,11 +105,11 @@
                 <div class="divider"></div>
                 <br>
                 <div class="row">
-                    <div class="col m3"></div>
-                    <div class="col m3">
+                    <div class="col m2"></div>
+                    <div class="col m8 center">
                         <button class="btn light-blue darken-3">Crear Licencia</button>
                     </div>
-                    <div class="col m3"></div>
+                    <div class="col m2"></div>
                 </div>
             </form>
         </div>

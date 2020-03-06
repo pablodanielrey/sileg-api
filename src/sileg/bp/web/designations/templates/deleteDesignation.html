@@ -5,15 +5,20 @@
     <div class="col m10">
         <div class="card-panel grey lighten-5">
             <div class="row">
-                <div class="col m8">
-                    <h4>Extensión</h4>
+                <div class="col m2"></div>
+                <div class="col m8 center">
+                    <h4>Eliminar Designación</h4>
                 </div>
-                <div class="col m3">
+                <div class="col m2"></div>
+            </div>
+            <div class="row">
+                <div class="col m2"></div>
+                <div class="col m4">
                     <p>Nombre: {{person.firstname}}</p>
                     <p>Apellido: {{person.lastname}}</p>
                     <p>Documento: {{person.identity_numbers[0].number}}</p>
                 </div>
-                <div class="col m3">
+                <div class="col m4">
                     <h5>Designación</h5>
                     <p>Tipo: {{designation.type.value}}</p>
                     <p>Cargo: {{designation.function.name}}</p>
@@ -23,7 +28,8 @@
                         Inicio: {%if designation.start%}{{designation.start.strftime('%d-%m-%Y')}}{%endif%}
                         Fin: {%if designation.end%}{{designation.end.strftime('%d-%m-%Y')}}{%endif%}
                     </p>
-                </div>                
+                </div>
+                <div class="col m2"></div>
             </div>
             <div class="divider"></div>
             <form action="" method="post">
@@ -31,11 +37,12 @@
                 <div class="divider"></div>
                 <br>
                 <div class="row">
-                    <div class="col m3"></div>
-                    <div class="col m3">
+                    <div class="col m2"></div>
+                    CONSULTAR CASOS DE ELIMINACION
+                    <div class="col m8 center">
                         <button class="btn light-blue darken-3">Eliminar</button>
                     </div>
-                    <div class="col m3"></div>
+                    <div class="col m2"></div>
                 </div>
             </form>
         </div>
