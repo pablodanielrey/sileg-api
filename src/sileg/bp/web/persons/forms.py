@@ -378,6 +378,9 @@ class PersonDataModifyForm(FlaskForm):
                 newLog.data = json.dumps(personLog, default=str)
                 session.add(newLog)
                 session.commit()
+                return 'Datos personales modificados'
+            else:
+                return 'Error interno'
 
 
 class PersonIdNumberModifyForm(FlaskForm):
@@ -424,6 +427,9 @@ class PersonIdNumberModifyForm(FlaskForm):
                         newLog.data = json.dumps(idNumberLog, default=str)
                         session.add(newLog)
                         session.commit()
+                        return 'Documento agregado con éxito'
+                    else:
+                        return 'Error interno'
 
 
 class PersonMailModifyForm(FlaskForm):
@@ -468,6 +474,9 @@ class PersonMailModifyForm(FlaskForm):
                     newLog.data = json.dumps(newPersonalMailLog, default=str)
                     session.add(newLog)
                     session.commit()
+                    return 'Correo agregado con éxito'
+                else:
+                    return 'Error interno'
 
 class PersonPhoneModifyForm(FlaskForm):
     phone_type = SelectField('Tipo de número telefónico', coerce=str)
@@ -514,6 +523,9 @@ class PersonPhoneModifyForm(FlaskForm):
                     newLog.data = json.dumps(phoneToAddLog, default=str)
                     session.add(newLog)
                     session.commit()
+                    return 'Teléfono agregado con exito'
+                else:
+                    return 'Error interno'
                     
 
 class PersonSeniorityModifyForm(FlaskForm):
