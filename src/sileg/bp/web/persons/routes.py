@@ -227,6 +227,9 @@ def deleteIdentityNumber(user,uid,pidnumberid):
             abort(404)
         elif identityNumber == pidnumberid:
             session.commit()
+            flash('Documento eliminado correctamente')
+        else:
+            flash('Error interno')
         return redirect(url_for('persons.modifyPersonData', uid=uid))
 
 @bp.route('<uid>/correo/<pmid>/eliminar')
@@ -241,6 +244,9 @@ def deleteMail(user,uid,pmid):
             abort(404)
         elif mail == pmid:
             session.commit()
+            flash('Correo eliminado correctamente')
+        else:
+            flash('Error interno')
         return redirect(url_for('persons.modifyPersonData', uid=uid))
 
 @bp.route('<uid>/telefono/<phid>/eliminar')
@@ -255,4 +261,7 @@ def deletePhone(user,uid,phid):
             abort(404)
         elif phone == phid:
             session.commit()
+            flash('Teléfono eliminado correctamente')
+        else:
+            flash('Error interno')
         return redirect(url_for('persons.modifyPersonData', uid=uid))
