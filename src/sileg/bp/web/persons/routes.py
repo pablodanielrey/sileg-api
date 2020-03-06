@@ -120,7 +120,8 @@ def personData(user,uid):
     with open_users_session() as session:
         persons = usersModel.get_users(session, [uid])
         if not persons or len(persons) <= 0:
-            abort(404)
+            if persons[0].deleted:
+                abort(404)
         person = persons[0]
         return render_template('showPerson.html', user=user,person=person)
 

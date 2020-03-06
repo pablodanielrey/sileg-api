@@ -29,7 +29,9 @@
                     <p>Tipo de documento</p>
                     {% if person.identity_numbers|length > 0 %}
                     {% for pi in person.identity_numbers if pi.type.value != 'CUIL' and pi.type.value != 'CUIT' %}
+                    {% if not pi.deleted %}
                     <h6><strong>{{pi.type.value}}</strong></h6>
+                    {% endif %}
                     {% else %}
                     <h6><strong>No se encuentra registrado</strong></h6>
                     {% endfor %}
@@ -41,7 +43,9 @@
                     <p>Número de documento</p>
                     {% if person.identity_numbers|length > 0 %}
                     {% for pi in person.identity_numbers if pi.type.value != 'CUIL' and pi.type.value != 'CUIT' %}
+                    {% if not pi.deleted %}
                     <h6><strong>{{pi.number}}</strong></h6>
+                    {% endif %}
                     {% else %}
                     <h6><strong>No se encuentra registrado</strong></h6>
                     {% endfor %}
@@ -126,7 +130,9 @@
                     <p>Correo de trabajo</p>
                     {% if person.mails|length > 0 %}
                     {% for pm in person.mails if pm.type.value == 'INSTITUTIONAL' or pm.type.value == 'NOTIFICATION' %}
+                    {% if not pm.deleted %}
                     <h6><strong><a href="mailto:{{pm.email}}">{{pm.email}}</a></strong></h6>
+                    {% endif %}
                     {% else %}
                     <h6><strong>No se encuentra registrado</strong></h6>
                     {% endfor %}
@@ -138,7 +144,9 @@
                     <p>Correo Personal</p>
                     {% if person.mails|length > 0 %}
                     {% for pm in person.mails if pm.type.value == 'ALTERNATIVE' %}
+                    {% if not pm.deleted %}
                     <h6><strong><a href="mailto:{{pm.email}}">{{pm.email}}</a></strong></h6>
+                    {% endif %}
                     {% else %}
                     <h6><strong>No se encuentra registrado</strong></h6>
                     {% endfor %}
@@ -154,7 +162,9 @@
                     <p>Teléfono Fijo</p>
                     {% if person.phones|length > 0 %}
                     {% for ph in person.phones if ph.type.value == 'LANDLINE' %}
+                    {% if not ph.deleted %}
                     <h6><strong>{{ph.number}}</strong></h6>
+                    {% endif %}
                     {% else %}
                     <h6><strong>No se encuentra registrado</strong></h6>
                     {% endfor %}
@@ -166,7 +176,9 @@
                     <p>Teléfono Móvil</p>
                     {% if person.phones|length > 0 %}
                     {% for ph in person.phones if ph.type.value == 'CELLPHONE' %}
+                    {% if not ph.deleted %}
                     <h6><strong>{{ph.number}}</strong></h6>
+                    {% endif %}
                     {% else %}
                     <h6><strong>No se encuentra registrado</strong></h6>
                     {% endfor %}
@@ -206,10 +218,11 @@
 
                         <tbody>
                             {% for pi in person.identity_numbers if pi.type.value != 'CUIL' and pi.type.value != 'CUIT' %}
+                            {% if not pi.deleted %}
                             <tr>
                                 <td>{{pi.type.value}}</td>
                                 <td>{{pi.number}}</td>
-                                {% if pi.file %}
+                                {% if pi.file and not pi.file.deleted %}
                                 <td>{{pi.file.created.strftime('%d/%m/%Y')}}</td>
                                 <td class="blue-text darken-4">
                                     <a href="{{url_for('persons.downloadIdNumberFile',uid=person.id,iid=pi.id)}}" download>
@@ -220,6 +233,7 @@
                                 <td colspan="2">No se subió archivo</td>
                                 {% endif %}
                             </tr>
+                            {% endif %}
                             {% else %}
                             <tr>
                                 <td colspan="4">No se encuentran subidos archivos de documento de identidad</td>
@@ -241,6 +255,7 @@
 
                         <tbody>
                             {% for pi in person.identity_numbers if pi.type.value == 'CUIL' or pi.type.value == 'CUIT' %}
+                            {% if not pi.deleted %}
                             <tr>
                                 <td>{{pi.type.value}}</td>
                                 <td>{{pi.number}}</td>
@@ -254,6 +269,7 @@
                                 <td colspan="2">No se subió archivo</td>
                                 {% endif %}
                             </tr>
+                            {% endif %}
                             {% else %}
                             <tr>
                                 <td colspan="4">No se encuentran subidos archivos de constancia de CUIT / CUIL</td>
