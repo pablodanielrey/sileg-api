@@ -34,7 +34,6 @@
                             <th class="center">Tipo de Documento</th>
                             <th class="center">Documento</th>
                             <th class="center">Acciones</th>
-                            <th class="center">Eliminar</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -48,9 +47,6 @@
                                     <i class="material-icons">edit</i>
                                 </a>
                             </td>
-                            <td class="center"><a class="btn-floating waves-effect waves-light red" href="#eliminar">
-                                <i class="material-icons">delete</i></a>
-                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -62,6 +58,7 @@
                     <li><a class="blue-text darken-4" href="{{url_for('persons.degrees', uid=p.id)}}">Títulos</a></li>
                     <li><a class="blue-text darken-4" href="{{url_for('leavelicense.create_personal_leave', uid=p.id)}}">Generar Licencia</a></li>
                     <li><a class="blue-text darken-4" href="{{url_for('leavelicense.list_leave_licenses', uid=p.id)}}">Ver Licencias</a></li>
+                    <li><a class="red-text" href="#">Eliminar</a></li>
                 </ul>
                 {% endfor %}
                 {% elif persons != None %}

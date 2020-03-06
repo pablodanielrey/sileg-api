@@ -1,6 +1,8 @@
 import json
 import uuid
 import base64
+import re
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, DateTimeField, SelectField
 from flask_wtf.file import FileField
@@ -135,11 +137,22 @@ class PersonCreateForm(FlaskForm):
                 if person_file_id:
                     idNumber.file_id = person_file_id
                 session.add(idNumber)
+                toLog.append({  'id': idNumber.id,
+                                    'created': idNumber.created,
+                                    'updated': idNumber.updated,
+                                    'deleted': idNumber.deleted,
+                                    'type': idNumber.type,
+                                    'number': idNumber.number,
+                                    'user_id': idNumber.user_id,
+                                })
                 
                 """ Se genera correo laboral """
                 if self.work_email.data:
                     newWorkEmail = Mail()
-                    newWorkEmail.type = MailTypes.INSTITUTIONAL
+                    emailType = MailTypes.NOTIFICATION
+                    if re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]*econo.unlp.edu.ar$",self.work_email.data) != None:
+                        emailType = MailTypes.INSTITUTIONAL
+                    newWorkEmail.type = emailType
                     newWorkEmail.email = self.work_email.data
                     newWorkEmail.user_id = uid
                     session.add(newWorkEmail)
@@ -156,7 +169,7 @@ class PersonCreateForm(FlaskForm):
                 """ Se genera correo personal """
                 if self.personal_email.data:
                     newPersonalMail = Mail()
-                    newPersonalMail.type = MailTypes.NOTIFICATION
+                    newPersonalMail.type = MailTypes.ALTERNATIVE
                     newPersonalMail.email = self.personal_email.data
                     newPersonalMail.user_id = uid
                     session.add(newPersonalMail)
@@ -229,7 +242,15 @@ class PersonCreateForm(FlaskForm):
                                     })
                     if cfid:
                         cuil.file_id = cfid
-                    session.add(cuil)  
+                    session.add(cuil)
+                    toLog.append({  'id': cuil.id,
+                                    'created': cuil.created,
+                                    'updated': cuil.updated,
+                                    'deleted': cuil.deleted,
+                                    'type': cuil.type,
+                                    'number': cuil.number,
+                                    'user_id': cuil.user_id,
+                                })  
 
                 newLog = UsersLog()
                 newLog.entity_id = newUser.id
