@@ -24,7 +24,10 @@ def create(user):
     if form.validate_on_submit():
         identityNumber = form.save(user['sub'])
         if identityNumber:
+            flash(Markup('<span>¡Usuario Creado!</span>'))
             return redirect(url_for('persons.search', query=identityNumber))
+        else:
+            flash(Markup('<span>¡Error al crear el usuario!, intente nuevamente.</span>'))
     return render_template('createPerson.html', user=user, form=form)
 
 
@@ -82,8 +85,10 @@ def deleteDegree(user,uid,did):
     with open_users_session() as session:
         degree = usersModel.delete_person_degree(session,uid,did,user['sub'])
         if not degree:
+            flash(Markup('<span>¡Error al eliminar el titulo!</span>'))
             abort(404)
         elif degree == did:
+            flash(Markup('<span>¡Titulo eliminado!</span>'))
             session.commit()
         return redirect(url_for('persons.degrees', uid=uid))
 
@@ -117,8 +122,6 @@ def personData(user,uid):
         if not persons or len(persons) <= 0:
             abort(404)
         person = persons[0]
-        #for pi in person.identity_numbers:
-        #    pi.file
         return render_template('showPerson.html', user=user,person=person)
 
 
