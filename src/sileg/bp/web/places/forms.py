@@ -87,7 +87,6 @@ class PlaceCreateForm(FlaskForm):
                         'telephone': newPlace.telephone,
                         'email': newPlace.email,
                         })
-        print(toLog)
         newLog = SilegLog()
         newLog.entity_id = newPlace.id
         newLog.authorizer_id = authorizer_id
