@@ -3,7 +3,7 @@ from sileg.auth import require_user
 
 from .forms import PlaceSearchForm,PlaceCreateForm
 
-from sileg.models import open_sileg_session
+from sileg.models import open_sileg_session, silegModel
 
 from . import bp
 
@@ -32,7 +32,7 @@ def create_post(user):
         return render_template('createPlace.html',user=user,form=form)
     with open_sileg_session() as session:     
         form.save(session, user['sub'])
-        #session.commit()
+        session.commit()
         flash(Markup('<span>¡Lugar Creado!</span>'))
     return redirect(url_for('places.search', query=form.name.data))
 
@@ -47,7 +47,8 @@ def search(user):
     query = request.args.get('query','',str)
     places = []
     if query:
-        #TODO ver metodo de busqueda de lugares
+        #with open_sileg_session() as session:
+        #    result = silegModel.
         places = None            
     else:
         places = None
