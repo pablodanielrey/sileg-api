@@ -3,6 +3,7 @@ from flask import render_template, flash, redirect,request, Markup, url_for, abo
 from sileg.auth import require_user
 from sileg.models import silegModel, open_sileg_session, usersModel, open_users_session
 from sileg_model.model.entities.Designation import Designation, DesignationTypes, DesignationEndTypes
+from sileg_model.model.entities.Place import PlaceTypes
 
 from . import bp
 from .forms import ExtendDesignationForm, \
@@ -54,6 +55,38 @@ def dt2s(dt: DesignationTypes):
     if dt == DesignationTypes.DISCHARGE:
         return 'Baja'
     return ''
+
+def placeTypeToString(p:PlaceTypes):
+    if p == PlaceTypes.UNIVERSIDAD:
+        return 'Universidad'
+    if p == PlaceTypes.FACULTAD:
+        return 'Facultad'
+    if p == PlaceTypes.SECRETARIA:
+        return 'Secretaría'
+    if p == PlaceTypes.PROSECRETARIA:
+        return 'Pro-Secretaría'
+    if p == PlaceTypes.DEPARTAMENTO:
+        return 'Departamento'
+    if p == PlaceTypes.DIRECCION:
+        return 'Dirección'
+    if p == PlaceTypes.INSTITUTO:
+        return 'Instituto'
+    if p == PlaceTypes.ESCUELA:
+        return 'Escuela'
+    if p == PlaceTypes.SEMINARIO:
+        return 'Seminario'
+    if p == PlaceTypes.AREA:
+        return 'Area'
+    if p == PlaceTypes.DIVISION:
+        return 'División'
+    if p == PlaceTypes.MAESTRIA:
+        return 'Maestría'
+    if p == PlaceTypes.CENTRO:
+        return 'Centro'
+    if p == PlaceTypes.MATERIA:
+        return 'Materia'
+    if p == PlaceTypes.CATEDRA:
+        return 'Catedra'
 
 
 """
@@ -497,13 +530,12 @@ def placeDesignations(user, pid):
     assert pid is not None
 
     with open_sileg_session() as session:
-        place = silegModel.get_places(session,[pid])
+        place = silegModel.get_places(session,[pid])[0]
         dids = silegModel.get_designations_by_places(session, [pid])
         designations = silegModel.get_designations(session, dids)
-
         original = [d for d in designations if d.deleted is None and (d.type == DesignationTypes.ORIGINAL or d.type == DesignationTypes.REPLACEMENT)]
 
-        personas_activas = {}
+        persons_designations = {}
 
         #armo el grupo de las designaciones relacionadas con el cargo original
         active = []
@@ -514,14 +546,13 @@ def placeDesignations(user, pid):
                     if dr.type is DesignationTypes.PROMOTION or dr.type is DesignationTypes.ORIGINAL:
                         related.append(dr)
             uid = related[0].user_id
-            if uid not in personas_activas:
-                personas_activas[uid] = []
-            personas_activas[uid].append(related)
+            if uid not in persons_designations:
+                persons_designations[uid] = []
+            persons_designations[uid].append(related)
 
-        for p in personas_activas.values():
+        for p in persons_designations.values():
             active.append(p)
-
-        return render_template('placeDesignations.html', dt2s=dt2s, cend=calculate_end, user=user, designations=active, place=place, is_secondary=_is_secondary, is_suplencia=_is_suplencia, find_user=_find_user)
+        return render_template('placeDesignations.html', dt2s=dt2s, cend=calculate_end, user=user, persons=active, place=place, is_secondary=_is_secondary, is_suplencia=_is_suplencia, find_user=_find_user, placeTypeToString=placeTypeToString)
 
 
 @bp.route('/crear/<uid>')

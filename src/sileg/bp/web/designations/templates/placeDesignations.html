@@ -1,32 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
-
-<script>
-    function toggle(id) {
-        var x = document.getElementById(id);
-        if (x.style.visibility === "collapse") {
-            x.style.visibility = "visible";
-        } else {
-            x.style.visibility = "collapse";
-        }
-    }
-</script>
-
 <div class="row">
     <div class="col m1"></div>
     <div class="col m10">
-
         <div class="card-panel grey lighten-5">
-            <div class="center">
-                <h4> Listado de Designaciones </h4>
-            </div>
-            <br>
-            <div class="divider"></div>
-            <br>
             <div class="row">
                 <div class="col m2"></div>
-                <div class="col m4">
-                    <p>Nombre: {{place.name}}</p>
+                <div class="col m4 center">
+                    <h4> {%if place.name%}{{place.name}}{%endif%} </h4>
+                </div>
+                <div class="col m4 right">
+                    <p>Tipo: {%if place.type%}{{placeTypeToString(place.type)}}{%endif%}</p>
+                    <p>Correo: {%if place.email%}{{place.email}}{%endif%}</p>
+                    <p>Teléfono: {%if place.telephone%}{{place.telephone}}{%endif%}</p>
                 </div>
                 <div class="col m2"></div>
             </div>
@@ -35,18 +21,30 @@
             <br>
             <div class="row">
                 <div class="col m12 center">
-                    <a class="btn waves-effect blue lighten-1"
-                        href="">Nueva Designación</a>
+                    <a class="btn waves-effect blue lighten-1" href="">
+                        Nueva Designación
+                    </a>
                 </div>
             </div>
-
-
-            
-            {% for ps in designations %}
+            {% if persons %}
+            <div class="row">
+                <div class="col m12 center">
+                    <h4>Designaciones del Lugar</h4>
+                </div>
+            </div>
+            {% endif %}
+            {% for p in persons %}
                 <!-- grupos de designaciones por cargo -->
-                {% for ds in ps %}
+                <div class="divider"></div>
                 <br>
                 <br>
+                <div class="row">
+                    <div class="col m2"></div>
+                    <div class="col m8 center">
+                        <h5>{{find_user(p[0][0])}}</h5>
+                    </div>
+                    <div class="col m2"></div>
+                </div>
                 <div>
                     <table class="responsive-table highlight">
                         <thead style="background-color: black; color:white">
@@ -63,7 +61,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- designaciones originales, bajas, extensiones -->
+                        {% for ds in p %}
                             {% for d in ds %}
                             <tr>
                                 <td class="center"><a class="blue-text darken-4"
@@ -199,10 +197,10 @@
                             </tr>
                             {% endif %}
                             {% endfor %}
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
-                {% endfor %}
             {% endfor %}
         </div>
     </div>
