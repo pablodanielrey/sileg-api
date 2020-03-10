@@ -257,10 +257,10 @@
                         <div class="input-field">
                             {{ form.seniority_external_years.label }}
                             {% if form.seniority_external_years.errors %}
-                            {{ form.seniority_external_years(class="validate invalid", type="number") }}
+                            {{ form.seniority_external_years(class="validate invalid", type="number", min="0") }}
                             <span class="helper-text" data-error="{{form.seniority_external_years.errors[0]}}"></span>
                             {% else %}
-                            {{ form.seniority_external_years(class="validate", type="number") }}
+                            {{ form.seniority_external_years(class="validate", type="number", min="0") }}
                             {% endif %}
                         </div>
                     </div>
@@ -268,10 +268,10 @@
                         <div class="input-field">
                             {{ form.seniority_external_months.label }}
                             {% if form.seniority_external_months.errors %}
-                            {{ form.seniority_external_months(class="validate invalid", type="number") }}
+                            {{ form.seniority_external_months(class="validate invalid", type="number", min="0", max="11") }}
                             <span class="helper-text" data-error="{{form.seniority_external_months.errors[0]}}"></span>
                             {% else %}
-                            {{ form.seniority_external_months(class="validate", type="number") }}
+                            {{ form.seniority_external_months(class="validate", type="number", min="0", max="11") }}
                             {% endif %}
                         </div>
                     </div>
@@ -279,10 +279,10 @@
                         <div class="input-field">
                             {{ form.seniority_external_days.label }}
                             {% if form.seniority_external_days.errors %}
-                            {{ form.seniority_external_days(class="validate invalid", type="number") }}
+                            {{ form.seniority_external_days(class="validate invalid", type="number", min="0", max="29") }}
                             <span class="helper-text" data-error="{{form.seniority_external_days.errors[0]}}"></span>
                             {% else %}
-                            {{ form.seniority_external_days(class="validate", type="number") }}
+                            {{ form.seniority_external_days(class="validate", type="number", min="0", max="29") }}
                             {% endif %}
                         </div>
                     </div>

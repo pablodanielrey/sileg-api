@@ -13,8 +13,12 @@ from wtforms.validators import ValidationError, DataRequired, EqualTo, Email, In
 from sileg.helpers.apiHandler import getStates
 from sileg.helpers.namesHandler import id2sDegrees, id2sIdentityNumber
 
-from sileg.models import usersModel, open_users_session
+from sileg.models import usersModel, open_users_session, open_sileg_session
 from users.model.entities.User import User, IdentityNumber, Mail, Phone, File, MailTypes, PhoneTypes, UsersLog, UserLogTypes, IdentityNumberTypes, DegreeTypes, UserDegree
+
+from sileg_model.model.SilegModel import SilegModel
+from sileg_model.model.entities.ExternalSeniority import ExternalSeniority
+from sileg_model.model.entities.Log import SilegLog, SilegLogTypes
 
 class PersonCreateForm(FlaskForm):
     """
@@ -60,7 +64,7 @@ class PersonCreateForm(FlaskForm):
             except:
                 raise ValidationError('La antiguedad debe ser un número')
             if number < 0:
-                raise ValidationError('El número debe ser mayor a 0')
+                raise ValidationError('El número debe ser mayor o igual 0')
     
     def validate_seniority_external_months(self,seniority_external_months):
         if self.seniority_external_months.data:
@@ -69,7 +73,9 @@ class PersonCreateForm(FlaskForm):
             except:
                 raise ValidationError('La antiguedad debe ser un número')
             if number < 0:
-                raise ValidationError('El número debe ser mayor a 0')
+                raise ValidationError('El número debe ser mayor o igual a 0')
+            if number > 11:
+                raise ValidationError('Utilice un número entre 0 y 11')
     
     def validate_seniority_external_days(self,seniority_external_days):
         if self.seniority_external_days.data:
@@ -78,7 +84,9 @@ class PersonCreateForm(FlaskForm):
             except:
                 raise ValidationError('La antiguedad debe ser un número')
             if number < 0:
-                raise ValidationError('El número debe ser mayor a 0')
+                raise ValidationError('El número debe ser mayor o igual a 0')
+            if number > 29:
+                raise ValidationError('Utilice un número entre 0 y 29')
 
     def save(self,authorizer_id):
         """
@@ -259,23 +267,56 @@ class PersonCreateForm(FlaskForm):
                 newLog.type = UserLogTypes.CREATE
                 newLog.data = json.dumps(toLog, default=str)
                 session.add(newLog)
-                session.commit()
-
-                """
-
-                MODELO DE SILEG ---> ALTA DE ANTIGUEDAD DE PERSONA
-
-                """
-                #TODO Agregar a Sileg model la antiguedad de la persona
-                newSeniority = {
-                    'seniority_external_years' : self.seniority_external_years.data,
-                    'seniority_external_months'  : self.seniority_external_months.data,
-                    'seniority_external_days' : self.seniority_external_days.data
-                }
-
-                return self.person_number.data
+                #session.commit()
+                new_person_identity_number = self.person_number.data
             else:
                 return None
+
+        """
+
+        MODELO DE SILEG ---> ALTA DE ANTIGUEDAD DE PERSONA
+
+        """
+        #TODO Agregar a Sileg model la antiguedad de la persona
+        if self.seniority_external_years.data or self.seniority_external_months.data or self.seniority_external_days.data:
+            with open_sileg_session() as session:
+                newSeniority = {
+                    'seniority_external_years' : int(self.seniority_external_years.data) if self.seniority_external_years.data else 0,
+                    'seniority_external_months'  : int(self.seniority_external_months.data) if self.seniority_external_months.data else 0,
+                    'seniority_external_days' : int(self.seniority_external_days.data) if self.seniority_external_days.data else 0
+                }
+                external_seniority = ExternalSeniority()
+                external_seniority.id = str(uuid.uuid4())
+                external_seniority.user_id = uid
+                external_seniority.years = newSeniority['seniority_external_years']
+                external_seniority.months = newSeniority['seniority_external_months']
+                external_seniority.days = newSeniority['seniority_external_days']
+                session.add(external_seniority)
+                external_seniority_log = {
+                'id': external_seniority.id,
+                'created': external_seniority.created,
+                'updated': external_seniority.updated,
+                'deleted': external_seniority.deleted,
+                'days': external_seniority.days,
+                'months': external_seniority.months,
+                'years': external_seniority.years,
+                'user_id': external_seniority.user_id
+                }
+                log = SilegLog()
+                log.type = SilegLogTypes.CREATE
+                log.entity_id = external_seniority.id
+                log.authorizer_id = authorizer_id
+                log.data = json.dumps([external_seniority_log], default=str)
+                session.add(log)
+                #session.commit()
+                #print(external_seniority.years)
+                #print(external_seniority.months)
+                #print(external_seniority.days)
+                #print(external_seniority.id)
+                #print(uid)
+                #print(external_seniority.user_id)
+                return new_person_identity_number
+        return new_person_identity_number
 
 class DegreeAssignForm(FlaskForm):
     degreeType = SelectField('Tipo de Título')
