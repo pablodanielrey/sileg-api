@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect,request, Markup, url_for, abort
 from sileg.auth import require_user
 
-from .forms import PlaceSearchForm,PlaceCreateForm
+from .forms import PlaceSearchForm,PlaceCreateForm,placeTypeToString
 
 from sileg.models import open_sileg_session, silegModel
 
@@ -55,4 +55,5 @@ def search(user):
                 result = []
     else:
         places = None
-    return render_template('searchPlaces.html',user=user, places=places,form=form)
+    return render_template('searchPlaces.html',user=user, places=places,form=form,placeTypeToString=placeTypeToString)
+    
