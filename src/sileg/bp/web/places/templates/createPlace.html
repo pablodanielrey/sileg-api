@@ -38,6 +38,21 @@
                     </div>
                     <div class="col m1"></div>
                 </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m10">
+                        <div class="input-field">
+                            {{ form.description.label }}
+                            {% if form.description.errors %}
+                            {{ form.description(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.description.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.description(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
                 <div class="divider"></div>
                 <div class="row">
                     <div class="col m5">
