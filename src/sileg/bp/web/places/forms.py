@@ -28,7 +28,7 @@ def placeTypeToString(p:PlaceTypes):
         return 'Instituto'
     if p == PlaceTypes.ESCUELA:
         return 'Escuela'
-    if p == PlaceTypes.SEMINRARIO:
+    if p == PlaceTypes.SEMINARIO:
         return 'Seminario'
     if p == PlaceTypes.AREA:
         return 'Area'

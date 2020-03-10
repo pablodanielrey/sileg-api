@@ -31,22 +31,40 @@
                         <tr>
                             <th>Nombre</th>
                             <th class="center">Tipo de Lugar</th>
+                            <th class="center">Teléfono</th>
+                            <th class="center">Correo</th>
+                            <th class="center">Descripción</th>
                             <th class="center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for p in places %}
                         <tr>
-                            <td><a class="blue-text darken-4" href="#">
-                                    {{p.name}}
+                            <td class="blue-text darken-4">
+                                {{p.name}}
+                            </td>
+                            <td class="center blue-text darken-4">
+                                {{placeTypeToString(p.type)}}
+                            </td>
+                            <td class="center blue-text darken-4">
+                                {%if p.telephone%}{{p.telephone}}{%endif%}
+                            </td>
+                            <td class="center blue-text darken-4">
+                                {%if p.email%}{{p.email}}{%endif%}
+                            </td>
+                            <td class="center blue-text darken-4">
+                                {%if p.description%}{{p.description}}{%endif%}
+                            </td>
+                            <td class="center">
+                                <a class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3"
+                                    href="#" data-target="dropdown-{{p.id}}">
+                                    <i class="material-icons">edit</i>
                                 </a>
                             </td>
-                            <td class="center">
-
-                            </td>
-                            <td class="center">
-                                
-                            </td>
+                            <ul id="dropdown-{{p.id}}" class="dropdown-content">
+                                <li><a class="blue-text darken-4" href="#">Designaciones</a></li>
+                                <li><a class="blue-text darken-4" href="#">Modificar</a></li>
+                            </ul>
                         </tr>
                         {% endfor %}
                     </tbody>
