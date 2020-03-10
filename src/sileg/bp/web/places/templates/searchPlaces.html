@@ -62,7 +62,7 @@
                                 </a>
                             </td>
                             <ul id="dropdown-{{p.id}}" class="dropdown-content">
-                                <li><a class="blue-text darken-4" href="#">Designaciones</a></li>
+                                <li><a class="blue-text darken-4" href="{{url_for('designations.placeDesignations', pid=p.id)}}">Designaciones</a></li>
                                 <li><a class="blue-text darken-4" href="{{url_for('places.modifyPlace', pid=p.id)}}">Modificar</a></li>
                             </ul>
                         </tr>

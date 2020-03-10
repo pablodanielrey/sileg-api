@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% block content %}
+
+<script>
+    function toggle(id) {
+        var x = document.getElementById(id);
+        if (x.style.visibility === "collapse") {
+            x.style.visibility = "visible";
+        } else {
+            x.style.visibility = "collapse";
+        }
+    }
+</script>
+
+<div class="row">
+    <div class="col m1"></div>
+    <div class="col m10">
+
+        <div class="card-panel grey lighten-5">
+            <div class="center">
+                <h4> Listado de Designaciones </h4>
+            </div>
+            <br>
+            <div class="divider"></div>
+            <br>
+            <div class="row">
+                <div class="col m2"></div>
+                <div class="col m4">
+                    <p>Nombre: {{place.name}}</p>
+                </div>
+                <div class="col m2"></div>
+            </div>
+            <div class="divider"></div>
+            <br>
+            <br>
+            <div class="row">
+                <div class="col m12 center">
+                    <a class="btn waves-effect blue lighten-1"
+                        href="">Nueva Designación</a>
+                </div>
+            </div>
+
+
+            
+            {% for ps in designations %}
+                <!-- grupos de designaciones por cargo -->
+                {% for ds in ps %}
+                <br>
+                <br>
+                <div>
+                    <table class="responsive-table highlight">
+                        <thead style="background-color: black; color:white">
+                            <tr>
+                                <th class="center">Tipo</th>
+                                <th class="center">Lugar</th>
+                                <th class="center">Cargo</th>
+                                <th class="center">Carácter</th>
+                                <th class="center">Dedicacion</th>
+                                <th class="center">Inicio</th>
+                                <th class="center">Fin (Calculado)</th>
+                                <th class="center">Detalle</th>
+                                <th class="center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- designaciones originales, bajas, extensiones -->
+                            {% for d in ds %}
+                            <tr>
+                                <td class="center"><a class="blue-text darken-4"
+                                        href="{{url_for('designations.designation_detail', did=d.id)}}">{{ dt2s(d.type) }}</a>
+                                </td>
+                                <td class="center"><a class="blue-text darken-4" href="#place">{{ d.place.name }},
+                                        ({{d.place.type.value}})</a></td>
+                                <td class="center"><a class="blue-text darken-4"
+                                        href="#cargo">{{ d.function.name.split('-')[0] }}</a></td>
+                                <td class="center"><a class="blue-text darken-4"
+                                        href="#caracter">{{ d.function.name.split('-')[2] }}</a></td>
+                                <td class="center"><a class="blue-text darken-4"
+                                        href="#cargopplanta">{{ d.function.name.split('-')[1] }}</a></td>
+                                <td class="center"><a class="blue-text darken-4"
+                                        href="#type">{%if d.start%}{{d.start.strftime('%d-%m-%Y')}}{%endif%}</a></td>
+                                <td class="center"><a class="blue-text darken-4"
+                                        href="#type">{%if cend(d)%}{{cend(d).strftime('%d-%m-%Y')}}{%endif%}</a></td>
+                                <td class="center">
+                                    {% if d.designations %}
+                                    <button class="btn-floating waves-effect deep-purple darken-4"
+                                        onclick="toggle('prorrogas-{{d.id}}')">P</button>
+                                    <button class="btn-floating waves-effect teal darken-4"
+                                        onclick="toggle('suplencia-{{d.id}}')">S</button>
+                                    {% endif %}
+                                </td>
+                                <td class="center">
+                                    <a class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3"
+                                        href="#" data-target="dropdown-{{d.id}}">
+                                        <i class="material-icons">edit</i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <ul id="dropdown-{{d.id}}" class="dropdown-content">
+                                <li><a class="blue-text darken-4"
+                                        href="{{url_for('designations.designation_detail', did=d.id)}}">Detalle</a></li>
+                                <li><a class="blue-text darken-4"
+                                        href="{{url_for('designations.promote', did=d.id)}}">Extender</a></li>
+                                <li><a class="blue-text darken-4"
+                                        href="{{url_for('designations.extend', did=d.id)}}">Prorrogar</a></li>
+                                <li><a class="blue-text darken-4"
+                                        href="{{url_for('designations.discharge', did=d.id)}}">Baja</a></li>
+                                <li><a class="blue-text darken-4"
+                                        href="{{url_for('designations.convalidate', did=d.id)}}">Convalidar</a></li>
+                                <li><a class="blue-text darken-4"
+                                        href="{{url_for('designations.replacement_select_person', did=d.id)}}">Suplencia</a>
+                                </li>
+                                <li><a class="blue-text darken-4"
+                                        href="{{url_for('leavelicense.create_designation_leave_license', did=d.id)}}">Licencia</a>
+                                </li>
+                                <li><a class="red-text darken-4"
+                                        href="{{url_for('designations.delete', did=d.id)}}">Eliminar</a></li>
+                            </ul>
+
+                            <!-- prorrogas, bajas de prorrogas -->
+                            {% if d.designations %}
+                            <tr id="prorrogas-{{d.id}}" style="visibility: collapse;">
+                                <td colspan="8">
+                                    <table class="center responsive-table highlight">
+                                        <thead class="deep-purple darken-4">
+                                            <tr>
+                                                <th class="center white-text">Tipo</th>
+                                                <th class="center white-text">Inicio</th>
+                                                <th class="center white-text">Fin</th>
+                                                <th class="center white-text">Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>                                       
+                                            {% for d2 in d.designations %}
+                                            {% if not d2.historic and is_secondary(d2) %}
+                                            <tr>
+                                                <td class="center"><a class="blue-text darken-4" 
+                                                    href="{{url_for('designations.designation_detail', did=d2.id)}}">{{ dt2s(d2.type) }}</a></td>
+                                                <td class="center blue-text darken-4">
+                                                    {%if d2.start%}{{d2.start.strftime('%d-%m-%Y')}}{%endif%}</td>
+                                                <td class="center blue-text darken-4">
+                                                    {% if d2.end %}{{ d2.end.strftime('%d-%m-%Y')}}{% endif %}</td>
+                                                <td class="center"><a
+                                                        class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3"
+                                                        href="#" data-target="dropdown-{{d2.id}}"><i
+                                                            class="material-icons">edit</i></a></td>
+                                            </tr>
+                                            <ul id="dropdown-{{d2.id}}" class="dropdown-content">
+                                                <li><a class="blue-text darken-4"
+                                                        href="{{url_for('designations.discharge', did=d2.id)}}">Baja</a>
+                                                </li>
+                                                <li><a class="red-text darken-4"
+                                                        href="{{url_for('designations.delete', did=d2.id)}}">Eliminar</a>
+                                                </li>
+                                            </ul>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <!-- suplencias -->
+                            <tr id="suplencia-{{d.id}}" style="visibility: collapse;">
+                                <td colspan="8">
+                                    <table class="responsive-table highlight">
+                                        <thead class="teal darken-4">
+                                            <tr>
+                                                <th class="center white-text">Tipo</th>
+                                                <th class="center white-text">Reemplazo</th>
+                                                <th class="center white-text">Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for d2 in d.designations %}
+                                            {% if not d2.historic and is_suplencia(d2) %}
+                                            <tr>
+                                                <td class="center blue-text darken-4"><a
+                                                        href="{{url_for('designations.designation_detail', did=d2.id)}}">{{ dt2s(d2.type) }}</a>
+                                                </td>
+                                                <td class="center blue-text darken-4">{{ find_user(d2) }}</td>
+                                                <td class="center"><a
+                                                        class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3"
+                                                        href="#" data-target="dropdown-{{d2.id}}"><i
+                                                            class="material-icons">edit</i></a></td>
+                                            </tr>
+                                            <ul id="dropdown-{{d2.id}}" class="dropdown-content">
+                                                <li><a class="blue-text darken-4"
+                                                        href="{{url_for('designations.discharge', did=d2.id)}}">Baja</a>
+                                                </li>
+                                                <li><a class="red-text darken-4"
+                                                        href="{{url_for('designations.delete', did=d2.id)}}">Eliminar</a>
+                                                </li>
+                                            </ul>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

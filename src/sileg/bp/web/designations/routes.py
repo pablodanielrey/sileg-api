@@ -487,6 +487,42 @@ def personDesignations(user, uid):
 
         return render_template('personDesignations.html', dt2s=dt2s, cend=calculate_end, user=user, designations=active, person=person, is_secondary=_is_secondary, is_suplencia=_is_suplencia, find_user=_find_user)
 
+@bp.route('/lugar/<pid>')
+@require_user
+def placeDesignations(user, pid):
+    """
+    Pagina de lisata de designaciones de un lugar
+    Recibe como parametro pid del lugar
+    """
+    assert pid is not None
+
+    with open_sileg_session() as session:
+        place = silegModel.get_places(session,[pid])
+        dids = silegModel.get_designations_by_places(session, [pid])
+        designations = silegModel.get_designations(session, dids)
+
+        original = [d for d in designations if d.deleted is None and (d.type == DesignationTypes.ORIGINAL or d.type == DesignationTypes.REPLACEMENT)]
+
+        personas_activas = {}
+
+        #armo el grupo de las designaciones relacionadas con el cargo original
+        active = []
+        for d in original:
+            related = [d]
+            for dr in d.designations:
+                if not (dr.historic or dr.deleted):
+                    if dr.type is DesignationTypes.PROMOTION or dr.type is DesignationTypes.ORIGINAL:
+                        related.append(dr)
+            uid = related[0].user_id
+            if uid not in personas_activas:
+                personas_activas[uid] = []
+            personas_activas[uid].append(related)
+
+        for p in personas_activas.values():
+            active.append(p)
+
+        return render_template('placeDesignations.html', dt2s=dt2s, cend=calculate_end, user=user, designations=active, place=place, is_secondary=_is_secondary, is_suplencia=_is_suplencia, find_user=_find_user)
+
 
 @bp.route('/crear/<uid>')
 @require_user
