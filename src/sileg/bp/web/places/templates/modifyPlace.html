@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col m1"></div>
+    <div class="col m10">
+        <div class="card-panel grey lighten-5">
+            <div class="center">
+                <h4> Modificación de Lugar </h4>
+            </div>
+            <form action="" method="post">
+                {{ form.hidden_tag() }}
+                <div class="row">
+                    <div class="col m5">
+                        <h5>Datos Básicos</h5>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <div class="input-field">
+                            {{ form.name.label }}
+                            {% if form.name.errors %}
+                            {{ form.name(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.name.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.name(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m5">
+                        {{ form.type.label }}
+                        {% if form.type.errors %}
+                        {{ form.type(class="validate invalid") }}
+                        <span class="helper-text red-text">Debe seleccionar una opción</span>
+                        {% else %}
+                        {{ form.type(class="validate") }}
+                        {% endif %}
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m10">
+                        <div class="input-field">
+                            {{ form.description.label }}
+                            {% if form.description.errors %}
+                            {{ form.description(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.description.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.description(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m5">
+                        <h5>Contacto</h5>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <div class="input-field">
+                            {{ form.email.label }}
+                            {% if form.email.errors %}
+                            {{ form.email(class="validate invalid", placeholder="oficina@econo.unlp.edu.ar") }}
+                            <span class="helper-text" data-error="{{form.email.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.email(class="validate", placeholder="oficina@econo.unlp.edu.ar") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m4">
+                        <div class="input-field">
+                            {{ form.telephone.label }}
+                            {% if form.telephone.errors %}
+                            {{ form.telephone(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.telephone.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.telephone(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m5">
+                        <h5>Oficina</h5>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <div class="input-field">
+                            {{ form.number.label }}
+                            {% if form.number.errors %}
+                            {{ form.number(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.number.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.number(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="divider"></div>
+                <br>
+                <div class="row">
+                    <div class="col m4"></div>
+                    <div class="col m4 center">
+                        <button class="btn light-blue darken-3">Actualizar Lugar</button>
+                    </div>
+                    <div class="col m4"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col m1"></div>
+</div>
+{% endblock %}
