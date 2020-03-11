@@ -60,8 +60,9 @@ class PlaceCreateForm(FlaskForm):
         self.type.choices = typeChoices
         
     def validate_email(self, email):
-        if re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]*econo.unlp.edu.ar$",self.email.data) == None:
-            raise ValidationError('El correo ingresado es erroneo.')
+        if self.email.data and self.email.data != '':
+            if re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]*econo.unlp.edu.ar$",self.email.data) == None:
+                raise ValidationError('El correo ingresado es erroneo.')
 
     def save(self,session,authorizer_id):
         """
@@ -122,8 +123,9 @@ class PlaceModifyForm(FlaskForm):
                 self.email.data = place.email      
         
     def validate_email(self, email):
-        if re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]*econo.unlp.edu.ar$",self.email.data) == None:
-            raise ValidationError('El correo ingresado es erroneo.')
+        if self.email.data and self.email.data != '':
+            if re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]*econo.unlp.edu.ar$",self.email.data) == None:
+                raise ValidationError('El correo ingresado es erroneo.')
 
     def save(self,session,pid,authorizer_id):
         """
