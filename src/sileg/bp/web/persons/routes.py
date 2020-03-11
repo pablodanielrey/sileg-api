@@ -11,7 +11,7 @@ from sileg.helpers.namesHandler import id2sDegrees
 from sileg.auth import require_user
 
 from sileg.auth import oidc
-from sileg.models import usersModel, open_users_session
+from sileg.models import usersModel, open_users_session, silegModel, open_sileg_session
 
 
 @bp.route('/crear',methods=['GET','POST'])
@@ -119,11 +119,17 @@ def personData(user,uid):
     """
     with open_users_session() as session:
         persons = usersModel.get_users(session, [uid])
-        if not persons or len(persons) <= 0:
-            if persons[0].deleted:
-                abort(404)
+        if not persons or len(persons) <= 0 or persons[0].deleted:
+            abort(404)
         person = persons[0]
-        return render_template('showPerson.html', user=user,person=person)
+        external_seniority = None
+        with open_sileg_session() as sileg_session:
+            es_id = silegModel.get_external_seniority_by_user(sileg_session, uid)
+            if es_id:
+                es = silegModel.get_external_seniority(sileg_session, es_id)
+                if es and len(es) >= 1 and not es[0].deleted:
+                    external_seniority = es[0]
+        return render_template('showPerson.html', user=user,person=person,external_seniority=external_seniority)
 
 @bp.route('<uid>/documento/<iid>/descargar')
 @require_user

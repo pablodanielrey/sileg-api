@@ -189,6 +189,36 @@
                 <div class="col m1"></div>
             </div>
             <div class="divider"></div>
+            {% if external_seniority %}
+            <div class="row">
+                <div class="col m5">
+                    <h5>Antigüedad externa</h5>
+                </div>
+            </div>
+            <div class="row center">
+                <div class="col m1"></div>
+                <div class="col m5">
+                    <table class="centered responsive-table">
+                        <thead>
+                            <tr>
+                                <th>Años</th>
+                                <th>Meses</th>
+                                <th>Días</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{external_seniority.years}}</td>
+                                <td>{{external_seniority.months}}</td>
+                                <td>{{external_seniority.days}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col m1"></div>
+            </div>
+            <div class="divider"></div>
+            {% endif %}
             <div class="row">
                 <div class="col m5">
                     <h5>Archivos</h5>
