@@ -517,6 +517,9 @@ def personDesignations(user, uid):
                     if dr.type is DesignationTypes.PROMOTION or dr.type is DesignationTypes.ORIGINAL:
                         related.append(dr)
             active.append(related)
+        
+
+        active = sorted(active, key=lambda d: d[0].start, reverse=True)
 
         return render_template('personDesignations.html', dt2s=dt2s, cend=calculate_end, user=user, designations=active, person=person, is_secondary=_is_secondary, is_suplencia=_is_suplencia, find_user=_find_user)
 
