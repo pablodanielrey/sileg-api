@@ -13,7 +13,7 @@ from wtforms.validators import ValidationError, DataRequired, EqualTo, Email, In
 from sileg.helpers.apiHandler import getStates
 from sileg.helpers.namesHandler import id2sDegrees, id2sIdentityNumber
 
-from sileg.models import usersModel, open_users_session, open_sileg_session
+from sileg.models import usersModel, open_users_session, silegModel, open_sileg_session
 from users.model.entities.User import User, IdentityNumber, Mail, Phone, File, MailTypes, PhoneTypes, UsersLog, UserLogTypes, IdentityNumberTypes, DegreeTypes, UserDegree
 
 from sileg_model.model.SilegModel import SilegModel
@@ -582,6 +582,7 @@ class PersonSeniorityModifyForm(FlaskForm):
     seniority_external_years = StringField('Años')
     seniority_external_months = StringField('Meses')
     seniority_external_days = StringField('Días')
+    personSeniorityModify = SubmitField('Guardar')
  
     def validate_seniority_external_years(self,seniority_external_years):
         if self.seniority_external_years.data:
@@ -590,7 +591,7 @@ class PersonSeniorityModifyForm(FlaskForm):
             except:
                 raise ValidationError('La antiguedad debe ser un número')
             if number < 0:
-                raise ValidationError('El número debe ser mayor a 0')
+                raise ValidationError('El número debe ser mayor o igual 0')
     
     def validate_seniority_external_months(self,seniority_external_months):
         if self.seniority_external_months.data:
@@ -599,7 +600,9 @@ class PersonSeniorityModifyForm(FlaskForm):
             except:
                 raise ValidationError('La antiguedad debe ser un número')
             if number < 0:
-                raise ValidationError('El número debe ser mayor a 0')
+                raise ValidationError('El número debe ser mayor o igual a 0')
+            if number > 11:
+                raise ValidationError('Utilice un número entre 0 y 11')
     
     def validate_seniority_external_days(self,seniority_external_days):
         if self.seniority_external_days.data:
@@ -608,15 +611,69 @@ class PersonSeniorityModifyForm(FlaskForm):
             except:
                 raise ValidationError('La antiguedad debe ser un número')
             if number < 0:
-                raise ValidationError('El número debe ser mayor a 0')
+                raise ValidationError('El número debe ser mayor o igual a 0')
+            if number > 29:
+                raise ValidationError('Utilice un número entre 0 y 29')
                 
     def saveModifySeniority(self,uid,authorizer_id):
-        """
-        MODELO DE SILEG ---> ALTA DE ANTIGUEDAD DE PERSONA
-        """
-        #TODO Agregar a Sileg model la antiguedad de la persona
-        newSeniority = {
-            'seniority_external_years' : self.seniority_external_years.data,
-            'seniority_external_months'  : self.seniority_external_months.data,
-            'seniority_external_days' : self.seniority_external_days.data
-        }
+        with open_sileg_session() as sileg_session:
+            if self.seniority_external_years.raw_data[0] or self.seniority_external_months.raw_data[0] or self.seniority_external_days.raw_data[0]:
+                newSeniority = {
+                    'seniority_external_years' : int(self.seniority_external_years.raw_data[0]) if self.seniority_external_years.raw_data[0] else 0,
+                    'seniority_external_months'  : int(self.seniority_external_months.raw_data[0]) if self.seniority_external_months.raw_data[0] else 0,
+                    'seniority_external_days' : int(self.seniority_external_days.raw_data[0]) if self.seniority_external_days.raw_data[0] else 0
+                }
+                external_seniority = ExternalSeniority()
+                external_seniority.id = str(uuid.uuid4())
+                external_seniority.user_id = uid
+                external_seniority.years = newSeniority['seniority_external_years']
+                external_seniority.months = newSeniority['seniority_external_months']
+                external_seniority.days = newSeniority['seniority_external_days']
+                sileg_session.add(external_seniority)
+                external_seniority_log = {  'id': external_seniority.id,
+                                            'created': external_seniority.created,
+                                            'updated': external_seniority.updated,
+                                            'deleted': external_seniority.deleted,
+                                            'days': external_seniority.days,
+                                            'months': external_seniority.months,
+                                            'years': external_seniority.years,
+                                            'user_id': external_seniority.user_id
+                                        }
+                log = SilegLog()
+                log.type = SilegLogTypes.UPDATE
+                log.entity_id = external_seniority.id
+                log.authorizer_id = authorizer_id
+                log.data = json.dumps([external_seniority_log], default=str)
+                sileg_session.add(log)
+            es_id = silegModel.get_external_seniority_by_user(sileg_session, uid)
+            if es_id:
+                es = silegModel.get_external_seniority(sileg_session, es_id)
+                if es and len(es) >= 1 and not es[0].deleted:
+                    toDelete_external_seniority = es[0]
+                    toDelete_external_seniority.deleted = datetime.datetime.utcnow()
+                    sileg_session.add(toDelete_external_seniority)
+                    external_seniority_log = {  'id': toDelete_external_seniority.id,
+                                        'created': toDelete_external_seniority.created,
+                                        'updated': toDelete_external_seniority.updated,
+                                        'deleted': toDelete_external_seniority.deleted,
+                                        'days': toDelete_external_seniority.days,
+                                        'months': toDelete_external_seniority.months,
+                                        'years': toDelete_external_seniority.years,
+                                        'user_id': toDelete_external_seniority.user_id
+                                    }
+                    toDelete_log = SilegLog()
+                    toDelete_log.type = SilegLogTypes.DELETE
+                    toDelete_log.entity_id = toDelete_external_seniority.id
+                    toDelete_log.authorizer_id = authorizer_id
+                    toDelete_log.data = json.dumps([external_seniority_log], default=str)
+                    sileg_session.add(toDelete_log)
+                    try:
+                        sileg_session.commit()
+                        return 'Se ha modificado la antigüedad externa'
+                    except:
+                        return 'Error interno'
+            try:
+                sileg_session.commit()
+                return 'Se ha modificado la antigüedad externa'
+            except:
+                return 'Error interno'

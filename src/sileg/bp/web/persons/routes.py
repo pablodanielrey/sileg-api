@@ -220,6 +220,27 @@ def modifyPersonData(user,uid):
                 flash(message)
                 return redirect(url_for('persons.modifyPersonData', uid=uid))
 
+        ## formModifySeniority
+        with open_sileg_session() as sileg_session:
+            es_id = silegModel.get_external_seniority_by_user(sileg_session, uid)
+            if es_id:
+                es = silegModel.get_external_seniority(sileg_session, es_id)
+                if es and len(es) >= 1 and not es[0].deleted:
+                    external_seniority = es[0]
+                    formModifySeniority.seniority_external_years.data = external_seniority.years
+                    formModifySeniority.seniority_external_months.data = external_seniority.months
+                    formModifySeniority.seniority_external_days.data = external_seniority.days
+                    if formModifySeniority.personSeniorityModify.data and (str(formModifySeniority.seniority_external_years.data) != formModifySeniority.seniority_external_years.raw_data[0] or str(formModifySeniority.seniority_external_months.data) != formModifySeniority.seniority_external_months.raw_data[0] or str(formModifySeniority.seniority_external_days.data) != formModifySeniority.seniority_external_days.raw_data[0]):
+                        if formModifySeniority.validate_on_submit():
+                            message = formModifySeniority.saveModifySeniority(person.id,user['sub'])
+                            flash(message)
+                            return redirect(url_for('persons.modifyPersonData', uid=uid))
+            elif formModifySeniority.personSeniorityModify.data and (formModifySeniority.seniority_external_years.data or formModifySeniority.seniority_external_months.data or formModifySeniority.seniority_external_days.data):
+                if formModifySeniority.validate_on_submit():
+                            message = formModifySeniority.saveModifySeniority(person.id,user['sub'])
+                            flash(message)
+                            return redirect(url_for('persons.modifyPersonData', uid=uid))
+
     return render_template('modifyPerson.html', user=user, person=person, formModifyPersonData=formModifyPersonData, formModifyIdNumber=formModifyIdNumber, formModifyMail=formModifyMail, formModifyPhone=formModifyPhone, formModifySeniority=formModifySeniority)
 
 @bp.route('<uid>/documento/<pidnumberid>/eliminar')
