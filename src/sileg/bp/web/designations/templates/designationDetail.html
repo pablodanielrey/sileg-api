@@ -38,8 +38,8 @@
                 </div>
                 <div class="col m4">
                     <p>Tipo: {{ dt2s(designation.type) }}</p>
-                    <p>Inicio: {%if designation.start%}{{ designation.start.strftime('%d-%m-%Y')}}{%endif%}</p>
-                    <p>Fin Original: {%if designation.end%}{{ designation.end.strftime('%d-%m-%Y')}}{%endif%} </p>
+                    <p>Inicio: {%if designation.start%}{{ designation.start.strftime('%d-%m-%Y') if designation.start }}{%endif%}</p>
+                    <p>Fin Original: {%if designation.end%}{{ designation.end.strftime('%d-%m-%Y') if designation.end }}{%endif%} </p>
                     <p>Tipo de Fin: {{ det2s(designation.end_type) }}</p>
                     {% if designation.deleted %}
                         <p>Eliminada: {{designation.deleted.strftime('%H:%M:%S %d-%m-%Y')}}</p>
@@ -197,7 +197,7 @@
                                     <td class="center"><a class="blue-text darken-4" href="#cargo">{{ dp.function.name.split('-')[0] }}</a></td>
                                     <td class="center"><a class="blue-text darken-4" href="#caracter">{{ dp.function.name.split('-')[2] }}</a></td>
                                     <td class="center"><a class="blue-text darken-4" href="#cargopplanta">{{ dp.function.name.split('-')[1] }}</a></td>
-                                    <td class="center"><a class="blue-text darken-4" href="#type">{{ dp.start.strftime('%d-%m-%Y') }}</a></td>
+                                    <td class="center"><a class="blue-text darken-4" href="#type">{{ dp.start.strftime('%d-%m-%Y') if dp.start }}</a></td>
                                     <td class="center"><a class="blue-text darken-4" href="#type"></a></td>
                                     <td class="center"><a class="blue-text darken-4" href="#type">{{ dp.exp }} / {{dp.cor}} </a></td>
                                     <td class="center"><a class="blue-text darken-4" href="#type">{{ dp.res }}</a></td>
@@ -250,7 +250,7 @@
                                 <td class="center"><a class="blue-text darken-4" href="#cargo">{{ d.function.name.split('-')[0] }}</a></td>
                                 <td class="center"><a class="blue-text darken-4" href="#caracter">{{ d.function.name.split('-')[2] }}</a></td>
                                 <td class="center"><a class="blue-text darken-4" href="#cargopplanta">{{ d.function.name.split('-')[1] }}</a></td>
-                                <td class="center"><a class="blue-text darken-4" href="#type">{{ d.start.strftime('%d-%m-%Y') }}</a></td>
+                                <td class="center"><a class="blue-text darken-4" href="#type">{{ d.start.strftime('%d-%m-%Y') if dp.start }}</a></td>
                                 <td class="center"><a class="blue-text darken-4" href="#type">{%if d.end%}{{ d.end.strftime('%d-%m-%Y') }}{%endif%}</a></td>
                                 <td class="center"><a class="blue-text darken-4" href="#type">{{ d.exp }} / {{d.cor}} </a></td>
                                 <td class="center"><a class="blue-text darken-4" href="#type">{{ d.res }}</a></td>
@@ -280,7 +280,7 @@
                                     <td class="center"><a class="blue-text darken-4" href="#cargo">{{ dp.function.name.split('-')[0] }}</a></td>
                                     <td class="center"><a class="blue-text darken-4" href="#caracter">{{ dp.function.name.split('-')[2] }}</a></td>
                                     <td class="center"><a class="blue-text darken-4" href="#cargopplanta">{{ dp.function.name.split('-')[1] }}</a></td>
-                                    <td class="center"><a class="blue-text darken-4" href="#type">{{ dp.start.strftime('%d-%m-%Y') }}</a></td>
+                                    <td class="center"><a class="blue-text darken-4" href="#type">{{ dp.start.strftime('%d-%m-%Y') if dp.start }}</a></td>
                                     <td class="center"><a class="blue-text darken-4" href="#type"></a></td>
                                     <td class="center"><a class="blue-text darken-4" href="#type">{{ dp.exp }} / {{dp.cor}} </a></td>
                                     <td class="center"><a class="blue-text darken-4" href="#type">{{ dp.res }}</a></td>
@@ -334,7 +334,7 @@
                                 <td class="center"><a class="blue-text darken-4" href="#cargo">{{ d.function.name.split('-')[0] }}</a></td>
                                 <td class="center"><a class="blue-text darken-4" href="#caracter">{{ d.function.name.split('-')[2] }}</a></td>
                                 <td class="center"><a class="blue-text darken-4" href="#cargopplanta">{{ d.function.name.split('-')[1] }}</a></td>
-                                <td class="center"><a class="blue-text darken-4" href="#type">{{ d.start.strftime('%d-%m-%Y') }}</a></td>
+                                <td class="center"><a class="blue-text darken-4" href="#type">{{ d.start.strftime('%d-%m-%Y') if d.start }}</a></td>
                                 <td class="center"><a class="blue-text darken-4" href="#type">{%if d.end%}{{ d.end.strftime('%d-%m-%Y') }}{%endif%}</a></td>
                                 <td class="center"><a class="blue-text darken-4" href="#type">{{ d.exp }} / {{d.cor}} </a></td>
                                 <td class="center"><a class="blue-text darken-4" href="#type">{{ d.res }}</a></td>
