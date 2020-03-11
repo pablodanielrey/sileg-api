@@ -12,19 +12,33 @@ from sileg_model.model.entities.Log import SilegLog, SilegLogTypes
 def lt2s(t:LicenseTypes):
     if t == LicenseTypes.INDETERMINATE:
         return 'Indeterminado'
-    if t == LicenseTypes.LIC:
+    if t == LicenseTypes.LICENSE:
         return 'Licencia'
-    if t == LicenseTypes.RC:
+    if t == LicenseTypes.DESIGNATION_RETENTION:
         return 'Retención Cargo'
-    if t == LicenseTypes.RS:
+    if t == LicenseTypes.SUSPENDED_PAYMENT:
         return 'Renta Suspendida'
-    if t == LicenseTypes.S:
-        return '---Consultar---S---'
+    if t == LicenseTypes.SUSPENSION:
+        return 'Suspención'
+    if t == LicenseTypes.TRANSITORY_SUSPENSION:
+        return 'Suspención Transitoria'
+    if t == LicenseTypes.EXTENSION:
+        return 'Prórroga'
+    if t == LicenseTypes.DISCHARGE:
+        return 'Baja'
     return ''
 
 def et2s(t:LicenseEndTypes):
     if t == LicenseEndTypes.INDETERMINATE:
         return 'Indeterminado'
+    if t == LicenseEndTypes.LICENSE_END:
+        return 'Fin de licencia'
+    if t == LicenseEndTypes.LICENSE_CHANGE:
+        return 'Cambio de licencia'
+    if t == LicenseEndTypes.DESIGNATION_END:
+        return 'Fin de designación'
+    if t == LicenseEndTypes.REINCORPORATION:
+        return 'Reincorporación'
     return ''
 
 class LeaveLicensePersonalCreateForm(FlaskForm):

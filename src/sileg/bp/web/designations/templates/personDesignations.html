@@ -69,7 +69,11 @@
                     <tbody>
                         <!-- designaciones originales, bajas, extensiones -->
                         {% for d in ds %}
+                        {% if d.historic %}
+                        <tr class="blue-grey lighten-3">
+                        {% else %}
                         <tr>
+                        {% endif %}
                             <td class="center"><a class="blue-text darken-4"
                                     href="{{url_for('designations.designation_detail', did=d.id)}}">{{ dt2s(d.type) }}</a>
                             </td>
