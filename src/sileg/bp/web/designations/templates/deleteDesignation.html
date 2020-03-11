@@ -23,9 +23,16 @@
                     <p>Tipo: {{designation.type.value}}</p>
                     <p>Cargo: {{designation.function.name}}</p>
                     <p>Ubicación: {{designation.place.name}}</p>
-                    <p>Resolución: {{designation.res}} {{designation.exp}} / {{designation.cor}} </p>
+                    <p>Resolución: 
+                        {%if designation.res%}{{designation.res}}{%else%}-{%endif%} 
+                        {%if designation.cor%}{{designation.cor}}{%else%}-{%endif%} 
+                        / 
+                        {%if designation.cor%}{{designation.cor}}{%else%}-{%endif%}
+                    </p>
                     <p>
                         Inicio: {%if designation.start%}{{designation.start.strftime('%d-%m-%Y')}}{%endif%}
+                    </p>
+                    <p>
                         Fin: {%if designation.end%}{{designation.end.strftime('%d-%m-%Y')}}{%endif%}
                     </p>
                 </div>
