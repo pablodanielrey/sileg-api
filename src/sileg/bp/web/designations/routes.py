@@ -533,7 +533,7 @@ def placeDesignations(user, pid):
         place = silegModel.get_places(session,[pid])[0]
         dids = silegModel.get_designations_by_places(session, [pid])
         designations = silegModel.get_designations(session, dids)
-        original = [d for d in designations if d.deleted is None and (d.type == DesignationTypes.ORIGINAL or d.type == DesignationTypes.REPLACEMENT)]
+        original = [d for d in designations if d.deleted is None and d.historic is None and (d.type == DesignationTypes.ORIGINAL or d.type == DesignationTypes.REPLACEMENT)]
 
         persons_designations = {}
 
