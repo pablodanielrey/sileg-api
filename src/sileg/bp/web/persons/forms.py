@@ -95,7 +95,7 @@ class PersonCreateForm(FlaskForm):
         toLog = []
         uid = str(uuid.uuid4())
         with open_sileg_session() as sileg_session:
-            if self.seniority_external_years.data or self.seniority_external_months.data or self.seniority_external_days.data:
+            if (self.seniority_external_years.data or self.seniority_external_months.data or self.seniority_external_days.data) and (self.seniority_external_years.data != '0' or self.seniority_external_months.data != '0' or self.seniority_external_days.data != '0'):
                 newSeniority = {
                     'seniority_external_years' : int(self.seniority_external_years.data) if self.seniority_external_years.data else 0,
                     'seniority_external_months'  : int(self.seniority_external_months.data) if self.seniority_external_months.data else 0,
@@ -617,7 +617,7 @@ class PersonSeniorityModifyForm(FlaskForm):
                 
     def saveModifySeniority(self,uid,authorizer_id):
         with open_sileg_session() as sileg_session:
-            if self.seniority_external_years.raw_data[0] or self.seniority_external_months.raw_data[0] or self.seniority_external_days.raw_data[0]:
+            if (self.seniority_external_years.raw_data[0] or self.seniority_external_months.raw_data[0] or self.seniority_external_days.raw_data[0]) and (self.seniority_external_years.raw_data[0] != '0' or self.seniority_external_months.raw_data[0] != '0' or self.seniority_external_days.raw_data[0] != '0'):
                 newSeniority = {
                     'seniority_external_years' : int(self.seniority_external_years.raw_data[0]) if self.seniority_external_years.raw_data[0] else 0,
                     'seniority_external_months'  : int(self.seniority_external_months.raw_data[0]) if self.seniority_external_months.raw_data[0] else 0,
@@ -640,7 +640,7 @@ class PersonSeniorityModifyForm(FlaskForm):
                                             'user_id': external_seniority.user_id
                                         }
                 log = SilegLog()
-                log.type = SilegLogTypes.UPDATE
+                log.type = SilegLogTypes.CREATE
                 log.entity_id = external_seniority.id
                 log.authorizer_id = authorizer_id
                 log.data = json.dumps([external_seniority_log], default=str)
