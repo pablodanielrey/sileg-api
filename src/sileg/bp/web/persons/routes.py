@@ -58,7 +58,7 @@ def reset_credentials(user, uid):
         username = usernames[0]
 
     with open_sileg_session() as session:
-        desigs = silegModel.get_designations_by_uuid(session, [uid])
+        desigs = silegModel.get_designations_by_uuid(session, uid)
         if desigs and len(desigs) > 0:
             error = 'No se puede blanquear la clave ya que tiene designaciones'
             return render_template('resetCredentials.html', error=error, user=user)
@@ -160,7 +160,7 @@ def downloadDegree(user,uid,did):
 
 @bp.route('<uid>')
 @require_user
-@verify_sileg_permission
+@verify_students_permission
 def personData(user,uid):
     """
     Pagina de vista de datos personales
@@ -181,7 +181,7 @@ def personData(user,uid):
 
 @bp.route('<uid>/documento/<iid>/descargar')
 @require_user
-@verify_sileg_permission
+@verify_students_permission
 def downloadIdNumberFile(user,uid,iid):
     with open_users_session() as session:
         person = usersModel.get_users(session,[uid])[0]
