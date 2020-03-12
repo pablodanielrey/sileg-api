@@ -4,8 +4,7 @@ import io
 from flask import render_template, flash, redirect,request, Markup, url_for, abort, send_file
 from . import bp
 
-from .forms import StudentCreateForm, StudentDataModifyForm, StudentIdNumberModifyForm
-
+from .forms import StudentCreateForm
 from sileg.helpers.namesHandler import id2sDegrees
 
 from sileg.auth import require_user

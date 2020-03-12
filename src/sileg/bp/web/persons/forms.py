@@ -13,8 +13,12 @@ from wtforms.validators import ValidationError, DataRequired, EqualTo, Email, In
 from sileg.helpers.apiHandler import getStates
 from sileg.helpers.namesHandler import id2sDegrees, id2sIdentityNumber
 
-from sileg.models import usersModel, open_users_session
+from sileg.models import usersModel, open_users_session, silegModel, open_sileg_session
 from users.model.entities.User import User, IdentityNumber, Mail, Phone, File, MailTypes, PhoneTypes, UsersLog, UserLogTypes, IdentityNumberTypes, DegreeTypes, UserDegree
+
+from sileg_model.model.SilegModel import SilegModel
+from sileg_model.model.entities.ExternalSeniority import ExternalSeniority
+from sileg_model.model.entities.Log import SilegLog, SilegLogTypes
 
 class PersonCreateForm(FlaskForm):
     """
@@ -60,7 +64,7 @@ class PersonCreateForm(FlaskForm):
             except:
                 raise ValidationError('La antiguedad debe ser un número')
             if number < 0:
-                raise ValidationError('El número debe ser mayor a 0')
+                raise ValidationError('El número debe ser mayor o igual 0')
     
     def validate_seniority_external_months(self,seniority_external_months):
         if self.seniority_external_months.data:
@@ -69,7 +73,9 @@ class PersonCreateForm(FlaskForm):
             except:
                 raise ValidationError('La antiguedad debe ser un número')
             if number < 0:
-                raise ValidationError('El número debe ser mayor a 0')
+                raise ValidationError('El número debe ser mayor o igual a 0')
+            if number > 11:
+                raise ValidationError('Utilice un número entre 0 y 11')
     
     def validate_seniority_external_days(self,seniority_external_days):
         if self.seniority_external_days.data:
@@ -78,205 +84,228 @@ class PersonCreateForm(FlaskForm):
             except:
                 raise ValidationError('La antiguedad debe ser un número')
             if number < 0:
-                raise ValidationError('El número debe ser mayor a 0')
+                raise ValidationError('El número debe ser mayor o igual a 0')
+            if number > 29:
+                raise ValidationError('Utilice un número entre 0 y 29')
 
     def save(self,authorizer_id):
         """
         Persistencia de datos en DB
         """
         toLog = []
-        with open_users_session() as session:
-            if not usersModel.get_uid_person_number(session, self.person_number.data):
-                uid = str(uuid.uuid4())
-                newUser = User()
-                newUser.id = uid
-                newUser.lastname = self.lastname.data
-                newUser.firstname = self.firstname.data
-                newUser.gender = self.gender.data if self.gender.data != '0' else None
-                newUser.marital_status = self.marital_status.data if self.marital_status.data != '0' else None
-                newUser.birthplace = self.birthplace.data
-                newUser.birthdate = self.birthdate.data if self.birthdate.data else None
-                newUser.residence = self.residence.data
-                newUser.address = self.address.data
-                session.add(newUser)
-                toLog.append({  'id': newUser.id,
-                                'created': newUser.created,
-                                'updated': newUser.updated,
-                                'deleted': newUser.deleted,
-                                'lastname': newUser.lastname,
-                                'firstname': newUser.firstname,
-                                'gender': newUser.gender,
-                                'marital_status': newUser.marital_status,
-                                'birthplace': newUser.birthplace,
-                                'birthdate': newUser.birthdate,
-                                'residence': newUser.residence,
-                                'address': newUser.address,
-                                })
-
-                """ Se carga archivo documento """
-                person_file_id = None
-                if self.person_numberFile.data:
-                    person_file_id = str(uuid.uuid4())                    
-                    personNumberFile = File()
-                    personNumberFile.id = person_file_id
-                    personNumberFile.mimetype = self.person_numberFile.data.mimetype
-                    personNumberFile.content = base64.b64encode(self.person_numberFile.data.read()).decode()
-                    session.add(personNumberFile)
-                    toLog.append({  'id': personNumberFile.id,
-                                    'created': personNumberFile.created,
-                                    'updated': personNumberFile.updated,
-                                    'deleted': personNumberFile.deleted,
-                                    'mimetype': personNumberFile.mimetype,
-                                    'content': personNumberFile.content,
-                                })
-
-                """ Se genera documento """
-                idNumber = IdentityNumber()
-                idNumber.type = self.person_number_type.data
-                idNumber.number = self.person_number.data
-                idNumber.user_id = uid
-                if person_file_id:
-                    idNumber.file_id = person_file_id
-                session.add(idNumber)
-                toLog.append({  'id': idNumber.id,
-                                    'created': idNumber.created,
-                                    'updated': idNumber.updated,
-                                    'deleted': idNumber.deleted,
-                                    'type': idNumber.type,
-                                    'number': idNumber.number,
-                                    'user_id': idNumber.user_id,
-                                })
-                
-                """ Se genera correo laboral """
-                if self.work_email.data:
-                    newWorkEmail = Mail()
-                    emailType = MailTypes.NOTIFICATION
-                    if re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]*econo.unlp.edu.ar$",self.work_email.data) != None:
-                        emailType = MailTypes.INSTITUTIONAL
-                    newWorkEmail.type = emailType
-                    newWorkEmail.email = self.work_email.data
-                    newWorkEmail.user_id = uid
-                    session.add(newWorkEmail)
-                    toLog.append({  'id': newWorkEmail.id,
-                                    'created': newWorkEmail.created,
-                                    'updated': newWorkEmail.updated,
-                                    'deleted': newWorkEmail.deleted,
-                                    'type': newWorkEmail.type.value,
-                                    'email': newWorkEmail.email,
-                                    'confirmed': newWorkEmail.confirmed,
-                                    'user_id': newWorkEmail.user_id,
-                                })
-
-                """ Se genera correo personal """
-                if self.personal_email.data:
-                    newPersonalMail = Mail()
-                    newPersonalMail.type = MailTypes.ALTERNATIVE
-                    newPersonalMail.email = self.personal_email.data
-                    newPersonalMail.user_id = uid
-                    session.add(newPersonalMail)
-                    toLog.append({  'id': newPersonalMail.id,
-                                    'created': newPersonalMail.created,
-                                    'updated': newPersonalMail.updated,
-                                    'deleted': newPersonalMail.deleted,
-                                    'type': newPersonalMail.type.value,
-                                    'email': newPersonalMail.email,
-                                    'confirmed': newPersonalMail.confirmed,
-                                    'user_id': newPersonalMail.user_id,
-                                })
-
-                """ Se genera telefono fijo """
-                if self.land_line.data:
-                    landLinePhone = Phone()
-                    landLinePhone.type = PhoneTypes.LANDLINE
-                    landLinePhone.number = self.land_line.data
-                    landLinePhone.user_id = uid
-                    session.add(landLinePhone)
-                    toLog.append({  'id': landLinePhone.id,
-                                    'created': landLinePhone.created,
-                                    'updated': landLinePhone.updated,
-                                    'deleted': landLinePhone.deleted,
-                                    'type': landLinePhone.type.value,
-                                    'number': landLinePhone.number,
-                                    'user_id': landLinePhone.user_id,
-                                })
-
-                """ Se genera telefono movil """
-                if self.mobile_number.data:
-                    mobileNumber = Phone()
-                    mobileNumber.type = PhoneTypes.CELLPHONE
-                    mobileNumber.number = self.mobile_number.data
-                    mobileNumber.user_id = uid
-                    session.add(mobileNumber)
-                    toLog.append({  'id': mobileNumber.id,
-                                    'created': mobileNumber.created,
-                                    'updated': mobileNumber.updated,
-                                    'deleted': mobileNumber.deleted,
-                                    'type': mobileNumber.type.value,
-                                    'number': mobileNumber.number,
-                                    'user_id': mobileNumber.user_id,
-                                })
-
-                if self.laboral_number.data:
-                    cid = str(uuid.uuid4())
-                    cuil = IdentityNumber()
-                    cuil.id = cid
-                    cuil.type = IdentityNumberTypes.CUIL
-                    cuil.number = self.laboral_number.data
-                    cuil.user_id = uid
-                
-                    """ Se genera archivo de cuil """
-                    cfid = None
-                    if self.laboral_numberFile.data:
-                        cfid = str(uuid.uuid4())
-                        laboralNumberFile = File()
-                        laboralNumberFile.id = cfid
-                        laboralNumberFile.mimetype = self.laboral_numberFile.data.mimetype
-                        laboralNumberFile.content = base64.b64encode(self.laboral_numberFile.data.read()).decode()
-                        session.add(laboralNumberFile)
-                        toLog.append({  'id': laboralNumberFile.id,
-                                        'created': laboralNumberFile.created,
-                                        'updated': laboralNumberFile.updated,
-                                        'deleted': laboralNumberFile.deleted,
-                                        'mimetype': laboralNumberFile.mimetype,
-                                        'content': laboralNumberFile.content,
-                                        'identityNumber': cid,
-                                    })
-                    if cfid:
-                        cuil.file_id = cfid
-                    session.add(cuil)
-                    toLog.append({  'id': cuil.id,
-                                    'created': cuil.created,
-                                    'updated': cuil.updated,
-                                    'deleted': cuil.deleted,
-                                    'type': cuil.type,
-                                    'number': cuil.number,
-                                    'user_id': cuil.user_id,
-                                })  
-
-                newLog = UsersLog()
-                newLog.entity_id = newUser.id
-                newLog.authorizer_id = authorizer_id
-                newLog.type = UserLogTypes.CREATE
-                newLog.data = json.dumps(toLog, default=str)
-                session.add(newLog)
-                session.commit()
-
-                """
-
-                MODELO DE SILEG ---> ALTA DE ANTIGUEDAD DE PERSONA
-
-                """
-                #TODO Agregar a Sileg model la antiguedad de la persona
+        uid = str(uuid.uuid4())
+        with open_sileg_session() as sileg_session:
+            if (self.seniority_external_years.data or self.seniority_external_months.data or self.seniority_external_days.data) and (self.seniority_external_years.data != '0' or self.seniority_external_months.data != '0' or self.seniority_external_days.data != '0'):
                 newSeniority = {
-                    'seniority_external_years' : self.seniority_external_years.data,
-                    'seniority_external_months'  : self.seniority_external_months.data,
-                    'seniority_external_days' : self.seniority_external_days.data
+                    'seniority_external_years' : int(self.seniority_external_years.data) if self.seniority_external_years.data else 0,
+                    'seniority_external_months'  : int(self.seniority_external_months.data) if self.seniority_external_months.data else 0,
+                    'seniority_external_days' : int(self.seniority_external_days.data) if self.seniority_external_days.data else 0
                 }
+                external_seniority = ExternalSeniority()
+                external_seniority.id = str(uuid.uuid4())
+                external_seniority.user_id = uid
+                external_seniority.years = newSeniority['seniority_external_years']
+                external_seniority.months = newSeniority['seniority_external_months']
+                external_seniority.days = newSeniority['seniority_external_days']
+                sileg_session.add(external_seniority)
+                external_seniority_log = {  'id': external_seniority.id,
+                                            'created': external_seniority.created,
+                                            'updated': external_seniority.updated,
+                                            'deleted': external_seniority.deleted,
+                                            'days': external_seniority.days,
+                                            'months': external_seniority.months,
+                                            'years': external_seniority.years,
+                                            'user_id': external_seniority.user_id
+                                        }
+                log = SilegLog()
+                log.type = SilegLogTypes.CREATE
+                log.entity_id = external_seniority.id
+                log.authorizer_id = authorizer_id
+                log.data = json.dumps([external_seniority_log], default=str)
+                sileg_session.add(log)
+                try:
+                    sileg_session.commit()
+                except:
+                    return None
+            with open_users_session() as users_session:
+                if not usersModel.get_uid_person_number(users_session, self.person_number.data):
+                    newUser = User()
+                    newUser.id = uid
+                    newUser.lastname = self.lastname.data
+                    newUser.firstname = self.firstname.data
+                    newUser.gender = self.gender.data if self.gender.data != '0' else None
+                    newUser.marital_status = self.marital_status.data if self.marital_status.data != '0' else None
+                    newUser.birthplace = self.birthplace.data
+                    newUser.birthdate = self.birthdate.data if self.birthdate.data else None
+                    newUser.residence = self.residence.data
+                    newUser.address = self.address.data
+                    users_session.add(newUser)
+                    toLog.append({  'id': newUser.id,
+                                    'created': newUser.created,
+                                    'updated': newUser.updated,
+                                    'deleted': newUser.deleted,
+                                    'lastname': newUser.lastname,
+                                    'firstname': newUser.firstname,
+                                    'gender': newUser.gender,
+                                    'marital_status': newUser.marital_status,
+                                    'birthplace': newUser.birthplace,
+                                    'birthdate': newUser.birthdate,
+                                    'residence': newUser.residence,
+                                    'address': newUser.address,
+                                    })
 
-                return self.person_number.data
-            else:
-                return None
+                    """ Se carga archivo documento """
+                    person_file_id = None
+                    if self.person_numberFile.data:
+                        person_file_id = str(uuid.uuid4())                    
+                        personNumberFile = File()
+                        personNumberFile.id = person_file_id
+                        personNumberFile.mimetype = self.person_numberFile.data.mimetype
+                        personNumberFile.content = base64.b64encode(self.person_numberFile.data.read()).decode()
+                        users_session.add(personNumberFile)
+                        toLog.append({  'id': personNumberFile.id,
+                                        'created': personNumberFile.created,
+                                        'updated': personNumberFile.updated,
+                                        'deleted': personNumberFile.deleted,
+                                        'mimetype': personNumberFile.mimetype,
+                                        'content': personNumberFile.content,
+                                    })
 
+                    """ Se genera documento """
+                    idNumber = IdentityNumber()
+                    idNumber.type = self.person_number_type.data
+                    idNumber.number = self.person_number.data
+                    idNumber.user_id = uid
+                    if person_file_id:
+                        idNumber.file_id = person_file_id
+                    users_session.add(idNumber)
+                    toLog.append({  'id': idNumber.id,
+                                        'created': idNumber.created,
+                                        'updated': idNumber.updated,
+                                        'deleted': idNumber.deleted,
+                                        'type': idNumber.type,
+                                        'number': idNumber.number,
+                                        'user_id': idNumber.user_id,
+                                    })
+
+                    """ Se genera correo laboral """
+                    if self.work_email.data:
+                        newWorkEmail = Mail()
+                        emailType = MailTypes.NOTIFICATION
+                        if re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]*econo.unlp.edu.ar$",self.work_email.data) != None:
+                            emailType = MailTypes.INSTITUTIONAL
+                        newWorkEmail.type = emailType
+                        newWorkEmail.email = self.work_email.data
+                        newWorkEmail.user_id = uid
+                        users_session.add(newWorkEmail)
+                        toLog.append({  'id': newWorkEmail.id,
+                                        'created': newWorkEmail.created,
+                                        'updated': newWorkEmail.updated,
+                                        'deleted': newWorkEmail.deleted,
+                                        'type': newWorkEmail.type.value,
+                                        'email': newWorkEmail.email,
+                                        'confirmed': newWorkEmail.confirmed,
+                                        'user_id': newWorkEmail.user_id,
+                                    })
+
+                    """ Se genera correo personal """
+                    if self.personal_email.data:
+                        newPersonalMail = Mail()
+                        newPersonalMail.type = MailTypes.ALTERNATIVE
+                        newPersonalMail.email = self.personal_email.data
+                        newPersonalMail.user_id = uid
+                        users_session.add(newPersonalMail)
+                        toLog.append({  'id': newPersonalMail.id,
+                                        'created': newPersonalMail.created,
+                                        'updated': newPersonalMail.updated,
+                                        'deleted': newPersonalMail.deleted,
+                                        'type': newPersonalMail.type.value,
+                                        'email': newPersonalMail.email,
+                                        'confirmed': newPersonalMail.confirmed,
+                                        'user_id': newPersonalMail.user_id,
+                                    })
+
+                    """ Se genera telefono fijo """
+                    if self.land_line.data:
+                        landLinePhone = Phone()
+                        landLinePhone.type = PhoneTypes.LANDLINE
+                        landLinePhone.number = self.land_line.data
+                        landLinePhone.user_id = uid
+                        users_session.add(landLinePhone)
+                        toLog.append({  'id': landLinePhone.id,
+                                        'created': landLinePhone.created,
+                                        'updated': landLinePhone.updated,
+                                        'deleted': landLinePhone.deleted,
+                                        'type': landLinePhone.type.value,
+                                        'number': landLinePhone.number,
+                                        'user_id': landLinePhone.user_id,
+                                    })
+
+                    """ Se genera telefono movil """
+                    if self.mobile_number.data:
+                        mobileNumber = Phone()
+                        mobileNumber.type = PhoneTypes.CELLPHONE
+                        mobileNumber.number = self.mobile_number.data
+                        mobileNumber.user_id = uid
+                        users_session.add(mobileNumber)
+                        toLog.append({  'id': mobileNumber.id,
+                                        'created': mobileNumber.created,
+                                        'updated': mobileNumber.updated,
+                                        'deleted': mobileNumber.deleted,
+                                        'type': mobileNumber.type.value,
+                                        'number': mobileNumber.number,
+                                        'user_id': mobileNumber.user_id,
+                                    })
+
+                    if self.laboral_number.data:
+                        cid = str(uuid.uuid4())
+                        cuil = IdentityNumber()
+                        cuil.id = cid
+                        cuil.type = IdentityNumberTypes.CUIL
+                        cuil.number = self.laboral_number.data
+                        cuil.user_id = uid
+
+                        """ Se genera archivo de cuil """
+                        cfid = None
+                        if self.laboral_numberFile.data:
+                            cfid = str(uuid.uuid4())
+                            laboralNumberFile = File()
+                            laboralNumberFile.id = cfid
+                            laboralNumberFile.mimetype = self.laboral_numberFile.data.mimetype
+                            laboralNumberFile.content = base64.b64encode(self.laboral_numberFile.data.read()).decode()
+                            users_session.add(laboralNumberFile)
+                            toLog.append({  'id': laboralNumberFile.id,
+                                            'created': laboralNumberFile.created,
+                                            'updated': laboralNumberFile.updated,
+                                            'deleted': laboralNumberFile.deleted,
+                                            'mimetype': laboralNumberFile.mimetype,
+                                            'content': laboralNumberFile.content,
+                                            'identityNumber': cid,
+                                        })
+                        if cfid:
+                            cuil.file_id = cfid
+                        users_session.add(cuil)
+                        toLog.append({  'id': cuil.id,
+                                        'created': cuil.created,
+                                        'updated': cuil.updated,
+                                        'deleted': cuil.deleted,
+                                        'type': cuil.type,
+                                        'number': cuil.number,
+                                        'user_id': cuil.user_id,
+                                    })  
+
+                    newLog = UsersLog()
+                    newLog.entity_id = newUser.id
+                    newLog.authorizer_id = authorizer_id
+                    newLog.type = UserLogTypes.CREATE
+                    newLog.data = json.dumps(toLog, default=str)
+                    users_session.add(newLog)
+                    users_session.commit()
+                    return self.person_number.data
+                else:
+                    return None
+
+        
 class DegreeAssignForm(FlaskForm):
     degreeType = SelectField('Tipo de Título')
     degreeDate = DateTimeField('Fecha de Obtención',format='%d-%m-%Y')
@@ -553,6 +582,7 @@ class PersonSeniorityModifyForm(FlaskForm):
     seniority_external_years = StringField('Años')
     seniority_external_months = StringField('Meses')
     seniority_external_days = StringField('Días')
+    personSeniorityModify = SubmitField('Guardar')
  
     def validate_seniority_external_years(self,seniority_external_years):
         if self.seniority_external_years.data:
@@ -561,7 +591,7 @@ class PersonSeniorityModifyForm(FlaskForm):
             except:
                 raise ValidationError('La antiguedad debe ser un número')
             if number < 0:
-                raise ValidationError('El número debe ser mayor a 0')
+                raise ValidationError('El número debe ser mayor o igual 0')
     
     def validate_seniority_external_months(self,seniority_external_months):
         if self.seniority_external_months.data:
@@ -570,7 +600,9 @@ class PersonSeniorityModifyForm(FlaskForm):
             except:
                 raise ValidationError('La antiguedad debe ser un número')
             if number < 0:
-                raise ValidationError('El número debe ser mayor a 0')
+                raise ValidationError('El número debe ser mayor o igual a 0')
+            if number > 11:
+                raise ValidationError('Utilice un número entre 0 y 11')
     
     def validate_seniority_external_days(self,seniority_external_days):
         if self.seniority_external_days.data:
@@ -579,15 +611,69 @@ class PersonSeniorityModifyForm(FlaskForm):
             except:
                 raise ValidationError('La antiguedad debe ser un número')
             if number < 0:
-                raise ValidationError('El número debe ser mayor a 0')
+                raise ValidationError('El número debe ser mayor o igual a 0')
+            if number > 29:
+                raise ValidationError('Utilice un número entre 0 y 29')
                 
     def saveModifySeniority(self,uid,authorizer_id):
-        """
-        MODELO DE SILEG ---> ALTA DE ANTIGUEDAD DE PERSONA
-        """
-        #TODO Agregar a Sileg model la antiguedad de la persona
-        newSeniority = {
-            'seniority_external_years' : self.seniority_external_years.data,
-            'seniority_external_months'  : self.seniority_external_months.data,
-            'seniority_external_days' : self.seniority_external_days.data
-        }
+        with open_sileg_session() as sileg_session:
+            if (self.seniority_external_years.raw_data[0] or self.seniority_external_months.raw_data[0] or self.seniority_external_days.raw_data[0]) and (self.seniority_external_years.raw_data[0] != '0' or self.seniority_external_months.raw_data[0] != '0' or self.seniority_external_days.raw_data[0] != '0'):
+                newSeniority = {
+                    'seniority_external_years' : int(self.seniority_external_years.raw_data[0]) if self.seniority_external_years.raw_data[0] else 0,
+                    'seniority_external_months'  : int(self.seniority_external_months.raw_data[0]) if self.seniority_external_months.raw_data[0] else 0,
+                    'seniority_external_days' : int(self.seniority_external_days.raw_data[0]) if self.seniority_external_days.raw_data[0] else 0
+                }
+                external_seniority = ExternalSeniority()
+                external_seniority.id = str(uuid.uuid4())
+                external_seniority.user_id = uid
+                external_seniority.years = newSeniority['seniority_external_years']
+                external_seniority.months = newSeniority['seniority_external_months']
+                external_seniority.days = newSeniority['seniority_external_days']
+                sileg_session.add(external_seniority)
+                external_seniority_log = {  'id': external_seniority.id,
+                                            'created': external_seniority.created,
+                                            'updated': external_seniority.updated,
+                                            'deleted': external_seniority.deleted,
+                                            'days': external_seniority.days,
+                                            'months': external_seniority.months,
+                                            'years': external_seniority.years,
+                                            'user_id': external_seniority.user_id
+                                        }
+                log = SilegLog()
+                log.type = SilegLogTypes.CREATE
+                log.entity_id = external_seniority.id
+                log.authorizer_id = authorizer_id
+                log.data = json.dumps([external_seniority_log], default=str)
+                sileg_session.add(log)
+            es_id = silegModel.get_external_seniority_by_user(sileg_session, uid)
+            if es_id:
+                es = silegModel.get_external_seniority(sileg_session, es_id)
+                if es and len(es) >= 1 and not es[0].deleted:
+                    toDelete_external_seniority = es[0]
+                    toDelete_external_seniority.deleted = datetime.datetime.utcnow()
+                    sileg_session.add(toDelete_external_seniority)
+                    external_seniority_log = {  'id': toDelete_external_seniority.id,
+                                        'created': toDelete_external_seniority.created,
+                                        'updated': toDelete_external_seniority.updated,
+                                        'deleted': toDelete_external_seniority.deleted,
+                                        'days': toDelete_external_seniority.days,
+                                        'months': toDelete_external_seniority.months,
+                                        'years': toDelete_external_seniority.years,
+                                        'user_id': toDelete_external_seniority.user_id
+                                    }
+                    toDelete_log = SilegLog()
+                    toDelete_log.type = SilegLogTypes.DELETE
+                    toDelete_log.entity_id = toDelete_external_seniority.id
+                    toDelete_log.authorizer_id = authorizer_id
+                    toDelete_log.data = json.dumps([external_seniority_log], default=str)
+                    sileg_session.add(toDelete_log)
+                    try:
+                        sileg_session.commit()
+                        return 'Se ha modificado la antigüedad externa'
+                    except:
+                        return 'Error interno'
+            try:
+                sileg_session.commit()
+                return 'Se ha modificado la antigüedad externa'
+            except:
+                return 'Error interno'
