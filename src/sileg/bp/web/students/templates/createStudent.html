@@ -1,0 +1,332 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col m1"></div>
+    <div class="col m10">
+        <div class="card-panel grey lighten-5">
+            <div class="center">
+                <h4> Creación de Personas </h4>
+            </div>
+            <form action="" enctype="multipart/form-data" method="post">
+                {{ form.hidden_tag() }}
+                <div class="row">
+                    <div class="col m5">
+                        <h5>Datos Personales</h5>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <div class="input-field">
+                            {{ form.lastname.label }}
+                            {% if form.lastname.errors %}
+                            {{ form.lastname(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.lastname.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.lastname(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m5">
+                        <div class="input-field">
+                            {{ form.firstname.label }}
+                            {% if form.firstname.errors %}
+                            {{ form.firstname(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.firstname.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.firstname(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m2">
+                        {{ form.person_number_type.label }}
+                        {% if form.person_number_type.errors %}
+                        {{ form.person_number_type(class="validate invalid") }}
+                        <span class="helper-text red-text">Debe seleccionar una opción</span>
+                        {% else %}
+                        {{ form.person_number_type(class="validate") }}
+                        {% endif %}
+                    </div>
+                    <div class="col m3">
+                        <div class="input-field">
+                            {{ form.person_number.label }}
+                            {% if form.person_number.errors %}
+                            {{ form.person_number(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.person_number.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.person_number(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m5">
+                        <div class="file-field input-field">
+                            <div class="btn">
+                                <span>Documento</span>
+                                {{ form.person_numberFile(class="validate") }}
+                            </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Adjuntar Documento">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m3">
+                        {{ form.gender.label }}
+                        {% if form.gender.errors %}
+                        {{ form.gender(class="validate invalid") }}
+                        <span class="helper-text" data-error="{{form.gender.errors[0]}}"></span>
+                        {% else %}
+                        {{ form.gender(class="validate") }}
+                        {% endif %}
+                    </div>
+                    <div class="col m3">
+                        {{ form.marital_status.label }}
+                        {% if form.marital_status.errors %}
+                        {{ form.marital_status(class="validate invalid") }}
+                        <span class="helper-text" data-error="{{form.marital_status.errors[0]}}"></span>
+                        {% else %}
+                        {{ form.marital_status(class="validate") }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m3">
+                        <div class="input-field">
+                            {{ form.birthplace.label }}
+                            {% if form.birthplace.errors %}
+                            {{ form.birthplace(class="validate invalid form-control autocomplete") }}
+                            <span class="helper-text" data-error="{{form.birthplace.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.birthplace(class="validate form-control autocomplete") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m3">
+                        <div class="input-field">
+                            {{ form.birthdate.label }}
+                            {% if form.birthdate.errors %}
+                            {{ form.birthdate(class="validate invalid datepicker") }}
+                            <span class="helper-text" data-error="{{form.birthdate.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.birthdate(class="validate datepicker") }}
+                            {% endif %}
+
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m5">
+                        <h5>Domicilio</h5>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m6">
+                        <div class="input-field">
+                            {{ form.address.label }}
+                            {% if form.address.errors %}
+                            {{ form.address(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.address.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.address(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m4">
+                        <div class="input-field">
+                            {{ form.residence.label }}
+                            {% if form.residence.errors %}
+                            {{ form.residence(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.residence.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.residence(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m5">
+                        <h5>Contacto</h5>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <div class="input-field">
+                            {{ form.work_email.label }}
+                            {% if form.work_email.errors %}
+                            {{ form.work_email(class="validate invalid", placeholder="nombre.apellido@econo.unlp.edu.ar") }}
+                            <span class="helper-text" data-error="{{form.work_email.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.work_email(class="validate", placeholder="nombre.apellido@econo.unlp.edu.ar") }}
+                            {% endif %}
+
+                        </div>
+                    </div>
+                    <div class="col m5">
+                        <div class="input-field">
+                            {{ form.personal_email.label }}
+                            {% if form.personal_email.errors %}
+                            {{ form.personal_email(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.personal_email.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.personal_email(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        <div class="input-field">
+                            {{ form.land_line.label }}
+                            {% if form.land_line.errors %}
+                            {{ form.land_line(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.land_line.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.land_line(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m4">
+                        <div class="input-field">
+                            {{ form.mobile_number.label }}
+                            {% if form.mobile_number.errors %}
+                            {{ form.mobile_number(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.mobile_number.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.mobile_number(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m5">
+                        <h5>Datos Laborales</h5>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <div class="input-field">
+                            {{ form.laboral_number.label }}
+                            {% if form.laboral_number.errors %}
+                            {{ form.laboral_number(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{form.laboral_number.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.laboral_number(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m5">
+                        <div class="file-field input-field">
+                            <div class="btn">
+                                <span>CUIL</span>
+                                {{ form.laboral_numberFile(class="validate") }}
+                            </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Adjuntar CUIL">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <h6>Antigüedad Externa</h6>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m2">
+                        <div class="input-field">
+                            {{ form.seniority_external_years.label }}
+                            {% if form.seniority_external_years.errors %}
+                            {{ form.seniority_external_years(class="validate invalid", type="number") }}
+                            <span class="helper-text" data-error="{{form.seniority_external_years.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.seniority_external_years(class="validate", type="number") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m2">
+                        <div class="input-field">
+                            {{ form.seniority_external_months.label }}
+                            {% if form.seniority_external_months.errors %}
+                            {{ form.seniority_external_months(class="validate invalid", type="number") }}
+                            <span class="helper-text" data-error="{{form.seniority_external_months.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.seniority_external_months(class="validate", type="number") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m2">
+                        <div class="input-field">
+                            {{ form.seniority_external_days.label }}
+                            {% if form.seniority_external_days.errors %}
+                            {{ form.seniority_external_days(class="validate invalid", type="number") }}
+                            <span class="helper-text" data-error="{{form.seniority_external_days.errors[0]}}"></span>
+                            {% else %}
+                            {{ form.seniority_external_days(class="validate", type="number") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="divider"></div>
+                <br>
+                <div class="row">
+                    <div class="col m3"></div>
+                    <div class="col m1">
+                        <button class="btn red lighten-2" type="reset">Limpiar</button>
+                    </div>
+                    <div class="col m3"></div>
+                    <div class="col m2">
+                        <button class="btn light-blue darken-3">Crear Persona</button>
+                    </div>
+                    <div class="col m3"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col m1"></div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('select').formSelect();
+        $('.datepicker').datepicker({
+            format: 'd-m-yyyy',
+            minDate: new Date(1900, 1, 1),
+            maxDate: new Date(),
+            showClearBtn: true,
+            autoClose: true,
+            i18n: {
+                months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                monthsShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                weekdays: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+                weekdaysAbbrev: ["D", "L", "M", "M", "J", "V", "S"],
+                today: 'Hoy',
+                clear: 'Limpiar',
+                done: 'Aceptar',
+                cancel: 'Cancelar',
+            }
+        });
+    });
+</script>
+{% endblock %}
