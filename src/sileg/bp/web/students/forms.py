@@ -26,6 +26,7 @@ class StudentCreateForm(FlaskForm):
     firstname = StringField('Nombres', validators=[DataRequired()])
     person_number_type = SelectField('Tipo de Documento', coerce=str)
     person_number = StringField('Nro. de Documento', validators=[DataRequired()])
+    student_number = StringField('Legajo (Opcional)')
         
     def __init__(self):
         super(StudentCreateForm,self).__init__()
@@ -71,6 +72,20 @@ class StudentCreateForm(FlaskForm):
                                     'user_id': idNumber.user_id,
                                 })
                 
+                if self.student_number.data:
+                    s_number = IdentityNumber()
+                    s_number.type = IdentityNumberTypes.STUDENT
+                    s_number.number = self.student_number.data
+                    s_number.user_id = uid
+                    session.add(s_number)
+                    toLog.append({  'id': s_number.id,
+                                    'created': s_number.created,
+                                    'updated': s_number.updated,
+                                    'deleted': s_number.deleted,
+                                    'type': s_number.type,
+                                    'number': s_number.number,
+                                    'user_id': s_number.user_id,
+                                })  
 
                 newLog = UsersLog()
                 newLog.entity_id = newUser.id
@@ -79,12 +94,6 @@ class StudentCreateForm(FlaskForm):
                 newLog.data = json.dumps(toLog, default=str)
                 session.add(newLog)
                 session.commit()
-
-                """
-
-                MODELO DE SILEG ---> ALTA DE ANTIGUEDAD DE PERSONA
-
-                """
                 return self.person_number.data
             else:
                 return None
