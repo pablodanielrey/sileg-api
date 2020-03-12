@@ -1,0 +1,469 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col m1"></div>
+    <div class="col m10">
+        <div class="card-panel grey lighten-5">
+            <div class="center">
+                <h4> Modificación de datos de la persona </h4>
+            </div>
+            <form action="" enctype="multipart/form-data" method="post">
+                {{ formModifyPersonData.hidden_tag() }}
+                <div class="row">
+                    <div class="col m5">
+                        <h5>Datos Personales</h5>
+                    </div>
+                </div>
+                <div class="row center" style="margin-bottom: 0px;">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <div class="input-field">
+                            {{ formModifyPersonData.lastname.label }}
+                            {% if formModifyPersonData.lastname.errors %}
+                            {{ formModifyPersonData.lastname(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{formModifyPersonData.lastname.errors[0]}}"></span>
+                            {% else %}
+                            {{ formModifyPersonData.lastname(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m5">
+                        <div class="input-field">
+                            {{ formModifyPersonData.firstname.label }}
+                            {% if formModifyPersonData.firstname.errors %}
+                            {{ formModifyPersonData.firstname(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{formModifyPersonData.firstname.errors[0]}}"></span>
+                            {% else %}
+                            {{ formModifyPersonData.firstname(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m3">
+                        {{ formModifyPersonData.gender.label }}
+                        {% if formModifyPersonData.gender.errors %}
+                        {{ formModifyPersonData.gender(class="validate invalid") }}
+                        <span class="helper-text" data-error="{{formModifyPersonData.gender.errors[0]}}"></span>
+                        {% else %}
+                        {{ formModifyPersonData.gender(class="validate") }}
+                        {% endif %}
+                    </div>
+                    <div class="col m3">
+                        {{ formModifyPersonData.marital_status.label }}
+                        {% if formModifyPersonData.marital_status.errors %}
+                        {{ formModifyPersonData.marital_status(class="validate invalid") }}
+                        <span class="helper-text" data-error="{{formModifyPersonData.marital_status.errors[0]}}"></span>
+                        {% else %}
+                        {{ formModifyPersonData.marital_status(class="validate") }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m3">
+                        <div class="input-field">
+                            {{ formModifyPersonData.birthplace.label }}
+                            {% if formModifyPersonData.birthplace.errors %}
+                            {{ formModifyPersonData.birthplace(class="validate invalid form-control autocomplete") }}
+                            <span class="helper-text" data-error="{{formModifyPersonData.birthplace.errors[0]}}"></span>
+                            {% else %}
+                            {{ formModifyPersonData.birthplace(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m3">
+                        <div class="input-field">
+                            {{ formModifyPersonData.birthdate.label }}
+                            {% if formModifyPersonData.birthdate.errors %}
+                            {{ formModifyPersonData.birthdate(class="validate invalid datepicker") }}
+                            <span class="helper-text" data-error="{{formModifyPersonData.birthdate.errors[0]}}"></span>
+                            {% else %}
+                            {{ formModifyPersonData.birthdate(class="validate datepicker") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <div class="col m5">
+                        <h5>Domicilio</h5>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m6">
+                        <div class="input-field">
+                            {{ formModifyPersonData.address.label }}
+                            {% if formModifyPersonData.address.errors %}
+                            {{ formModifyPersonData.address(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{formModifyPersonData.address.errors[0]}}"></span>
+                            {% else %}
+                            {{ formModifyPersonData.address(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m4">
+                        <div class="input-field">
+                            {{ formModifyPersonData.residence.label }}
+                            {% if formModifyPersonData.residence.errors %}
+                            {{ formModifyPersonData.residence(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{formModifyPersonData.residence.errors[0]}}"></span>
+                            {% else %}
+                            {{ formModifyPersonData.residence(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m10 center">
+                        {{formModifyPersonData.personDataModify(class="btn light-blue darken-3")}}
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+            </form>
+
+            <div class="divider"></div>
+            
+            <form action="" enctype="multipart/form-data" method="post">
+                {{ formModifyIdNumber.hidden_tag() }}
+                <div class="row center">
+                    <div class="col m12">
+                        <h5>Documentos de identidad</h5>
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: 0px;">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        {{ formModifyIdNumber.person_number_type.label }}
+                        {% if formModifyIdNumber.person_number_type.errors %}
+                        {{ formModifyIdNumber.person_number_type(class="validate invalid") }}
+                        <span class="helper-text red-text">Debe seleccionar una opción</span>
+                        {% else %}
+                        {{ formModifyIdNumber.person_number_type(class="validate") }}
+                        {% endif %}
+                    </div>
+                    <div class="col m4">
+                        <div class="input-field">
+                            {{ formModifyIdNumber.person_number.label }}
+                            {% if formModifyIdNumber.person_number.errors %}
+                            {{ formModifyIdNumber.person_number(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{formModifyIdNumber.person_number.errors[0]}}"></span>
+                            {% else %}
+                            {{ formModifyIdNumber.person_number(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m1 center">
+                        <button class="btn-floating waves-effect waves-light green" name="idNumber" type="submit"><i class="material-icons">add</i></button>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                {% if person.identity_numbers|length > 0 %}
+                <br>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <div class="divider"></div>
+                        <table class="centered responsive-table">
+                            <thead>
+                                <tr>
+                                    <th style="padding-top: 5px; padding-bottom: 5px;">Tipo de documento</th>
+                                    <th style="padding-top: 5px; padding-bottom: 5px;">Número</th>
+                                    <th style="padding-top: 5px; padding-bottom: 5px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pi in person.identity_numbers %}
+                                {% if not pi.deleted %}
+                                <tr>
+                                    <td style="padding-top: 5px; padding-bottom: 5px;">{{pi.type.value}}</td>
+                                    <td style="padding-top: 5px; padding-bottom: 5px;">{{pi.number}}</td>
+                                    {% if pi.type.value != 'DNI' %}
+                                    <td style="padding-top: 5px; padding-bottom: 5px;"><a class="modal-trigger btn-floating waves-effect waves-light red" href="#eliminarDocumento{{pi.id}}"><i class="material-icons">delete</i></a></td>
+                                    <!-- Modal eliminar documento --> 
+                                    <div id="eliminarDocumento{{pi.id}}" class="modal">
+                                        <div class="modal-content">
+                                            <h4>Eliminar documento</h4>
+                                            <p>Confirmar la eliminación del <strong>{{pi.type.value}}</strong> <strong>{{pi.number}}</strong> que pertenece al usuario {{person.lastname}}, {{person.firstname}}</p>
+                                        </div>
+                                        <div class="divider"></div>
+                                        <div class="modal-footer">
+                                            <a href="#!" class="modal-close waves-effect waves-green btn-flat">cancelar</a>
+                                            <a href="{{url_for('persons.deleteIdentityNumber',uid=person.id,pidnumberid=pi.id)}}" class="modal-close waves-effect waves-green btn-flat red-text">eliminar</a>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <td style="padding-top: 5px; padding-bottom: 5px;"></td>
+                                    {% endif %}
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                {% endif %}
+            </form>
+
+            <div class="divider"></div>
+
+            <form action="" enctype="multipart/form-data" method="post">
+                {{ formModifyMail.hidden_tag() }}
+                <div class="row">
+                    <div class="col m5">
+                        <h5>Contacto</h5>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m12">
+                        <h5>Correos electrónicos</h5>
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: 0px;">
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        {{ formModifyMail.email_type.label }}
+                        {% if formModifyMail.email_type.errors %}
+                        {{ formModifyMail.email_type(class="validate invalid") }}
+                        <span class="helper-text red-text">Debe seleccionar una opción</span>
+                        {% else %}
+                        {{ formModifyMail.email_type(class="validate") }}
+                        {% endif %}
+                    </div>
+                    <div class="col m5">
+                        <div class="input-field">
+                            {{ formModifyMail.email.label }}
+                            {% if formModifyMail.email.errors %}
+                            {{ formModifyMail.email(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{formModifyMail.email.errors[0]}}"></span>
+                            {% else %}
+                            {{ formModifyMail.email(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m1 center">
+                        <button class="btn-floating waves-effect waves-light green" name="mail" type="submit"><i class="material-icons">add</i></button>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                {% if person.mails|length > 0 %}
+                <br>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <div class="divider"></div>
+                        <table class="centered responsive-table">
+                            <thead>
+                                <tr>
+                                    <th style="padding-top: 5px; padding-bottom: 5px;">Correos electrónicos</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pm in person.mails %}
+                                {% if not pm.deleted%}
+                                <tr>
+                                    <td style="padding-top: 5px; padding-bottom: 5px;">{{pm.email}}</td>
+                                    {% if pm.type.value != 'INSTITUTIONAL' %}
+                                    <td style="padding-top: 5px; padding-bottom: 5px;"><a class="modal-trigger btn-floating waves-effect waves-light red" href="#eliminarCorreo{{pm.id}}"><i class="material-icons">delete</i></a></td>
+                                    <!-- Modal eliminar correo -->
+                                    <div id="eliminarCorreo{{pm.id}}" class="modal">
+                                        <div class="modal-content">
+                                            <h4>Eliminar correo electrónico</h4>
+                                            <p>Confirmar la eliminación del correo eléctronico <strong>{{pm.email}}</strong> que pertenece al usuario {{person.lastname}}, {{person.firstname}}</p>
+                                        </div>
+                                        <div class="divider"></div>
+                                        <div class="modal-footer">
+                                            <a href="#!" class="modal-close waves-effect waves-green btn-flat">cancelar</a>
+                                            <a href="{{url_for('persons.deleteMail',uid=person.id,pmid=pm.id)}}" class="modal-close waves-effect waves-green btn-flat red-text">eliminar</a>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <td style="padding-top: 5px; padding-bottom: 5px;"></td>
+                                    {% endif %}
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>                    
+                    <div class="col m1"></div>
+                </div>
+                {% endif %}
+            </form>
+
+            <div class="divider"></div>
+
+            <form action="" enctype="multipart/form-data" method="post">
+                {{ formModifyPhone.hidden_tag() }}
+                <div class="row center">
+                    <div class="col m12">
+                        <h5>Teléfonos</h5>
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: 0px;">
+                    <div class="col m1"></div>
+                    <div class="col m4">
+                        {{ formModifyPhone.phone_type.label }}
+                        {% if formModifyPhone.phone_type.errors %}
+                        {{ formModifyPhone.phone_type(class="validate invalid") }}
+                        <span class="helper-text red-text">Debe seleccionar una opción</span>
+                        {% else %}
+                        {{ formModifyPhone.phone_type(class="validate") }}
+                        {% endif %}
+                    </div>
+                    <div class="col m5">
+                        <div class="input-field">
+                            {{ formModifyPhone.phone_number.label }}
+                            {% if formModifyPhone.phone_number.errors %}
+                            {{ formModifyPhone.phone_number(class="validate invalid") }}
+                            <span class="helper-text" data-error="{{formModifyPhone.phone_number.errors[0]}}"></span>
+                            {% else %}
+                            {{ formModifyPhone.phone_number(class="validate") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m1 center">
+                        <button class="btn-floating waves-effect waves-light green" name="phone" type="submit"><i class="material-icons">add</i></button>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                {% if person.phones|length > 0 %}
+                <br>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <div class="divider"></div>
+                        <table class="centered responsive-table">
+                            <thead>
+                                <tr>
+                                    <th style="padding-top: 5px; padding-bottom: 5px;"></th>
+                                    <th style="padding-top: 5px; padding-bottom: 5px;">Numeros telefónicos</th>
+                                    <th style="padding-top: 5px; padding-bottom: 5px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ph in person.phones %}
+                                {% if not ph.deleted %}
+                                <tr>
+                                    {% if ph.type.value == 'LANDLINE' %}
+                                    <td style="padding-top: 5px; padding-bottom: 5px;"><i class="material-icons">phone</i></td>
+                                    {% else %}
+                                    <td style="padding-top: 5px; padding-bottom: 5px;"><i class="material-icons">phone_android</i></td>
+                                    {% endif %}
+                                    <td style="padding-top: 5px; padding-bottom: 5px;">{{ph.number}}</td>
+                                    <td style="padding-top: 5px; padding-bottom: 5px;"><a class="modal-trigger btn-floating waves-effect waves-light red" href="#eliminarTel{{ph.id}}"><i class="material-icons">delete</i></a></td>
+                                    <!-- Modal eliminar teléfono -->
+                                    <div id="eliminarTel{{ph.id}}" class="modal">
+                                        <div class="modal-content">
+                                            <h4>Eliminar número telefónico</h4>
+                                            <p>Confirmar la eliminación del número telefónico <strong>{{ph.number}}</strong> que pertenece al usuario {{person.lastname}}, {{person.firstname}}</p>
+                                        </div>
+                                        <div class="divider"></div>
+                                        <div class="modal-footer">
+                                            <a href="#!" class="modal-close waves-effect waves-green btn-flat">cancelar</a>
+                                            <a href="{{url_for('persons.deletePhone',uid=person.id,phid=ph.id)}}" class="modal-close waves-effect waves-green btn-flat red-text">eliminar</a>
+                                        </div>
+                                    </div>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>                    
+                    <div class="col m1"></div>
+                </div>
+                {% endif %}
+            </form>
+
+            <div class="divider"></div>
+
+            <form action="" enctype="multipart/form-data" method="post">
+                {{ formModifySeniority.hidden_tag() }}
+                <div class="row">
+                    <div class="col m5">
+                        <h5>Datos Laborales</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <h6>Antigüedad Externa</h6>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m2">
+                        <div class="input-field">
+                            {{ formModifySeniority.seniority_external_years.label }}
+                            {% if formModifySeniority.seniority_external_years.errors %}
+                            {{ formModifySeniority.seniority_external_years(class="validate invalid", type="number") }}
+                            <span class="helper-text" data-error="{{formModifySeniority.seniority_external_years.errors[0]}}"></span>
+                            {% else %}
+                            {{ formModifySeniority.seniority_external_years(class="validate", type="number") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m2">
+                        <div class="input-field">
+                            {{ formModifySeniority.seniority_external_months.label }}
+                            {% if formModifySeniority.seniority_external_months.errors %}
+                            {{ formModifySeniority.seniority_external_months(class="validate invalid", type="number") }}
+                            <span class="helper-text" data-error="{{formModifySeniority.seniority_external_months.errors[0]}}"></span>
+                            {% else %}
+                            {{ formModifySeniority.seniority_external_months(class="validate", type="number") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m2">
+                        <div class="input-field">
+                            {{ formModifySeniority.seniority_external_days.label }}
+                            {% if formModifySeniority.seniority_external_days.errors %}
+                            {{ formModifySeniority.seniority_external_days(class="validate invalid", type="number") }}
+                            <span class="helper-text" data-error="{{formModifySeniority.seniority_external_days.errors[0]}}"></span>
+                            {% else %}
+                            {{ formModifySeniority.seniority_external_days(class="validate", type="number") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+            <form>
+        </div>
+    </div>
+    <div class="col m1"></div>
+</div>
+
+
+<script type="text/javascript">
+    $(function () {
+        $('select').formSelect();
+        $('.datepicker').datepicker({
+            format: 'dd-mm-yyyy',
+            minDate: new Date(1900, 1, 1),
+            maxDate: new Date(),
+            showClearBtn: true,
+            autoClose: true,
+            i18n: {
+                months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                monthsShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                weekdays: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+                weekdaysAbbrev: ["D", "L", "M", "M", "J", "V", "S"],
+                today: 'Hoy',
+                clear: 'Limpiar',
+                done: 'Aceptar',
+                cancel: 'Cancelar',
+            }
+        });
+        $('.modal').modal();
+    });
+</script>
+{% endblock %}
