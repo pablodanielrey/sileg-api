@@ -4,14 +4,16 @@ import io
 from flask import render_template, flash, redirect,request, Markup, url_for, abort, send_file
 from . import bp
 
-from .forms import PersonCreateForm, PersonSearchForm, DegreeAssignForm, PersonDataModifyForm, PersonIdNumberModifyForm, PersonMailModifyForm, PersonPhoneModifyForm, PersonSeniorityModifyForm
+from .forms import PersonCreateForm, PersonSearchForm, DegreeAssignForm, PersonDataModifyForm, PersonIdNumberModifyForm, PersonMailModifyForm, PersonPhoneModifyForm, PersonSeniorityModifyForm, ResetCredentialsForm
 
 from sileg.helpers.namesHandler import id2sDegrees
+from sileg.helpers.permissionsHelper import verify_user_permissions
 
 from sileg.auth import require_user
 
 from sileg.auth import oidc
-from sileg.models import usersModel, open_users_session, silegModel, open_sileg_session
+from sileg.models import usersModel, open_users_session, silegModel, open_sileg_session, open_login_session, loginModel
+from sileg.models import IdentityNumberTypes
 
 
 @bp.route('/crear',methods=['GET','POST'])
@@ -30,9 +32,49 @@ def create(user):
             flash(Markup('<span>¡Error al crear el usuario!, intente nuevamente.</span>'))
     return render_template('createPerson.html', user=user, form=form)
 
+@bp.route('<uid>/blanquear_clave',methods=['GET','POST'])
+@require_user
+def reset_credentials(user, uid):
+
+    assert uid is not None
+
+    """
+    Se resetea la calve solo para los alumnos ahora!!! personas que no tienen designaciones asociadas.
+    """
+
+    username = None
+    with open_users_session() as session:
+        users = usersModel.get_users(session, [uid])
+        if not users or len(users) <= 0:
+            error = 'No existe esa persona'
+            return render_template('resetCredentials.html', error=error, user=user)
+        person = users[0]
+        usernames = [id.number for id in person.identity_numbers if id.type == IdentityNumberTypes.DNI]
+        if len(usernames) <= 0:
+            error = 'La persona no tiene asociado un dni'
+            return render_template('resetCredentials.html', error=error, user=user)
+        username = usernames[0]
+
+    with open_sileg_session() as session:
+        desigs = silegModel.get_designations_by_uuid(session, [uid])
+        if desigs and len(desigs) > 0:
+            error = 'No se puede blanquear la clave ya que tiene designaciones'
+            return render_template('resetCredentials.html', error=error, user=user)
+
+    form = ResetCredentialsForm()
+    if form.validate_on_submit():
+        """ generamos una clave temporal """
+        with open_login_session() as session:
+            credentials = loginModel.generate_temporal_credentials(session, uid, username)
+            session.commit()
+        return render_template('resetCredentials.html', error=None, user=user, person=person, username=username, credentials=credentials, form=form)
+    
+    return render_template('resetCredentials.html', error=None, user=user, person=person, usernmae=None, credentials=None, form=form)
+            
 
 @bp.route('/buscar')
 @require_user
+@verify_user_permissions
 def search(user):
     """
     Pagina principal de personas
