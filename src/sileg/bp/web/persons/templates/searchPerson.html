@@ -53,6 +53,7 @@
                 </table>
                 {% for p in persons %}
                 <ul id='d{{p.id}}' class='dropdown-content'>                        
+                    <li><a class="blue-text darken-4" href="{{url_for('persons.reset_credentials', uid=p.id)}}">Blanquear Clave</a></li>
                     <li><a class="blue-text darken-4" href="{{url_for('persons.modifyPersonData', uid=p.id)}}">Modificar</a></li>
                     <li><a class="blue-text darken-4" href="{{url_for('designations.personDesignations', uid=p.id)}}">Designaciones</a></li>
                     <li><a class="blue-text darken-4" href="{{url_for('persons.degrees', uid=p.id)}}">Títulos</a></li>

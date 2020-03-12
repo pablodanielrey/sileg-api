@@ -20,6 +20,10 @@ from sileg_model.model.SilegModel import SilegModel
 from sileg_model.model.entities.ExternalSeniority import ExternalSeniority
 from sileg_model.model.entities.Log import SilegLog, SilegLogTypes
 
+class ResetCredentialsForm(FlaskForm):
+    modifyCredentials = SubmitField('Blanquear Clave')
+    
+    
 class PersonCreateForm(FlaskForm):
     """
 
