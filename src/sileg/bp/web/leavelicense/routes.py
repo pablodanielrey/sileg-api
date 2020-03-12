@@ -12,6 +12,7 @@ from sileg.models import usersModel, open_users_session, silegModel, open_sileg_
 from sileg_model.model.entities.Designation import DesignationTypes
 from sileg_model.model.entities.Log import SilegLog, SilegLogTypes
 
+from sileg.helpers.permissionsHelper import verify_admin_permissions, verify_sileg_permission, verify_students_permission
 
 
 def dt2s(dt: DesignationTypes):
@@ -28,6 +29,7 @@ def dt2s(dt: DesignationTypes):
 
 @bp.route('<uid>')
 @require_user
+@verify_sileg_permission
 def list_leave_licenses(user, uid):
     """
         Pagina de creacion de Licencia Personal
@@ -47,6 +49,7 @@ def list_leave_licenses(user, uid):
 
 @bp.route('/personal/<uid>')
 @require_user
+@verify_sileg_permission
 def create_personal_leave(user, uid):
     """
         Pagina de creacion de Licencia Personal
@@ -59,6 +62,7 @@ def create_personal_leave(user, uid):
 
 @bp.route('/personal/<uid>', methods=['POST'])
 @require_user
+@verify_sileg_permission
 def create_personal_leave_post(user, uid):
     """
         Pagina de creacion de Licencia Personal
@@ -80,6 +84,7 @@ def create_personal_leave_post(user, uid):
 
 @bp.route('/personal/<uid>/eliminar/<lid>')
 @require_user
+@verify_sileg_permission
 def delete_personal_leave(user, uid, lid):
     """
         Pagina de eliminacion de Licencia Personal
@@ -118,6 +123,7 @@ def delete_personal_leave(user, uid, lid):
 
 @bp.route('/designacion/<did>')
 @require_user
+@verify_sileg_permission
 def create_designation_leave_license(user, did):
     """
     Pagina de creacion de Licencia de Designacion
@@ -139,6 +145,7 @@ def create_designation_leave_license(user, did):
 
 @bp.route('/designacion/<did>', methods=['POST'])
 @require_user
+@verify_sileg_permission
 def create_designation_leave_license_post(user, did):
     assert did is not None
     with open_sileg_session() as session:

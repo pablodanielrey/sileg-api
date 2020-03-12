@@ -9,11 +9,14 @@ from sileg.helpers.namesHandler import id2sDegrees
 
 from sileg.auth import require_user
 
+from sileg.helpers.permissionsHelper import verify_admin_permissions, verify_sileg_permission, verify_students_permission
+
 from sileg.auth import oidc
 from sileg.models import usersModel, open_users_session
 
 @bp.route('/crear')
 @require_user
+@verify_students_permission
 def create(user):
     """
     Pagina de creacion de alumnos GET
@@ -23,6 +26,7 @@ def create(user):
 
 @bp.route('/crear',methods=['POST'])
 @require_user
+@verify_students_permission
 def create_post(user):
     """
     Pagina de creacion de alumnos POST

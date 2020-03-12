@@ -7,7 +7,7 @@ from . import bp
 from .forms import PersonCreateForm, PersonSearchForm, DegreeAssignForm, PersonDataModifyForm, PersonIdNumberModifyForm, PersonMailModifyForm, PersonPhoneModifyForm, PersonSeniorityModifyForm, ResetCredentialsForm
 
 from sileg.helpers.namesHandler import id2sDegrees
-from sileg.helpers.permissionsHelper import verify_user_permissions
+from sileg.helpers.permissionsHelper import verify_admin_permissions, verify_sileg_permission, verify_students_permission
 
 from sileg.auth import require_user
 
@@ -18,6 +18,7 @@ from sileg.models import IdentityNumberTypes
 
 @bp.route('/crear',methods=['GET','POST'])
 @require_user
+@verify_sileg_permission
 def create(user):
     """
     Pagina principal de personas
@@ -34,6 +35,7 @@ def create(user):
 
 @bp.route('<uid>/blanquear_clave',methods=['GET','POST'])
 @require_user
+@verify_students_permission
 def reset_credentials(user, uid):
 
     assert uid is not None
@@ -74,7 +76,7 @@ def reset_credentials(user, uid):
 
 @bp.route('/buscar')
 @require_user
-@verify_user_permissions
+@verify_students_permission
 def search(user):
     """
     Pagina principal de personas
@@ -98,6 +100,7 @@ def search(user):
 
 @bp.route('<uid>/titulos',methods=['GET','POST'])
 @require_user
+@verify_sileg_permission
 def degrees(user,uid):
     """
     Pagina de Listado de Títulos de persona
@@ -120,6 +123,7 @@ def degrees(user,uid):
 
 @bp.route('<uid>/titulos/<did>/eliminar')
 @require_user
+@verify_sileg_permission
 def deleteDegree(user,uid,did):
     """
     Metodo de baja de titulo
@@ -136,6 +140,7 @@ def deleteDegree(user,uid,did):
 
 @bp.route('<uid>/titulos/<did>/descargar')
 @require_user
+@verify_sileg_permission
 def downloadDegree(user,uid,did):
     with open_users_session() as session:
         person = usersModel.get_users(session,[uid])[0]
@@ -155,6 +160,7 @@ def downloadDegree(user,uid,did):
 
 @bp.route('<uid>')
 @require_user
+@verify_sileg_permission
 def personData(user,uid):
     """
     Pagina de vista de datos personales
@@ -175,6 +181,7 @@ def personData(user,uid):
 
 @bp.route('<uid>/documento/<iid>/descargar')
 @require_user
+@verify_sileg_permission
 def downloadIdNumberFile(user,uid,iid):
     with open_users_session() as session:
         person = usersModel.get_users(session,[uid])[0]
@@ -190,6 +197,7 @@ def downloadIdNumberFile(user,uid,iid):
 
 @bp.route('<uid>/modificar',methods=['GET','POST'])
 @require_user
+@verify_admin_permissions
 def modifyPersonData(user,uid):
     """
     Pagina de modificacion de datos personales
@@ -287,6 +295,7 @@ def modifyPersonData(user,uid):
 
 @bp.route('<uid>/documento/<pidnumberid>/eliminar')
 @require_user
+@verify_admin_permissions
 def deleteIdentityNumber(user,uid,pidnumberid):
     """
     Metodo de baja de documento
@@ -304,6 +313,7 @@ def deleteIdentityNumber(user,uid,pidnumberid):
 
 @bp.route('<uid>/correo/<pmid>/eliminar')
 @require_user
+@verify_admin_permissions
 def deleteMail(user,uid,pmid):
     """
     Metodo de baja de email
@@ -321,6 +331,7 @@ def deleteMail(user,uid,pmid):
 
 @bp.route('<uid>/telefono/<phid>/eliminar')
 @require_user
+@verify_sileg_permission
 def deletePhone(user,uid,phid):
     """
     Metodo de baja de teléfono

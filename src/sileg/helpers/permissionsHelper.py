@@ -1,6 +1,6 @@
 from functools import wraps
 
-def verify_user_permissions(fn):
+def verify_admin_permissions(fn):
     @wraps(fn)
     def verify_permission(*args, **kwargs):
         user = kwargs['user']

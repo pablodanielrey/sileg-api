@@ -5,10 +5,13 @@ from .forms import PlaceSearchForm,PlaceCreateForm,placeTypeToString,PlaceModify
 
 from sileg.models import open_sileg_session, silegModel
 
+from sileg.helpers.permissionsHelper import verify_admin_permissions, verify_sileg_permission, verify_students_permission
+
 from . import bp
 
 @bp.route('/crear')
 @require_user
+@verify_admin_permissions
 def create(user):
     """
     Pagina de creacion de lugares GET
@@ -18,6 +21,7 @@ def create(user):
 
 @bp.route('/crear', methods=['POST'])
 @require_user
+@verify_admin_permissions
 def create_post(user):
     """
     Pagina de creacion de lugares POST
@@ -38,6 +42,7 @@ def create_post(user):
 
 @bp.route('/buscar')
 @require_user
+@verify_sileg_permission
 def search(user):
     """
     Pagina de busqueda de lugares
@@ -60,6 +65,7 @@ def search(user):
 
 @bp.route('<pid>/modificar')
 @require_user
+@verify_admin_permissions
 def modifyPlace(user,pid):
     """
     Pagina de modificacion de lugar GET
@@ -70,6 +76,7 @@ def modifyPlace(user,pid):
 
 @bp.route('<pid>/modificar',methods=['POST'])
 @require_user
+@verify_admin_permissions
 def modifyPlace_post(user,pid):
     """
     Pagina de modificacion de lugar POST

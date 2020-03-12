@@ -5,6 +5,8 @@ from sileg.models import silegModel, open_sileg_session, usersModel, open_users_
 from sileg_model.model.entities.Designation import Designation, DesignationTypes, DesignationEndTypes
 from sileg_model.model.entities.Place import PlaceTypes
 
+from sileg.helpers.permissionsHelper import verify_admin_permissions, verify_sileg_permission, verify_students_permission
+
 from . import bp
 from .forms import ExtendDesignationForm, \
                 DesignationCreateForm, \
@@ -98,6 +100,7 @@ def placeTypeToString(p:PlaceTypes):
 
 @bp.route('/suplencia_seleccionar_persona/<did>')
 @require_user
+@verify_sileg_permission
 def replacement_select_person(user, did):
     """
         Paso 1 de generación de una suplencia.
@@ -118,6 +121,7 @@ def replacement_select_person(user, did):
 
 @bp.route('/suplencia_crear/<did>/<uid>')
 @require_user
+@verify_sileg_permission
 def replacement_create_designation(user, did, uid):
     """
         Paso 2 de generación de una suplencia.
@@ -140,6 +144,7 @@ def replacement_create_designation(user, did, uid):
 
 @bp.route('/suplencia_crear/<did>/<uid>', methods=['POST'])
 @require_user
+@verify_sileg_permission
 def replacement_create_designation_post(user, did, uid):
     """
         post del formulario con los datos completos para generar la suplencia.
@@ -172,6 +177,7 @@ def replacement_create_designation_post(user, did, uid):
 
 @bp.route('/convalidar/<did>')
 @require_user
+@verify_sileg_permission
 def convalidate(user, did):
     """
         Paso 1 de generación de una convalidación
@@ -193,6 +199,7 @@ def convalidate(user, did):
 
 @bp.route('/convalidar/<did>', methods=['POST'])
 @require_user
+@verify_sileg_permission
 def convalidate_post(user, did):
     """
         Metodo post de generacion de convalidacion
@@ -225,6 +232,7 @@ def convalidate_post(user, did):
 
 @bp.route('/extension/<did>')
 @require_user
+@verify_sileg_permission
 def promote(user, did):
     """
         Paso 1 de generación de una extensión
@@ -244,6 +252,7 @@ def promote(user, did):
 
 @bp.route('/extension/<did>', methods=['POST'])
 @require_user
+@verify_sileg_permission
 def promote_post(user, did):
     """
         Paso 2 de generación de una extensión
@@ -275,6 +284,7 @@ def promote_post(user, did):
 
 @bp.route('/prorroga/<did>')
 @require_user
+@verify_sileg_permission
 def extend(user, did):
     """
         Paso 1 de generación de una prorroga
@@ -295,6 +305,7 @@ def extend(user, did):
 
 @bp.route('/prorroga/<did>', methods=['POST'])
 @require_user
+@verify_sileg_permission
 def extend_post(user, did):
     """
         Paso 2 de creacion de prorroga
@@ -327,6 +338,7 @@ def extend_post(user, did):
 
 @bp.route('/baja/<did>')
 @require_user
+@verify_sileg_permission
 def discharge(user, did):
     """
         Crea una baja asociada a la designacion did
@@ -345,6 +357,7 @@ def discharge(user, did):
 
 @bp.route('/baja/<did>', methods=['POST'])
 @require_user
+@verify_sileg_permission
 def discharge_post(user, did):
     """
         Genera la baja asociada a did, en la base de datos
@@ -371,6 +384,7 @@ def discharge_post(user, did):
 
 @bp.route('/restaurar/<did>')
 @require_user
+@verify_sileg_permission
 def undelete(user, did):
     assert did is not None
     with open_sileg_session() as session:
@@ -386,6 +400,7 @@ def undelete(user, did):
 
 @bp.route('/eliminar/<did>')
 @require_user
+@verify_sileg_permission
 def delete(user, did):
     """
         Confirmar la eliminación de la designación
@@ -404,6 +419,7 @@ def delete(user, did):
 
 @bp.route('/eliminar/<did>', methods=['POST'])
 @require_user
+@verify_sileg_permission
 def delete_post(user, did):
     """
         Eliminación de la designación
@@ -439,6 +455,7 @@ def _is_promotion(d):
 
 @bp.route('/detalle/<did>')
 @require_user
+@verify_sileg_permission
 def designation_detail(user, did):
     """
         Detalle de una designación
@@ -492,6 +509,7 @@ def _find_user(d:Designation):
 
 @bp.route('/listado/<uid>')
 @require_user
+@verify_sileg_permission
 def personDesignations(user, uid):
     """
     Pagina de lisata de designaciones de una persona
@@ -525,6 +543,7 @@ def personDesignations(user, uid):
 
 @bp.route('/lugar/<pid>')
 @require_user
+@verify_sileg_permission
 def placeDesignations(user, pid):
     """
     Pagina de lisata de designaciones de un lugar
@@ -560,6 +579,7 @@ def placeDesignations(user, pid):
 
 @bp.route('/crear/<uid>')
 @require_user
+@verify_sileg_permission
 def create_get(user, uid):
     """
         Pagina de creacion de designacion
@@ -577,6 +597,7 @@ def create_get(user, uid):
 
 @bp.route('/crear/<uid>', methods=['POST'])
 @require_user
+@verify_sileg_permission
 def create_post(user, uid):
     """
         Pagina de creacion de designacion
