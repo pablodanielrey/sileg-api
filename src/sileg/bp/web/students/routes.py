@@ -12,19 +12,27 @@ from sileg.auth import require_user
 from sileg.auth import oidc
 from sileg.models import usersModel, open_users_session
 
-
-@bp.route('/crear',methods=['GET','POST'])
+@bp.route('/crear')
 @require_user
 def create(user):
     """
-    Pagina principal de estudiantes
+    Pagina de creacion de alumnos GET
+    """
+    form = StudentCreateForm()
+    return render_template('createStudent.html',user=user,form=form)
+
+@bp.route('/crear',methods=['POST'])
+@require_user
+def create_post(user):
+    """
+    Pagina de creacion de alumnos POST
     """
     form = StudentCreateForm()
     if form.validate_on_submit():
         identityNumber = form.save(user['sub'])
         if identityNumber:
-            flash(Markup('<span>¡Estudiante Creado!</span>'))
+            flash(Markup('<span>¡Alumno Creado!</span>'))
             return redirect(url_for('persons.search', query=identityNumber))
         else:
-            flash(Markup('<span>¡Error al crear el usuario!, intente nuevamente.</span>'))
+            flash(Markup('<span>¡Error al crear el alumno!, intente nuevamente.</span>'))
     return render_template('createStudent.html', user=user, form=form)
