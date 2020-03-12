@@ -197,7 +197,7 @@ def downloadIdNumberFile(user,uid,iid):
 
 @bp.route('<uid>/modificar',methods=['GET','POST'])
 @require_user
-@verify_admin_permissions
+@verify_students_permission
 def modifyPersonData(user,uid):
     """
     Pagina de modificacion de datos personales
