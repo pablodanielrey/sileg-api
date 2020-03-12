@@ -502,6 +502,9 @@ class PersonMailModifyForm(FlaskForm):
         """ 
         Agregar correo personal
         """
+        if (re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]*.unlp.edu.ar$",self.email.data)):
+            return 'No se puede agregar correo institucional'
+
         with open_users_session() as session:
             persons = usersModel.get_users(session, [uid])
             if len(persons) == 1:
@@ -530,7 +533,7 @@ class PersonMailModifyForm(FlaskForm):
                     session.commit()
                     return 'Correo agregado con éxito'
                 else:
-                    return 'Error interno'
+                    return 'Error'
 
 class PersonPhoneModifyForm(FlaskForm):
     phone_type = SelectField('Tipo de número telefónico', coerce=str)
