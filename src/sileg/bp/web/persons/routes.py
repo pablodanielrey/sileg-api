@@ -313,7 +313,7 @@ def deleteIdentityNumber(user,uid,pidnumberid):
 
 @bp.route('<uid>/correo/<pmid>/eliminar')
 @require_user
-@verify_admin_permissions
+@verify_students_permission
 def deleteMail(user,uid,pmid):
     """
     Metodo de baja de email
