@@ -27,6 +27,8 @@ def dt2s(dt: DesignationTypes):
     return ''
 
 
+from sileg_model.model.entities.LeaveLicense import DesignationLeaveLicense
+
 @bp.route('<uid>')
 @require_user
 @verify_sileg_permission
@@ -44,8 +46,14 @@ def list_leave_licenses(user, uid):
 
         lids = silegModel.get_user_designation_licenses(session, uid)
         licenses = silegModel.get_dlicenses(session, lids=lids)
+        tlicenses = []
+        for l in licenses:
+            tlicenses.append({
+                'license': l,
+                'extensions': sorted([d for d in session.query(DesignationLeaveLicense).filter(DesignationLeaveLicense.license_id == l.id).all()], key=lambda x : x.start, reverse=True)
+            })
 
-        return render_template('personLicenses.html', user=user, person=person, lt2s=lt2s, plicenses=plicenses, licenses=licenses)
+        return render_template('personLicenses.html', user=user, person=person, lt2s=lt2s, plicenses=plicenses, licenses=tlicenses)
 
 @bp.route('/personal/<uid>')
 @require_user

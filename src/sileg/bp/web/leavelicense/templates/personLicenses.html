@@ -1,5 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
+
+<script>
+    function toggle(id) {
+        var x = document.getElementById(id);
+        if (x.style.visibility === "collapse") {
+            x.style.visibility = "visible";
+        } else {
+            x.style.visibility = "collapse";
+        }
+    }
+</script>
+
 <div class="row">
     <div class="col m1"></div>
     <div class="col m10">
@@ -101,7 +113,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for l in licenses %}
+                        {% for license in licenses %}
+                            {% set l = license['license'] %}
+                            {% set extensions = license['extensions'] %}
                             <tr>
                                 <td class="center"><a class="blue-text darken-4" href="#type">{{ lt2s(l.type) }}</a></td>
                                 <td class="center"><a class="blue-text darken-4" href="#lugar">{{ l.designation.place.name }}, ({{l.designation.place.type.value}})</a></td>
@@ -110,11 +124,34 @@
                                 <td class="center"><a class="blue-text darken-4" href="#dedicacion">{{ l.designation.function.name.split('-')[1] }}</a></td>
                                 <td class="center"><a class="blue-text darken-4" href="#type">{%if l.start%}{{l.start.strftime('%d-%m-%Y')}}{%endif%}</a></td>
                                 <td class="center"><a class="blue-text darken-4" href="#type">{%if l.end%}{{l.end.strftime('%d-%m-%Y')}}{%endif%}</a></td>
-                                <td class="center"><a class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3" href="#" data-target='dropdown1'><i class="material-icons">edit</i></a></td>
+                                <td class="center">
+                                    <button class="btn-floating waves-effect deep-purple darken-4" onclick="toggle('extensions-{{l.id}}')">P</button>
+                                    <a class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3" href="#" data-target='dropdown1'>
+                                        <i class="material-icons">edit</i>
+                                    </a>
+                                </td>
                             </tr>
                             <ul id='dropdown1' class='dropdown-content'>
                                     <li><a class="red-text darken-4" href="#">Eliminar</a></li>
                             </ul>
+
+                            {% if extensions %}                            
+                            <tr id="extensions-{{l.id}}" style="visibility: collapse;">
+                                <td colspan="8">
+                                    <table>
+                                    {% for pr in extensions %}
+                                        <tr>
+                                            <td class="center"><a class="blue-text darken-4" href="#type">{{ lt2s(pr.type) }}</a></td>
+                                            <td class="center"><a class="blue-text darken-4" href="#type">{%if pr.start%}{{pr.start.strftime('%d-%m-%Y')}}{%endif%}</a></td>
+                                            <td class="center"><a class="blue-text darken-4" href="#type">{%if pr.end%}{{pr.end.strftime('%d-%m-%Y')}}{%endif%}</a></td>
+                                        </tr>
+                                    {% endfor %}
+                                    </table>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            
+
                         {% endfor %}
                     </tbody>
                 </table>
