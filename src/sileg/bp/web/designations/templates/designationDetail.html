@@ -85,6 +85,14 @@
             </div>            
 
             <div class="row">
+                <div class="col m4">
+                    Comentarios
+                    <p>{{ designation.comments }}</p>
+                </div>
+            </div>
+            <div class="divider"></div>
+
+            <div class="row">
                 <div class="col m2"></div>
                 <div class="col m8 center">
                     <a class="btn waves-effect blue lighten-1" href="{{url_for('designations.extend', did=designation.id)}}">Prorrogar</a>
