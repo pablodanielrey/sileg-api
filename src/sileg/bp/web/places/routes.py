@@ -56,6 +56,7 @@ def search(user):
             result = silegModel.search_place(session,query)
             if result:
                 places = silegModel.get_places(session,result)
+                places = sorted(sorted(places, key=lambda p: p.name), key=lambda p: p.type.value)
             else:
                 result = []
     else:
