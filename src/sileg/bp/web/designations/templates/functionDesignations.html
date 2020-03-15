@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+        <div>Cargo</div>
+        <div>{{function.name.split('-')[0]}}</div>
+        <div>Caracter</div>
+        <div>{{function.name.split('-')[2]}}</div>
+        <div>Dedicación</div>
+        <div>{{function.name.split('-')[1]}}</div>
+    </div>
+    <br><br><br>
+    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 4fr;">
+        <div>PERSONA</div>
+        <div>INICIO</div>
+        <div>FIN</div>
+        <div>LUGAR</div>
+        {% for d in designations %}
+            <div>{{find_user(d)}}</div>
+            <div>{{d.start.strftime('%d-%m-%Y') if d.start}}</div>
+            <div>{{d.end.strftime('%d-%m-%Y') if d.end}}</div>
+            <div>{{d.place.name if d.place}}</div>
+        {% endfor %}
+    </div>
+{% endblock %}

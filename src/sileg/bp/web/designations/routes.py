@@ -569,6 +569,25 @@ def personDesignations(user, uid):
                     has_suplencia=_has_suplencia,
                     has_extension=_has_extension)
 
+@bp.route('/cargo/<cid>')
+@require_user
+@verify_sileg_permission
+def function_designations(user, cid):
+    """
+    Pagina de lista de designaciones por cargo
+    """
+    assert cid is not None
+
+    with open_sileg_session() as session:
+        function = silegModel.get_functions(session, [cid])[0]
+        dids = silegModel.get_designations_by_functions(session, [cid])
+        to_show = dids[:50]
+        designations = silegModel.get_designations(session, to_show)
+        original = [d for d in designations if d.deleted is None and not d.historic and (d.type == DesignationTypes.ORIGINAL or d.type == DesignationTypes.PROMOTION or d.type == DesignationTypes.REPLACEMENT)]
+        original = sorted(original, key=lambda d:d.start, reverse=True)
+        return render_template('functionDesignations.html', user=user, function=function, designations=original, dt2s=dt2s, cend=calculate_end, is_secondary=_is_secondary, is_suplencia=_is_suplencia, find_user=_find_user, placeTypeToString=placeTypeToString)
+
+
 @bp.route('/lugar/<pid>')
 @require_user
 @verify_sileg_permission

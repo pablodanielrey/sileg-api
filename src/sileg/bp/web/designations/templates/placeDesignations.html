@@ -70,11 +70,11 @@
                                 <td class="center"><a class="blue-text darken-4" href="#place">{{ d.place.name }},
                                         ({{d.place.type.value}})</a></td>
                                 <td class="center"><a class="blue-text darken-4"
-                                        href="#cargo">{{ d.function.name.split('-')[0] }}</a></td>
+                                        href="{{url_for('designations.function_designations', cid=d.function.id)}}">{{ d.function.name.split('-')[0] }}</a></td>
                                 <td class="center"><a class="blue-text darken-4"
-                                        href="#caracter">{{ d.function.name.split('-')[2] }}</a></td>
+                                        href="{{url_for('designations.function_designations', cid=d.function.id)}}">{{ d.function.name.split('-')[2] }}</a></td>
                                 <td class="center"><a class="blue-text darken-4"
-                                        href="#cargopplanta">{{ d.function.name.split('-')[1] }}</a></td>
+                                        href="{{url_for('designations.function_designations', cid=d.function.id)}}">{{ d.function.name.split('-')[1] }}</a></td>
                                 <td class="center"><a class="blue-text darken-4"
                                         href="#type">{%if d.start%}{{d.start.strftime('%d-%m-%Y')}}{%endif%}</a></td>
                                 <td class="center"><a class="blue-text darken-4"
