@@ -40,6 +40,34 @@ def create_post(user):
         flash(Markup('<span>¡Lugar Creado!</span>'))
     return redirect(url_for('places.search', query=form.name.data))
 
+
+
+
+@bp.route('/organigrama')
+@require_user
+@verify_sileg_permission
+def organigrama(user):
+    """
+    Organigrama de las oficinas/catedras
+    """
+    def _get_tree(root):
+        r = {
+            'root': root,
+            'children': [_get_tree(c) for c in root.children]
+        }
+        return r
+
+    with open_sileg_session() as session:
+        result = silegModel.get_all_places(session)
+        if result:
+            places = silegModel.get_places(session,result)
+            """ genero la estructura de organigrama """
+            roots = [p for p in places if p.parent_id is None]
+            trees = [_get_tree(p) for p in roots]
+        else:
+            result = []
+    return render_template('showPlacesTree.html', user=user, places=trees, placeTypeToString=placeTypeToString)
+
 @bp.route('/buscar')
 @require_user
 @verify_sileg_permission
