@@ -167,7 +167,8 @@
                                 </table>
                             </td>
                         </tr>
-                        <!-- suplencias -->
+
+                        <!-- suplencias a este cargo -->
                         <tr id="suplencia-{{d.id}}" style="visibility: collapse;">
                             <td colspan="8">
                                 <table class="responsive-table highlight">
@@ -175,17 +176,27 @@
                                         <tr>
                                             <th class="center white-text">Tipo</th>
                                             <th class="center white-text">Reemplazo</th>
+                                            <th class="center white-text">Inicio</th>
+                                            <th class="center white-text">Fin</th>
                                             <th class="center white-text">Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {% for d2 in d.designations %}
-                                        {% if not d2.historic and is_suplencia(d2) %}
+                                        {% if is_suplencia(d2) %}
+                                        {% if d2.historic %}
+                                        <tr class="blue-grey lighten-3">
+                                        {% else %}
                                         <tr>
+                                        {% endif %}
                                             <td class="center blue-text darken-4"><a
                                                     href="{{url_for('designations.designation_detail', did=d2.id)}}">{{ dt2s(d2.type) }}</a>
                                             </td>
                                             <td class="center blue-text darken-4">{{ find_user(d2) }}</td>
+                                            <td class="center blue-text darken-4">
+                                                {%if d2.start%}{{d2.start.strftime('%d-%m-%Y')}}{%endif%}</td>
+                                            <td class="center blue-text darken-4">
+                                                {% if d2.end %}{{ d2.end.strftime('%d-%m-%Y')}}{% endif %}</td>
                                             <td class="center"><a
                                                     class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3"
                                                     href="#" data-target="dropdown-{{d2.id}}"><i
