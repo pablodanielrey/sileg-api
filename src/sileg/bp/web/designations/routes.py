@@ -19,6 +19,13 @@ from .forms import ExtendDesignationForm, \
                 DesignationSearchForm, \
                 PersonSearchForm 
 
+
+"""
+    //////////////////////////////////////////////////////////////////////
+        FUNCIONES AUXILIARES USADAS EN LAS VISTAS
+    //////////////////////////////////////////////////////////////////////
+"""
+
 def calculate_end(d:Designation):
     if d.deleted:
         return None
@@ -89,6 +96,47 @@ def placeTypeToString(p:PlaceTypes):
         return 'Materia'
     if p == PlaceTypes.CATEDRA:
         return 'Catedra'
+
+
+
+def _is_extension(d):
+    return d.type == DesignationTypes.EXTENSION
+
+def _is_promotion(d):
+    return d.type == DesignationTypes.PROMOTION
+
+def _is_secondary(d:Designation):
+    """ 
+        retorna true si va en el listado secundario de desiganciones
+        ej: bajas de prorrogas, prorrogas
+    """
+    if d.type == DesignationTypes.DISCHARGE:
+        return d.designation.type == DesignationTypes.EXTENSION
+    return d.type == DesignationTypes.EXTENSION
+
+def _is_suplencia(d:Designation):
+    return d.type == DesignationTypes.REPLACEMENT
+
+def _has_suplencia(ls:[]):
+    for l in ls:
+        if _is_suplencia(l):
+            return True
+    return False
+
+def _has_extension(ls:[]):
+    for l in ls:
+        if _is_extension(l):
+            return True
+    return False
+
+def _find_user(d:Designation):
+    uid = d.user_id
+    fullname = ''
+    with open_users_session() as session:
+        user = usersModel.get_users(session,[uid])[0]
+    if user:
+        fullname = f'{user.lastname}, {user.firstname}'
+    return fullname
 
 
 """
@@ -194,8 +242,7 @@ def convalidate(user, did):
             person = usersModel.get_users(session, uids=[original_uid])[0]
 
         return render_template('convalidateDesignation.html', user=user, person=person, designation=designation, form=form)
-
-    
+   
 
 @bp.route('/convalidar/<did>', methods=['POST'])
 @require_user
@@ -447,11 +494,6 @@ def delete_post(user, did):
     ########################################
 """
 
-def _is_extension(d):
-    return d.type == DesignationTypes.EXTENSION
-
-def _is_promotion(d):
-    return d.type == DesignationTypes.PROMOTION
 
 @bp.route('/detalle/<did>')
 @require_user
@@ -483,28 +525,6 @@ def designation_detail(user, did):
             person = usersModel.get_users(session, [uid])[0]
 
         return render_template('designationDetail.html', dt2s=dt2s, det2s=det2s, ie=_is_extension, ip=_is_promotion, user=user, person=person, designation=designation, extensions=extensions, promotions=promotions, discharges=discharges)
-
-
-def _is_secondary(d:Designation):
-    """ 
-        retorna true si va en el listado secundario de desiganciones
-        ej: bajas de prorrogas, prorrogas
-    """
-    if d.type == DesignationTypes.DISCHARGE:
-        return d.designation.type == DesignationTypes.EXTENSION
-    return d.type == DesignationTypes.EXTENSION
-
-def _is_suplencia(d:Designation):
-    return d.type == DesignationTypes.REPLACEMENT
-
-def _find_user(d:Designation):
-    uid = d.user_id
-    fullname = ''
-    with open_users_session() as session:
-        user = usersModel.get_users(session,[uid])[0]
-    if user:
-        fullname = f'{user.lastname}, {user.firstname}'
-    return fullname
 
 
 @bp.route('/listado/<uid>')
@@ -539,7 +559,15 @@ def personDesignations(user, uid):
 
         active = sorted(active, key=lambda d: d[0].start, reverse=True)
 
-        return render_template('personDesignations.html', dt2s=dt2s, cend=calculate_end, user=user, designations=active, person=person, is_secondary=_is_secondary, is_suplencia=_is_suplencia, find_user=_find_user)
+        return render_template('personDesignations.html', 
+                    dt2s=dt2s, cend=calculate_end, user=user, 
+                    designations=active, 
+                    person=person, 
+                    is_secondary=_is_secondary, 
+                    is_suplencia=_is_suplencia, 
+                    find_user=_find_user,
+                    has_suplencia=_has_suplencia,
+                    has_extension=_has_extension)
 
 @bp.route('/lugar/<pid>')
 @require_user
