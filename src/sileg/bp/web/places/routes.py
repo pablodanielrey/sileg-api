@@ -40,9 +40,6 @@ def create_post(user):
         flash(Markup('<span>¡Lugar Creado!</span>'))
     return redirect(url_for('places.search', query=form.name.data))
 
-
-
-
 @bp.route('/organigrama')
 @require_user
 @verify_sileg_permission

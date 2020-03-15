@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-    <ul style="display:block">
+    <ul style="display:block; padding:10px 10px 10px 10px;">
         {% for r in places recursive %}
-            <li style="border-color: coral;">
+            <li style="border-color: coral; padding:5px 0px 5px 0px;">
                 {{ r['root'].name }}
+                <a class="blue-text darken-4" href="{{url_for('designations.placeDesignations', pid=r['root'].id)}}">designaciones</a>
                 {% if r['children'] %}
                 <ul style="margin-left: {{loop.depth * 40}}px;">
                         {{loop(r['children'])}}
