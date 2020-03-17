@@ -15,13 +15,24 @@
             "name": "Attach (Remote Debug)",
             "type": "python",
             "request": "attach",
-            "port": 10204,
-            "host": "163.10.17.12",
+            "port": 10202,
+            "host": "163.10.17.14",
             "pathMappings": [{
                 "localRoot": "${workspaceFolder}",
                 "remoteRoot": "/"
             }]
         },
+        {
+            "name": "Attach Scripts (Remote Debug)",
+            "type": "python",
+            "request": "attach",
+            "port": 10202,
+            "host": "163.10.17.14",
+            "pathMappings": [{
+                "localRoot": "${workspaceFolder}/scripts/consistencia",
+                "remoteRoot": "/var/log/supervisor"
+            }]
+        },        
         {
             "name": "Python: Flask (0.11.x or later)",
             "type": "python",
