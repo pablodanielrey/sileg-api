@@ -310,6 +310,8 @@ class PersonCreateForm(FlaskForm):
                             users_session.commit()
                         except:
                             return None
+                    else:
+                        users_session.commit()
                 return self.person_number.data
             else:
                 return None
