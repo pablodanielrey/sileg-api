@@ -1,3 +1,5 @@
+import json
+
 from flask import render_template, flash, redirect,request, Markup, url_for
 from . import bp
 
@@ -7,17 +9,10 @@ from sileg.helpers.permissionsHelper import verify_admin_permissions, verify_sil
 
 from sileg.models import usersModel, open_users_session, silegModel, open_sileg_session
 
-def _find_user(uid):
-    fullname = 'Systema'
-    #with open_users_session() as session:
-    #    user = usersModel.get_users(session,[uid])[0]
-    #if user:
-    #    fullname = f'{user.lastname}, {user.firstname}'
-    return uid
 
 @bp.route('/usuarios')
 @require_user
-@verify_admin_permissions
+@verify_sileg_permission
 def listUserLogs(user):
     """
     Pagina de listado de logs de usuarios
@@ -25,11 +20,20 @@ def listUserLogs(user):
     logs = []
     with open_users_session() as session:
         logs = usersModel.get_logs(session, 100)
-    return render_template('listUserLogs.html',user=user, logs=logs,_find_user=_find_user)
+        uids = [l.authorizer_id for l in logs]
+        uids = list(set(uids))
+        try:
+            users = usersModel.get_users(session, uids)
+        except:
+            users = []
+    usersLogs = {}
+    for user in users:
+        usersLogs[user.id] = user
+    return render_template('listUserLogs.html', user=user, usersLogs=usersLogs, logs=logs)
 
 @bp.route('/sileg')
 @require_user
-@verify_admin_permissions
+@verify_sileg_permission
 def listSilegLogs(user):
     """
     Pagina de listado de logs de Sileg
@@ -37,19 +41,49 @@ def listSilegLogs(user):
     logs = []
     with open_sileg_session() as session:
         logs = silegModel.get_logs(session, 100)
-    return render_template('listSilegLogs.html',user=user,logs=logs,_find_user=_find_user)
+    with open_users_session() as sessionU:
+        uids = [l.authorizer_id for l in logs]
+        uids = list(set(uids))
+        try:
+            users = usersModel.get_users(sessionU, uids)
+        except:
+            users = []
+    usersLogs = {}
+    for user in users:
+        usersLogs[user.id] = user
+    return render_template('listSilegLogs.html',user=user, usersLogs=usersLogs, logs=logs)
 
-@bp.route('<lid>/detail')
+@bp.route('/users/<lid>/detail')
 @require_user
 @verify_admin_permissions
-def logDetail(user,lid):
+def usersLogDetail(user,lid):
+    """
+    Pagina de detalle de un log
+    """
+    assert lid is not None
+    with open_users_session() as session:
+        log = usersModel.get_log(session, lid)
+        try:
+            authorizer = usersModel.get_users(session, [log.authorizer_id])[0]
+        except:
+            authorizer = None
+    campos = json.loads(log.data)
+    return render_template('logDetail.html',user=user,authorizer=authorizer,log=log,campos=campos)
+
+@bp.route('/sileg/<lid>/detail')
+@require_user
+@verify_admin_permissions
+def silegLogDetail(user,lid):
     """
     Pagina de detalle de un log
     """
     assert lid is not None
     with open_sileg_session() as session:
         log = silegModel.get_log(session, lid)
-    if not log:
-        with open_users_session() as session2:
-            log = usersModel.get_log(session2, lid)
-    return render_template('logDetail.html',user=user,log=log)
+    with open_users_session() as sessionU:
+        try:
+            authorizer = usersModel.get_users(sessionU, [log.authorizer_id])[0]
+        except:
+            authorizer = None
+    campos = json.loads(log.data)
+    return render_template('logDetail.html',user=user,authorizer=authorizer,log=log,campos=campos)

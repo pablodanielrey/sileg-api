@@ -5,7 +5,7 @@
     <div class="col m10">
         <div class="card-panel grey lighten-5">
             <div class="center">
-                <h4> Registro de Eventos de SiLeg </h4>
+                <h4> Registro de Eventos de Usuarios </h4>
             </div>
             <br>
             <div class="divider"></div>
@@ -24,10 +24,10 @@
                     <tbody>
                         {% for l in logs %}
                         <tr>
-                            <td><a class="blue-text darken-4" href="{{url_for('logs.logDetail', lid=l.id)}}">{{ l.created.strftime('%H:%M:%S %d-%m-%Y') }}</a> </td>
-                            <td class="center"><a class="blue-text darken-4" href="{{url_for('logs.logDetail', lid=l.id)}}">{{ _find_user(l.authorizer_id) }}</a></td>
-                            <td class="center"><a class="blue-text darken-4" href="{{url_for('logs.logDetail', lid=l.id)}}">{{ l.type.name }}</a></td>
-                            <td class="center"><a class="blue-text darken-4" href="{{url_for('logs.logDetail', lid=l.id)}}">{{ l.entity_id }}</a></td>
+                            <td><a class="blue-text darken-4" href="{{url_for('logs.usersLogDetail', lid=l.id)}}">{{ l.created.strftime('%H:%M:%S %d-%m-%Y') }}</a> </td>
+                            <td class="center"><a class="blue-text darken-4" href="{{url_for('logs.usersLogDetail', lid=l.id)}}">{%if usersLogs%}{{usersLogs[l.authorizer_id].lastname }}, {{ usersLogs[l.authorizer_id].firstname}}{%endif%}</a></td>
+                            <td class="center"><a class="blue-text darken-4" href="{{url_for('logs.usersLogDetail', lid=l.id)}}">{{ l.type.name }}</a></td>
+                            <td class="center"><a class="blue-text darken-4" href="{{url_for('logs.usersLogDetail', lid=l.id)}}">{{ l.entity_id }}</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>
