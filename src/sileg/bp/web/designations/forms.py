@@ -94,24 +94,26 @@ class DesignationCreateForm(FlaskForm):
         session.add(d)
                 
         designationToLog = {
-            'id': d.id,
-            'created': d.created,
-            'updated': d.updated,
-            'deleted': d.deleted,
-            'start': d.start,
-            'end': d.end,
-            'end_type': d.end_type,
-            'historic': d.historic,
-            'exp': d.exp,
-            'res': d.res,
-            'cor': d.cor,
-            'status': d.status,
-            'type': d.type,
-            'designation_id': d.designation_id,
-            'user_id': d.user_id,
-            'function_id': d.function_id,
-            'place_id': d.place_id,
-            'comments': d.comments,
+            'designation': {
+                'id': d.id,
+                'created': d.created,
+                'updated': d.updated,
+                'deleted': d.deleted,
+                'start': d.start,
+                'end': d.end,
+                'end_type': d.end_type,
+                'historic': d.historic,
+                'exp': d.exp,
+                'res': d.res,
+                'cor': d.cor,
+                'status': d.status,
+                'type': d.type,
+                'designation_id': d.designation_id,
+                'user_id': d.user_id,
+                'function_id': d.function_id,
+                'place_id': d.place_id,
+                'comments': d.comments
+            }
         }
         log = SilegLog()
         log.type = SilegLogTypes.CREATE
@@ -166,24 +168,26 @@ class ReplacementDesignationCreateForm(FlaskForm):
         session.add(d)
 
         replacementToLog = {
-            'id': d.id,
-            'created': d.created,
-            'updated': d.updated,
-            'deleted': d.deleted,
-            'start': d.start,
-            'end': d.end,
-            'end_type': d.end_type,
-            'historic': d.historic,
-            'exp': d.exp,
-            'res': d.res,
-            'cor': d.cor,
-            'status': d.status,
-            'type': d.type,
-            'designation_id': d.designation_id,
-            'user_id': d.user_id,
-            'function_id': d.function_id,
-            'place_id': d.place_id,
-            'comments': d.comments,
+            'designation': {
+                'id': d.id,
+                'created': d.created,
+                'updated': d.updated,
+                'deleted': d.deleted,
+                'start': d.start,
+                'end': d.end,
+                'end_type': d.end_type,
+                'historic': d.historic,
+                'exp': d.exp,
+                'res': d.res,
+                'cor': d.cor,
+                'status': d.status,
+                'type': d.type,
+                'designation_id': d.designation_id,
+                'user_id': d.user_id,
+                'function_id': d.function_id,
+                'place_id': d.place_id,
+                'comments': d.comments,
+            }
         }
         log = SilegLog()
         log.type = SilegLogTypes.CREATE
@@ -241,24 +245,26 @@ class ConvalidateDesignationForm(FlaskForm):
         session.add(d)
 
         convalidateToLog = {
-            'id': d.id,
-            'created': d.created,
-            'updated': d.updated,
-            'deleted': d.deleted,
-            'start': d.start,
-            'end': d.end,
-            'end_type': d.end_type,
-            'historic': d.historic,
-            'exp': d.exp,
-            'res': d.res,
-            'cor': d.cor,
-            'status': d.status,
-            'type': d.type,
-            'designation_id': d.designation_id,
-            'user_id': d.user_id,
-            'function_id': d.function_id,
-            'place_id': d.place_id,
-            'comments': d.comments,
+            'designation': {
+                'id': d.id,
+                'created': d.created,
+                'updated': d.updated,
+                'deleted': d.deleted,
+                'start': d.start,
+                'end': d.end,
+                'end_type': d.end_type,
+                'historic': d.historic,
+                'exp': d.exp,
+                'res': d.res,
+                'cor': d.cor,
+                'status': d.status,
+                'type': d.type,
+                'designation_id': d.designation_id,
+                'user_id': d.user_id,
+                'function_id': d.function_id,
+                'place_id': d.place_id,
+                'comments': d.comments,
+            }
         }
         log = SilegLog()
         log.type = SilegLogTypes.CREATE
@@ -314,24 +320,26 @@ class PromoteDesignationForm(FlaskForm):
         session.add(d)
 
         promoteToLog = {
-            'id': d.id,
-            'created': d.created,
-            'updated': d.updated,
-            'deleted': d.deleted,
-            'start': d.start,
-            'end': d.end,
-            'end_type': d.end_type,
-            'historic': d.historic,
-            'exp': d.exp,
-            'res': d.res,
-            'cor': d.cor,
-            'status': d.status,
-            'type': d.type,
-            'designation_id': d.designation_id,
-            'user_id': d.user_id,
-            'function_id': d.function_id,
-            'place_id': d.place_id,
-            'comments': d.comments,
+            'designation': {
+                'id': d.id,
+                'created': d.created,
+                'updated': d.updated,
+                'deleted': d.deleted,
+                'start': d.start,
+                'end': d.end,
+                'end_type': d.end_type,
+                'historic': d.historic,
+                'exp': d.exp,
+                'res': d.res,
+                'cor': d.cor,
+                'status': d.status,
+                'type': d.type,
+                'designation_id': d.designation_id,
+                'user_id': d.user_id,
+                'function_id': d.function_id,
+                'place_id': d.place_id,
+                'comments': d.comments,
+            }
         }
         log = SilegLog()
         log.type = SilegLogTypes.CREATE
@@ -388,24 +396,26 @@ class ExtendDesignationForm(FlaskForm):
         session.add(d)
 
         extendToLog = {
-            'id': d.id,
-            'created': d.created,
-            'updated': d.updated,
-            'deleted': d.deleted,
-            'start': d.start,
-            'end': d.end,
-            'end_type': d.end_type,
-            'historic': d.historic,
-            'exp': d.exp,
-            'res': d.res,
-            'cor': d.cor,
-            'status': d.status,
-            'type': d.type,
-            'designation_id': d.designation_id,
-            'user_id': d.user_id,
-            'function_id': d.function_id,
-            'place_id': d.place_id,
-            'comments': d.comments,
+            'designation': {
+                'id': d.id,
+                'created': d.created,
+                'updated': d.updated,
+                'deleted': d.deleted,
+                'start': d.start,
+                'end': d.end,
+                'end_type': d.end_type,
+                'historic': d.historic,
+                'exp': d.exp,
+                'res': d.res,
+                'cor': d.cor,
+                'status': d.status,
+                'type': d.type,
+                'designation_id': d.designation_id,
+                'user_id': d.user_id,
+                'function_id': d.function_id,
+                'place_id': d.place_id,
+                'comments': d.comments,
+            }
         }
         log = SilegLog()
         log.type = SilegLogTypes.CREATE
@@ -468,24 +478,26 @@ class DischargeDesignationForm(FlaskForm):
         session.add(d)
 
         dischargeToLog = {
-            'id': d.id,
-            'created': d.created,
-            'updated': d.updated,
-            'deleted': d.deleted,
-            'start': d.start,
-            'end': d.end,
-            'end_type': d.end_type,
-            'historic': d.historic,
-            'exp': d.exp,
-            'res': d.res,
-            'cor': d.cor,
-            'status': d.status,
-            'type': d.type,
-            'designation_id': d.designation_id,
-            'user_id': d.user_id,
-            'function_id': d.function_id,
-            'place_id': d.place_id,
-            'comments': d.comments,
+            'designation': {
+                'id': d.id,
+                'created': d.created,
+                'updated': d.updated,
+                'deleted': d.deleted,
+                'start': d.start,
+                'end': d.end,
+                'end_type': d.end_type,
+                'historic': d.historic,
+                'exp': d.exp,
+                'res': d.res,
+                'cor': d.cor,
+                'status': d.status,
+                'type': d.type,
+                'designation_id': d.designation_id,
+                'user_id': d.user_id,
+                'function_id': d.function_id,
+                'place_id': d.place_id,
+                'comments': d.comments,
+            }
         }
         log = SilegLog()
         log.type = SilegLogTypes.CREATE
@@ -502,24 +514,26 @@ class DeleteDesignationForm(FlaskForm):
         designation.historic = True
 
         deleteToLog = {
-            'id': designation.id,
-            'created': designation.created,
-            'updated': designation.updated,
-            'deleted': designation.deleted,
-            'start': designation.start,
-            'end': designation.end,
-            'end_type': designation.end_type,
-            'historic': designation.historic,
-            'exp': designation.exp,
-            'res': designation.res,
-            'cor': designation.cor,
-            'status': designation.status,
-            'type': designation.type,
-            'designation_id': designation.designation_id,
-            'user_id': designation.user_id,
-            'function_id': designation.function_id,
-            'place_id': designation.place_id,
-            'comments': designation.comments,
+            'designation': {
+                'id': designation.id,
+                'created': designation.created,
+                'updated': designation.updated,
+                'deleted': designation.deleted,
+                'start': designation.start,
+                'end': designation.end,
+                'end_type': designation.end_type,
+                'historic': designation.historic,
+                'exp': designation.exp,
+                'res': designation.res,
+                'cor': designation.cor,
+                'status': designation.status,
+                'type': designation.type,
+                'designation_id': designation.designation_id,
+                'user_id': designation.user_id,
+                'function_id': designation.function_id,
+                'place_id': designation.place_id,
+                'comments': designation.comments,
+            }
         }
         log = SilegLog()
         log.type = SilegLogTypes.DELETE

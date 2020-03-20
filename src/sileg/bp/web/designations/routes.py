@@ -443,24 +443,26 @@ def undelete(user, did):
         d.historic = False
         
         undeleteToLog = {
-            'id': d.id,
-            'created': d.created,
-            'updated': d.updated,
-            'deleted': d.deleted,
-            'start': d.start,
-            'end': d.end,
-            'end_type': d.end_type,
-            'historic': d.historic,
-            'exp': d.exp,
-            'res': d.res,
-            'cor': d.cor,
-            'status': d.status,
-            'type': d.type,
-            'designation_id': d.designation_id,
-            'user_id': d.user_id,
-            'function_id': d.function_id,
-            'place_id': d.place_id,
-            'comments': d.comments,
+            'designation': {
+                'id': d.id,
+                'created': d.created,
+                'updated': d.updated,
+                'deleted': d.deleted,
+                'start': d.start,
+                'end': d.end,
+                'end_type': d.end_type,
+                'historic': d.historic,
+                'exp': d.exp,
+                'res': d.res,
+                'cor': d.cor,
+                'status': d.status,
+                'type': d.type,
+                'designation_id': d.designation_id,
+                'user_id': d.user_id,
+                'function_id': d.function_id,
+                'place_id': d.place_id,
+                'comments': d.comments,
+            }
         }
         log = SilegLog()
         log.type = SilegLogTypes.UPDATE
