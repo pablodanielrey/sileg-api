@@ -57,13 +57,16 @@ class StudentCreateForm(FlaskForm):
             newUser.lastname = self.lastname.data
             newUser.firstname = self.firstname.data
             session.add(newUser)
-            toLog.append({  'id': newUser.id,
-                            'created': newUser.created,
-                            'updated': newUser.updated,
-                            'deleted': newUser.deleted,
-                            'lastname': newUser.lastname,
-                            'firstname': newUser.firstname
-                            })
+            toLog.append({  
+                'user' : {
+                    'id': newUser.id,
+                    'created': newUser.created,
+                    'updated': newUser.updated,
+                    'deleted': newUser.deleted,
+                    'lastname': newUser.lastname,
+                    'firstname': newUser.firstname
+                }
+            })
 
             """ Se genera documento """
             idNumber = IdentityNumber()
@@ -71,14 +74,17 @@ class StudentCreateForm(FlaskForm):
             idNumber.number = self.person_number.data
             idNumber.user_id = uid
             session.add(idNumber)
-            toLog.append({  'id': idNumber.id,
-                                'created': idNumber.created,
-                                'updated': idNumber.updated,
-                                'deleted': idNumber.deleted,
-                                'type': idNumber.type,
-                                'number': idNumber.number,
-                                'user_id': idNumber.user_id,
-                            })
+            toLog.append({ 
+                'identity_number': {
+                    'id': idNumber.id,
+                    'created': idNumber.created,
+                    'updated': idNumber.updated,
+                    'deleted': idNumber.deleted,
+                    'type': idNumber.type,
+                    'number': idNumber.number,
+                    'user_id': idNumber.user_id,
+                }
+            })
             
             if self.student_number.data:
                 s_number = IdentityNumber()
@@ -86,14 +92,17 @@ class StudentCreateForm(FlaskForm):
                 s_number.number = self.student_number.data
                 s_number.user_id = uid
                 session.add(s_number)
-                toLog.append({  'id': s_number.id,
-                                'created': s_number.created,
-                                'updated': s_number.updated,
-                                'deleted': s_number.deleted,
-                                'type': s_number.type,
-                                'number': s_number.number,
-                                'user_id': s_number.user_id,
-                            })  
+                toLog.append({
+                    'identity_number' : {
+                        'id': s_number.id,
+                        'created': s_number.created,
+                        'updated': s_number.updated,
+                        'deleted': s_number.deleted,
+                        'type': s_number.type,
+                        'number': s_number.number,
+                        'user_id': s_number.user_id,
+                    }
+                })  
 
             newLog = UsersLog()
             newLog.entity_id = newUser.id
