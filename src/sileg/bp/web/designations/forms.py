@@ -75,6 +75,7 @@ class DesignationCreateForm(FlaskForm):
         d = Designation()
         d.id = str(uuid.uuid4())
         d.type = DesignationTypes.ORIGINAL
+        d.status = DesignationStatus.PENDING
         d.user_id = uid
 
         d.start = self.start.data
