@@ -79,17 +79,20 @@ class PlaceCreateForm(FlaskForm):
         newPlace.telephone = self.telephone.data
         newPlace.email = self.email.data
         session.add(newPlace)
-        toLog.append({  'id': newPlace.id,
-                        'created': newPlace.created,
-                        'updated': newPlace.updated,
-                        'deleted': newPlace.deleted,
-                        'name': newPlace.name,
-                        'type': newPlace.type,
-                        'description': newPlace.description,
-                        'number': newPlace.number,
-                        'telephone': newPlace.telephone,
-                        'email': newPlace.email,
-                        })
+        toLog.append({
+            'place' : {
+                'id': newPlace.id,
+                'created': newPlace.created,
+                'updated': newPlace.updated,
+                'deleted': newPlace.deleted,
+                'name': newPlace.name,
+                'type': newPlace.type,
+                'description': newPlace.description,
+                'number': newPlace.number,
+                'telephone': newPlace.telephone,
+                'email': newPlace.email,
+            }
+        })
         newLog = SilegLog()
         newLog.entity_id = newPlace.id
         newLog.authorizer_id = authorizer_id
@@ -142,17 +145,20 @@ class PlaceModifyForm(FlaskForm):
             place.telephone = self.telephone.data
             place.email = self.email.data
             session.add(place)
-            toLog.append({  'id': place.id,
-                            'created': place.created,
-                            'updated': place.updated,
-                            'deleted': place.deleted,
-                            'name': place.name,
-                            'type': place.type,
-                            'description': place.description,
-                            'number': place.number,
-                            'telephone': place.telephone,
-                            'email': place.email,
-                            })
+            toLog.append({  
+                'place' : {
+                    'id': place.id,
+                    'created': place.created,
+                    'updated': place.updated,
+                    'deleted': place.deleted,
+                    'name': place.name,
+                    'type': place.type,
+                    'description': place.description,
+                    'number': place.number,
+                    'telephone': place.telephone,
+                    'email': place.email,
+                }
+            })
             newLog = SilegLog()
             newLog.entity_id = place.id
             newLog.authorizer_id = authorizer_id

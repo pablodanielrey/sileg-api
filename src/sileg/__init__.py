@@ -43,6 +43,9 @@ app.register_blueprint(bp_web_leavelicense,url_prefix='/licencias')
 ## Registro blueprint web de estudiantes
 from .bp.web.students import bp as bp_web_students
 app.register_blueprint(bp_web_students, url_prefix='/estudiantes')
+## Registro blueprint web de logs
+from .bp.web.logs import bp as bp_web_logs
+app.register_blueprint(bp_web_logs, url_prefix='/logs')
 ## Registro bueprint api ciudades
 from .bp.rest.api.cities import bp as bp_api_cities
 app.register_blueprint(bp_api_cities,url_prefix='/api/v0.1/ciudades')

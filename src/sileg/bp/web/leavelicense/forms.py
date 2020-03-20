@@ -74,18 +74,20 @@ class LeaveLicensePersonalCreateForm(FlaskForm):
         l.res = self.res.data
         session.add(l)
         licenseToLog = {
-            'id': l.id,
-            'created': l.created,
-            'updated': l.updated,
-            'deleted': l.deleted,
-            'user_id': l.user_id,
-            'type': l.type,
-            'start': l.start,
-            'end': l.end,
-            'end_type': l.end_type,
-            'exp': l.exp,
-            'res': l.res,
-            'cor': l.cor
+            'personalLeaveLicence': {
+                'id': l.id,
+                'created': l.created,
+                'updated': l.updated,
+                'deleted': l.deleted,
+                'user_id': l.user_id,
+                'type': l.type,
+                'start': l.start,
+                'end': l.end,
+                'end_type': l.end_type,
+                'exp': l.exp,
+                'res': l.res,
+                'cor': l.cor
+            }
         }
         log = SilegLog()
         log.type = SilegLogTypes.CREATE
@@ -129,18 +131,20 @@ class DesignationLeaveLicenseCreateForm(FlaskForm):
         session.add(l)
 
         leaveToLog = {
-            'id': l.id,
-            'created': l.created,
-            'updated': l.updated,
-            'deleted': l.deleted,
-            'designation_id': l.designation_id,
-            'type' : l.type,
-            'start' : l.start,
-            'end' : l.end,
-            'end_type' : l.end_type,
-            'cor' : l.cor,
-            'exp' : l.exp,
-            'res' : l.res,
+            'designationLeaveLicence': {
+                'id': l.id,
+                'created': l.created,
+                'updated': l.updated,
+                'deleted': l.deleted,
+                'designation_id': l.designation_id,
+                'type' : l.type,
+                'start' : l.start,
+                'end' : l.end,
+                'end_type' : l.end_type,
+                'cor' : l.cor,
+                'exp' : l.exp,
+                'res' : l.res,
+            }
         }
 
         log = SilegLog()

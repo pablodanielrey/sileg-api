@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col m1"></div>
+    <div class="col m10">
+        <div class="col card-panel grey lighten-5">
+            <div class="center">
+                <h4> Detalle de LOG </h4>
+            </div>
+            <br>
+            <div class="divider"></div>
+            <div class="row">
+                <div class="col m2"></div>
+                <div class="col m8">
+                    <p>
+                        ID: {{log.id}}
+                    </p>
+                    <p>
+                        Creado: {{log.created}}
+                    </p>
+                    <p>
+                       Responsable: {%if authorizer%}{{authorizer.lastname}}, {{authorizer.firstname}}{%endif%}
+                    </p>
+                    <p>
+                        Tipo: {{log.type.name}}
+                    </p>
+                </div>
+                <div class="col m2"></div>
+            </div>
+            <div class="col m10 card-panel grey lighten-5">
+                {% for campo in campos %}
+                    {% for entidad in campo.keys() %}
+                        <p>{{entidad}}</p>
+                        <div style='display:grid; grid-template-columns: 1fr 4fr; border-color: red; border-style: dotted;'>
+                        {% for v in campo[entidad].keys() %}
+                            <pre>
+                                {{ v }}
+                            </pre>
+                            <pre>
+                                {{ campo[entidad][v] }}
+                            </pre>
+                        {% endfor %}
+                        </div>
+                    {% endfor %}
+                {%endfor%}
+            </div>
+        </div>
+    </div>
+    <div class="col m1"></div>
+</div>
+{% endblock %}
