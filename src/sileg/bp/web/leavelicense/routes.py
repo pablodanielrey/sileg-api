@@ -106,18 +106,20 @@ def delete_personal_leave(user, uid, lid):
             l.deleted = datetime.datetime.utcnow()
             session.add(l)
             deleteToLog = {
-                'id': l.id,
-                'created': l.created,
-                'updated': l.updated,
-                'deleted': l.deleted,
-                'user_id': l.user_id,
-                'type': l.type,
-                'start': l.start,
-                'end': l.end,
-                'end_type': l.end_type,
-                'exp': l.exp,
-                'res': l.res,
-                'cor': l.cor
+                'personalLeaveLicence': {
+                    'id': l.id,
+                    'created': l.created,
+                    'updated': l.updated,
+                    'deleted': l.deleted,
+                    'user_id': l.user_id,
+                    'type': l.type,
+                    'start': l.start,
+                    'end': l.end,
+                    'end_type': l.end_type,
+                    'exp': l.exp,
+                    'res': l.res,
+                    'cor': l.cor
+                }
             }
             log = SilegLog()
             log.type = SilegLogTypes.DELETE
