@@ -28,19 +28,21 @@
                 <div class="col m2"></div>
             </div>
             <div class="col m10 card-panel grey lighten-5">
-                {% for entidad in campos.keys() %}
-                    <p>{{entidad}}</p>
-                    <div style='display:grid; grid-template-columns: 1fr 4fr; border-color: red; border-style: dotted;'>
-                    {% for v in campos[entidad].keys() %}
-                        <pre>
-                            {{ v }}
-                        </pre>
-                        <pre>
-                            {{ campos[entidad][v] }}
-                        </pre>
+                {% for campo in campos %}
+                    {% for entidad in campo.keys() %}
+                        <p>{{entidad}}</p>
+                        <div style='display:grid; grid-template-columns: 1fr 4fr; border-color: red; border-style: dotted;'>
+                        {% for v in campo[entidad].keys() %}
+                            <pre>
+                                {{ v }}
+                            </pre>
+                            <pre>
+                                {{ campo[entidad][v] }}
+                            </pre>
+                        {% endfor %}
+                        </div>
                     {% endfor %}
-                    </div>
-                 {% endfor %}
+                {%endfor%}
             </div>
         </div>
     </div>
