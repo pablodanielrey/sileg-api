@@ -271,22 +271,28 @@
                                 {% if not pm.deleted%}
                                 <tr>
                                     <td style="padding-top: 5px; padding-bottom: 5px;">{{pm.email}}</td>
-                                    {% if pm.type.value != 'INSTITUTIONAL' %}
-                                    <td style="padding-top: 5px; padding-bottom: 5px;"><a class="modal-trigger btn-floating waves-effect waves-light red" href="#eliminarCorreo{{pm.id}}"><i class="material-icons">delete</i></a></td>
-                                    <!-- Modal eliminar correo -->
-                                    <div id="eliminarCorreo{{pm.id}}" class="modal">
-                                        <div class="modal-content">
-                                            <h4>Eliminar correo electrónico</h4>
-                                            <p>Confirmar la eliminación del correo eléctronico <strong>{{pm.email}}</strong> que pertenece al usuario {{person.lastname}}, {{person.firstname}}</p>
-                                        </div>
-                                        <div class="divider"></div>
-                                        <div class="modal-footer">
-                                            <a href="#!" class="modal-close waves-effect waves-green btn-flat">cancelar</a>
-                                            <a href="{{url_for('persons.deleteMail',uid=person.id,pmid=pm.id)}}" class="modal-close waves-effect waves-green btn-flat red-text">eliminar</a>
-                                        </div>
-                                    </div>
+                                    {% if pm.confirmed %}
+                                        <td style="padding-top: 5px; padding-bottom: 5px;">{{if pm.confirmed.strftime('%d-%m-%Y') if pm.confirmed}}</td>
                                     {% else %}
-                                    <td style="padding-top: 5px; padding-bottom: 5px;"></td>
+                                        <td style="padding-top: 5px; padding-bottom: 5px;">No confirmado</td>
+                                    {% endif %}
+                                    
+                                    {% if pm.type.value != 'INSTITUTIONAL' %}
+                                        <td style="padding-top: 5px; padding-bottom: 5px;"><a class="modal-trigger btn-floating waves-effect waves-light red" href="#eliminarCorreo{{pm.id}}"><i class="material-icons">delete</i></a></td>
+                                        <!-- Modal eliminar correo -->
+                                        <div id="eliminarCorreo{{pm.id}}" class="modal">
+                                            <div class="modal-content">
+                                                <h4>Eliminar correo electrónico</h4>
+                                                <p>Confirmar la eliminación del correo eléctronico <strong>{{pm.email}}</strong> que pertenece al usuario {{person.lastname}}, {{person.firstname}}</p>
+                                            </div>
+                                            <div class="divider"></div>
+                                            <div class="modal-footer">
+                                                <a href="#!" class="modal-close waves-effect waves-green btn-flat">cancelar</a>
+                                                <a href="{{url_for('persons.deleteMail',uid=person.id,pmid=pm.id)}}" class="modal-close waves-effect waves-green btn-flat red-text">eliminar</a>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <td style="padding-top: 5px; padding-bottom: 5px;"></td>
                                     {% endif %}
                                 </tr>
                                 {% endif %}
