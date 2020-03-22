@@ -263,6 +263,7 @@
                             <thead>
                                 <tr>
                                     <th style="padding-top: 5px; padding-bottom: 5px;">Correos electrónicos</th>
+                                    <th>Confirmado</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -272,9 +273,9 @@
                                 <tr>
                                     <td style="padding-top: 5px; padding-bottom: 5px;">{{pm.email}}</td>
                                     {% if pm.confirmed %}
-                                        <td style="padding-top: 5px; padding-bottom: 5px;">{{if pm.confirmed.strftime('%d-%m-%Y') if pm.confirmed}}</td>
+                                        <td style="padding-top: 5px; padding-bottom: 5px;">{{pm.confirmed.strftime('%d-%m-%Y')}}</td>
                                     {% else %}
-                                        <td style="padding-top: 5px; padding-bottom: 5px;">No confirmado</td>
+                                        <td style="padding-top: 5px; padding-bottom: 5px;">No</td>
                                     {% endif %}
                                     
                                     {% if pm.type.value != 'INSTITUTIONAL' %}

@@ -256,7 +256,10 @@ def modifyPersonData(user,uid):
             for pm in person.mails:
                 if not pm.deleted:
                     if pm.type.value == 'INSTITUTIONAL':
-                        formModifyMail.email_type.choices.remove((pm.type.value,'Institucional'))
+                        try:
+                            formModifyMail.email_type.choices.remove((pm.type.value,'Institucional'))
+                        except Exception:
+                            pass
         if 'mail' in request.form:
             if formModifyMail.validate_on_submit():
                 message = formModifyMail.saveModifyMail(person.id,user['sub'])

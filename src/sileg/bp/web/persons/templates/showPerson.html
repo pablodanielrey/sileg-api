@@ -72,31 +72,43 @@
             </div>
             <div style="display:grid; grid-template-columns: 1fr 4fr;">
                 <p>Correo de trabajo</p>
-                <div>
+                <div style="display:grid; grid-template-columns: 4fr 1fr;">
                     {% if person.mails|length > 0 %}
                         {% for pm in person.mails if pm.type.value == 'INSTITUTIONAL' or pm.type.value == 'NOTIFICATION' %}
                             {% if not pm.deleted %}
-                            <h6><strong><a href="mailto:{{pm.email}}">{{pm.email}}</a></strong></h6>
+                                <h6><strong><a href="mailto:{{pm.email}}">{{pm.email}}</a></strong></h6>
                             {% else %}
-                            <h6><strong>No se encuentra registrado</strong></h6>
+                                <h6><strong>No se encuentra registrado</strong></h6>
+                            {% endif %}
+
+                            {% if pm.confirmed %}
+                                <h6><strong>{{pm.confirmed.strftime('%d-%m-%Y')}}</strong></h6>
+                            {% else %}
+                                <h6><strong>No confirmado</strong></h6>
                             {% endif %}
                         {% endfor %}
                     {% else %}
-                    <h6><strong>No se encuentra registrado</strong></h6>
+                        <h6><strong>No se encuentra registrado</strong></h6>
                     {% endif %}
                 </div>
                 <p>Correo Personal</p>
-                <div>
+                <div style="display:grid; grid-template-columns: 4fr 1fr;">
                     {% if person.mails|length > 0 %}
-                    {% for pm in person.mails if pm.type.value == 'ALTERNATIVE' %}
-                    {% if not pm.deleted %}
-                    <h6><strong><a href="mailto:{{pm.email}}">{{pm.email}}</a></strong></h6>
+                        {% for pm in person.mails if pm.type.value == 'ALTERNATIVE' %}
+                            {% if not pm.deleted %}
+                                <h6><strong><a href="mailto:{{pm.email}}">{{pm.email}}</a></strong></h6>
+                            {% else %}
+                                <h6><strong>No se encuentra registrado</strong></h6>
+                            {% endif %}
+
+                            {% if pm.confirmed %}
+                                <h6><strong>{{pm.confirmed.strftime('%d-%m-%Y')}}</strong></h6>
+                            {% else %}
+                                <h6><strong>No confirmado</strong></h6>
+                            {% endif %}
+                        {% endfor %}
                     {% else %}
-                    <h6><strong>No se encuentra registrado</strong></h6>
-                    {% endif %}
-                    {% endfor %}
-                    {% else %}
-                    <h6><strong>No se encuentra registrado</strong></h6>
+                        <h6><strong>No se encuentra registrado</strong></h6>
                     {% endif %}
                 </div>
                 <p>Teléfono Fijo</p>
