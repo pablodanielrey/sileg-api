@@ -561,6 +561,8 @@ class PersonMailModifyForm(FlaskForm):
                 person = persons[0]
                 if self.email.data and self.email_type.data == 'ALTERNATIVE':
                     newPersonalMail = Mail()
+                    newPersonalMail.id = str(uuid.uuid4())
+                    newPersonalMail.created = datetime.datetime.utcnow()
                     newPersonalMail.type = MailTypes.ALTERNATIVE
                     newPersonalMail.email = self.email.data
                     newPersonalMail.user_id = person.id
