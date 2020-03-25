@@ -74,6 +74,7 @@ class DesignationCreateForm(FlaskForm):
     def save(self, session, silegModel, uid, authorizer_id):
         d = Designation()
         d.id = str(uuid.uuid4())
+        d.created = datetime.datetime.utcnow()
         d.type = DesignationTypes.ORIGINAL
         d.status = DesignationStatus.PENDING
         d.user_id = uid
@@ -154,6 +155,7 @@ class ReplacementDesignationCreateForm(FlaskForm):
     def save(self, session, silegModel, uid, replaced_did, authorizer_id):
         d = Designation()
         d.id = str(uuid.uuid4())
+        d.created = datetime.datetime.utcnow()
         d.type = DesignationTypes.REPLACEMENT
         d.designation_id = replaced_did
         
@@ -231,6 +233,7 @@ class ConvalidateDesignationForm(FlaskForm):
 
         d = Designation()
         d.id = str(uuid.uuid4())
+        d.created = datetime.datetime.utcnow()
         d.type = DesignationTypes.ORIGINAL
         d.designation_id = replaced_designation.id
         d.user_id = replaced_designation.user_id
@@ -306,6 +309,7 @@ class PromoteDesignationForm(FlaskForm):
     def save(self, session, designation: Designation, authorizer_id):
         d = Designation()
         d.id = str(uuid.uuid4())
+        d.created = datetime.datetime.utcnow()
         d.type = DesignationTypes.PROMOTION
         d.designation_id = designation.id
         d.user_id = designation.user_id
@@ -381,6 +385,7 @@ class ExtendDesignationForm(FlaskForm):
     def save(self, session, designation: Designation, authorizer_id):
         d = Designation()
         d.id = str(uuid.uuid4())
+        d.created = datetime.datetime.utcnow()
         d.type = DesignationTypes.EXTENSION
         d.designation_id = designation.id
         d.user_id = designation.user_id
@@ -461,6 +466,7 @@ class DischargeDesignationForm(FlaskForm):
 
         d = Designation()
         d.id = str(uuid.uuid4())
+        d.created = datetime.datetime.utcnow()
         d.type = DesignationTypes.DISCHARGE
         d.designation_id = designation_to_discharge.id
         d.user_id = designation_to_discharge.user_id
@@ -511,7 +517,8 @@ class DischargeDesignationForm(FlaskForm):
 class DeleteDesignationForm(FlaskForm):
 
     def save(self, session, designation: Designation, authorizer_id):
-        designation.deleted = datetime.datetime.now()
+        designation.updated = datetime.datetime.utcnow()
+        designation.deleted = datetime.datetime.utcnow()
         designation.historic = True
 
         deleteToLog = {

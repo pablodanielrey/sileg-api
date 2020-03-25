@@ -1,5 +1,6 @@
 import uuid
 import json
+import datetime
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, DateTimeField, SelectField
@@ -64,6 +65,7 @@ class LeaveLicensePersonalCreateForm(FlaskForm):
     def save(self, session, silegModel:SilegModel, uid, authorizer_id):
         l = PersonalLeaveLicense()
         l.id = str(uuid.uuid4())
+        l.created = datetime.datetime.utcnow()
         l.user_id = uid
         l.type = self.type.data
         l.start = self.start.data
@@ -120,6 +122,7 @@ class DesignationLeaveLicenseCreateForm(FlaskForm):
     def save(self, session, silegModel:SilegModel, did, authorizer_id):
         l = DesignationLeaveLicense()
         l.id = str(uuid.uuid4())
+        l.created = datetime.datetime.utcnow()
         l.designation_id = did
         l.type = self.type.data
         l.start = self.start.data

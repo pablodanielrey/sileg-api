@@ -1,6 +1,7 @@
 import uuid
 import re
 import json
+import datetime
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField
@@ -72,6 +73,7 @@ class PlaceCreateForm(FlaskForm):
         pid = str(uuid.uuid4())
         newPlace = Place()
         newPlace.id = pid
+        newPlace.created = datetime.datetime.utcnow()
         newPlace.name = self.name.data
         newPlace.type = self.type.data
         newPlace.description = self.description.data
@@ -138,6 +140,7 @@ class PlaceModifyForm(FlaskForm):
         if places and len(places) == 1 and not places[0].deleted:
             place = places[0]
             toLog = []
+            place.updated = datetime.datetime.utcnow()
             place.name = self.name.data
             place.type = self.type.data
             place.description = self.description.data

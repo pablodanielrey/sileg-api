@@ -106,6 +106,7 @@ class PersonCreateForm(FlaskForm):
             if not usersModel.get_uid_person_number(users_session, self.person_number.data):
                 newUser = User()
                 newUser.id = uid
+                newUser.created = datetime.datetime.utcnow()
                 newUser.lastname = self.lastname.data
                 newUser.firstname = self.firstname.data
                 newUser.gender = self.gender.data if self.gender.data != '0' else None
@@ -138,6 +139,7 @@ class PersonCreateForm(FlaskForm):
                     person_file_id = str(uuid.uuid4())                    
                     personNumberFile = File()
                     personNumberFile.id = person_file_id
+                    personNumberFile.created = datetime.datetime.utcnow()
                     personNumberFile.mimetype = self.person_numberFile.data.mimetype
                     personNumberFile.content = base64.b64encode(self.person_numberFile.data.read()).decode()
                     users_session.add(personNumberFile)
@@ -154,6 +156,8 @@ class PersonCreateForm(FlaskForm):
 
                 """ Se genera documento """
                 idNumber = IdentityNumber()
+                idNumber.id = str(uuid.uuid4())
+                idNumber.created = datetime.datetime.utcnow()
                 idNumber.type = self.person_number_type.data
                 idNumber.number = self.person_number.data
                 idNumber.user_id = uid
@@ -175,6 +179,8 @@ class PersonCreateForm(FlaskForm):
                 """ Se genera correo laboral """
                 if self.work_email.data:
                     newWorkEmail = Mail()
+                    newWorkEmail.id = str(uuid.uuid4())
+                    newWorkEmail.created = datetime.datetime.utcnow()
                     emailType = MailTypes.NOTIFICATION
                     if re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]*econo.unlp.edu.ar$",self.work_email.data) != None:
                         emailType = MailTypes.INSTITUTIONAL
@@ -198,6 +204,8 @@ class PersonCreateForm(FlaskForm):
                 """ Se genera correo personal """
                 if self.personal_email.data:
                     newPersonalMail = Mail()
+                    newPersonalMail.id = str(uuid.uuid4())
+                    newPersonalMail.created = datetime.datetime.utcnow()
                     newPersonalMail.type = MailTypes.ALTERNATIVE
                     newPersonalMail.email = self.personal_email.data
                     newPersonalMail.user_id = uid
@@ -219,6 +227,8 @@ class PersonCreateForm(FlaskForm):
                 """ Se genera telefono fijo """
                 if self.land_line.data:
                     landLinePhone = Phone()
+                    landLinePhone.id = str(uuid.uuid4())
+                    landLinePhone.created = datetime.datetime.utcnow()
                     landLinePhone.type = PhoneTypes.LANDLINE
                     landLinePhone.number = self.land_line.data
                     landLinePhone.user_id = uid
@@ -238,6 +248,8 @@ class PersonCreateForm(FlaskForm):
                 """ Se genera telefono movil """
                 if self.mobile_number.data:
                     mobileNumber = Phone()
+                    mobileNumber.id = str(uuid.uuid4())
+                    mobileNumber.created = datetime.datetime.utcnow()
                     mobileNumber.type = PhoneTypes.CELLPHONE
                     mobileNumber.number = self.mobile_number.data
                     mobileNumber.user_id = uid
@@ -258,6 +270,7 @@ class PersonCreateForm(FlaskForm):
                     cid = str(uuid.uuid4())
                     cuil = IdentityNumber()
                     cuil.id = cid
+                    cuil.created = datetime.datetime.utcnow()
                     cuil.type = IdentityNumberTypes.CUIL
                     cuil.number = self.laboral_number.data
                     cuil.user_id = uid
@@ -268,6 +281,7 @@ class PersonCreateForm(FlaskForm):
                         cfid = str(uuid.uuid4())
                         laboralNumberFile = File()
                         laboralNumberFile.id = cfid
+                        laboralNumberFile.created = datetime.datetime.utcnow()
                         laboralNumberFile.mimetype = self.laboral_numberFile.data.mimetype
                         laboralNumberFile.content = base64.b64encode(self.laboral_numberFile.data.read()).decode()
                         users_session.add(laboralNumberFile)
@@ -313,6 +327,7 @@ class PersonCreateForm(FlaskForm):
                         }
                         external_seniority = ExternalSeniority()
                         external_seniority.id = str(uuid.uuid4())
+                        external_seniority.created = datetime.datetime.utcnow()
                         external_seniority.user_id = uid
                         external_seniority.years = newSeniority['seniority_external_years']
                         external_seniority.months = newSeniority['seniority_external_months']
@@ -376,6 +391,7 @@ class DegreeAssignForm(FlaskForm):
                     degree_file_id = str(uuid.uuid4())                    
                     degreeFile = File()
                     degreeFile.id = degree_file_id
+                    degreeFile.created = datetime.datetime.utcnow()
                     degreeFile.mimetype = self.degreeFile.data.mimetype
                     degreeFile.content = base64.b64encode(self.degreeFile.data.read()).decode()
                     session.add(degreeFile)
@@ -392,6 +408,7 @@ class DegreeAssignForm(FlaskForm):
                 did = str(uuid.uuid4())
                 newDegree = UserDegree()
                 newDegree.id = did
+                newDegree.created = datetime.datetime.utcnow()
                 newDegree.type = self.degreeType.data
                 newDegree.title = self.degreeName.data
                 newDegree.start = self.degreeDate.data if self.degreeDate.data else None
@@ -447,6 +464,7 @@ class PersonDataModifyForm(FlaskForm):
             persons = usersModel.get_users(session, [uid])
             if len(persons) == 1:
                 person = persons[0]
+                person.updated = datetime.datetime.utcnow()
                 person.lastname = self.lastname.raw_data[0]
                 person.firstname = self.firstname.raw_data[0]
                 person.gender = self.gender.raw_data[0] if self.gender.raw_data[0] != '0' else None
@@ -507,6 +525,8 @@ class PersonIdNumberModifyForm(FlaskForm):
                 if self.person_number.data and self.person_number_type.data:
                     if self.person_number_type.data != 'DNI' or self.person_number_type.data != 'LC' or self.person_number_type.data != 'LE':
                         idNumber = IdentityNumber()
+                        idNumber.id = str(uuid.uuid4())
+                        idNumber.created = datetime.datetime.utcnow()
                         idNumber.type = self.person_number_type.data
                         idNumber.number = self.person_number.data
                         idNumber.user_id = person.id
@@ -614,6 +634,8 @@ class PersonPhoneModifyForm(FlaskForm):
                 if self.phone_number.data:
                     """ telefono fijo""" 
                     phoneToAdd = Phone()
+                    phoneToAdd.id = str(uuid.uuid4())
+                    phoneToAdd.created = datetime.datetime.utcnow()
                     if self.phone_type.data == 'LANDLINE':
                         phoneToAdd.type = PhoneTypes.LANDLINE
                     elif self.phone_type.data == 'CELLPHONE':
@@ -691,6 +713,7 @@ class PersonSeniorityModifyForm(FlaskForm):
                 }
                 external_seniority = ExternalSeniority()
                 external_seniority.id = str(uuid.uuid4())
+                external_seniority.created = datetime.datetime.utcnow()
                 external_seniority.user_id = uid
                 external_seniority.years = newSeniority['seniority_external_years']
                 external_seniority.months = newSeniority['seniority_external_months']
@@ -719,6 +742,7 @@ class PersonSeniorityModifyForm(FlaskForm):
                 es = silegModel.get_external_seniority(sileg_session, es_id)
                 if es and len(es) >= 1 and not es[0].deleted:
                     toDelete_external_seniority = es[0]
+                    toDelete_external_seniority.updated = datetime.datetime.utcnow()
                     toDelete_external_seniority.deleted = datetime.datetime.utcnow()
                     sileg_session.add(toDelete_external_seniority)
                     external_seniority_log = {  
