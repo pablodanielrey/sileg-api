@@ -54,6 +54,7 @@ class StudentCreateForm(FlaskForm):
             uid = str(uuid.uuid4())
             newUser = User()
             newUser.id = uid
+            newUser.created = datetime.datetime.utcnow()
             newUser.lastname = self.lastname.data
             newUser.firstname = self.firstname.data
             session.add(newUser)
@@ -70,6 +71,8 @@ class StudentCreateForm(FlaskForm):
 
             """ Se genera documento """
             idNumber = IdentityNumber()
+            idNumber.id = str(uuid.uuid4())
+            idNumber.created = datetime.datetime.utcnow()
             idNumber.type = self.person_number_type.data
             idNumber.number = self.person_number.data
             idNumber.user_id = uid
@@ -88,6 +91,8 @@ class StudentCreateForm(FlaskForm):
             
             if self.student_number.data:
                 s_number = IdentityNumber()
+                s_number.id = str(uuid.uuid4())
+                s_number.created = str(uid.uuid4())
                 s_number.type = IdentityNumberTypes.STUDENT
                 s_number.number = self.student_number.data
                 s_number.user_id = uid
