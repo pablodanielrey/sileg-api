@@ -44,6 +44,16 @@ def reset_credentials(user, uid):
     Se resetea la calve solo para los alumnos ahora!!! personas que no tienen designaciones asociadas.
     """
 
+    ''' por ahora se chequean los ids '''
+    admin_users = [
+        '89d88b81-fbc0-48fa-badb-d32854d3d93a',
+        '3ca3057b-adba-49b3-8b99-550311fc9c81',
+        '13b2471b-507e-44d7-a440-efdb66d5aaa8',
+        '205de802-2a15-4652-8fde-f23c674a1246',
+        '35f7a8a6-d844-4d6f-b60b-aab810610809'
+    ]
+    assert uid not in admin_users
+
     username = None
     with open_users_session() as session:
         users = usersModel.get_users(session, [uid])
@@ -57,11 +67,13 @@ def reset_credentials(user, uid):
             return render_template('resetCredentials.html', error=error, user=user)
         username = usernames[0]
 
+    """
     with open_sileg_session() as session:
         desigs = silegModel.get_designations_by_uuid(session, uid)
         if desigs and len(desigs) > 0:
             error = 'No se puede blanquear la clave ya que tiene designaciones'
             return render_template('resetCredentials.html', error=error, user=user)
+    """
 
     form = ResetCredentialsForm()
     if form.validate_on_submit():
