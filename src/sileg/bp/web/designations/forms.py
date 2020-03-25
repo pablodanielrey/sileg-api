@@ -85,7 +85,7 @@ class DesignationCreateForm(FlaskForm):
         d.end_type = self.functionEndType.data
         d.place_id = self.place.data
         
-        d.status = self.status.data
+        #d.status = self.status.data
 
         d.comments = self.observations.data
 
