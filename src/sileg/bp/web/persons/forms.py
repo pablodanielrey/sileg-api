@@ -116,7 +116,7 @@ class PersonCreateForm(FlaskForm):
                 newUser.residence = self.residence.data
                 newUser.address = self.address.data
                 users_session.add(newUser)
-                toLog['user'] : {
+                toLog['user'] = {
                         'id': newUser.id,
                         'created': newUser.created,
                         'updated': newUser.updated,
@@ -141,7 +141,7 @@ class PersonCreateForm(FlaskForm):
                     personNumberFile.mimetype = self.person_numberFile.data.mimetype
                     personNumberFile.content = base64.b64encode(self.person_numberFile.data.read()).decode()
                     users_session.add(personNumberFile)
-                    toLog['file'] : {
+                    toLog['file'] = {
                             'id': personNumberFile.id,
                             'created': personNumberFile.created,
                             'updated': personNumberFile.updated,
@@ -160,7 +160,7 @@ class PersonCreateForm(FlaskForm):
                 if person_file_id:
                     idNumber.file_id = person_file_id
                 users_session.add(idNumber)
-                toLog['identity_number'] : {
+                toLog['identity_number'] = {
                         'id': idNumber.id,
                         'created': idNumber.created,
                         'updated': idNumber.updated,
@@ -182,7 +182,7 @@ class PersonCreateForm(FlaskForm):
                     newWorkEmail.email = self.work_email.data
                     newWorkEmail.user_id = uid
                     users_session.add(newWorkEmail)
-                    toLog['mail'] : {
+                    toLog['mail'] = {
                             'id': newWorkEmail.id,
                             'created': newWorkEmail.created,
                             'updated': newWorkEmail.updated,
@@ -203,7 +203,7 @@ class PersonCreateForm(FlaskForm):
                     newPersonalMail.user_id = uid
                     newPersonalMail.confirmed = datetime.datetime.utcnow()
                     users_session.add(newPersonalMail)
-                    toLog['mail'] : {
+                    toLog['mail'] = {
                             'id': newPersonalMail.id,
                             'created': newPersonalMail.created,
                             'updated': newPersonalMail.updated,
@@ -223,7 +223,7 @@ class PersonCreateForm(FlaskForm):
                     landLinePhone.number = self.land_line.data
                     landLinePhone.user_id = uid
                     users_session.add(landLinePhone)
-                    toLog['phone'] : {
+                    toLog['phone'] = {
                             'id': landLinePhone.id,
                             'created': landLinePhone.created,
                             'updated': landLinePhone.updated,
@@ -242,7 +242,7 @@ class PersonCreateForm(FlaskForm):
                     mobileNumber.number = self.mobile_number.data
                     mobileNumber.user_id = uid
                     users_session.add(mobileNumber)
-                    toLog['phone'] : {
+                    toLog['phone'] = {
                             'id': mobileNumber.id,
                             'created': mobileNumber.created,
                             'updated': mobileNumber.updated,
@@ -271,7 +271,7 @@ class PersonCreateForm(FlaskForm):
                         laboralNumberFile.mimetype = self.laboral_numberFile.data.mimetype
                         laboralNumberFile.content = base64.b64encode(self.laboral_numberFile.data.read()).decode()
                         users_session.add(laboralNumberFile)
-                        toLog['file'] : {
+                        toLog['file'] = {
                                 'id': laboralNumberFile.id,
                                 'created': laboralNumberFile.created,
                                 'updated': laboralNumberFile.updated,
@@ -283,7 +283,7 @@ class PersonCreateForm(FlaskForm):
                     if cfid:
                         cuil.file_id = cfid
                     users_session.add(cuil)
-                    toLog['identity_number'] : {
+                    toLog['identity_number'] = {
                             'id': cuil.id,
                             'created': cuil.created,
                             'updated': cuil.updated,
@@ -377,7 +377,7 @@ class DegreeAssignForm(FlaskForm):
                     degreeFile.mimetype = self.degreeFile.data.mimetype
                     degreeFile.content = base64.b64encode(self.degreeFile.data.read()).decode()
                     session.add(degreeFile)
-                    toLog['file'] : {
+                    toLog['file'] = {
                             'id': degreeFile.id,
                             'created': degreeFile.created,
                             'updated': degreeFile.updated,
@@ -397,7 +397,7 @@ class DegreeAssignForm(FlaskForm):
                 if degree_file_id:
                     newDegree.file_id = degree_file_id
                 session.add(newDegree)
-                toLog['user_degree'] : {
+                toLog['user_degree'] = {
                         'id': newDegree.id,
                         'created': newDegree.created,
                         'updated': newDegree.updated,
@@ -406,7 +406,7 @@ class DegreeAssignForm(FlaskForm):
                         'start': newDegree.start,
                         'user_id': newDegree.user_id,
                     }
-                })                
+
                 newLog = UsersLog()
                 newLog.entity_id = did
                 newLog.authorizer_id = authorizer_id
