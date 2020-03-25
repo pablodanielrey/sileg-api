@@ -69,7 +69,6 @@ class PlaceCreateForm(FlaskForm):
         """
         Persistencia de datos en DB
         """
-        toLog = []
         pid = str(uuid.uuid4())
         newPlace = Place()
         newPlace.id = pid
@@ -81,20 +80,20 @@ class PlaceCreateForm(FlaskForm):
         newPlace.telephone = self.telephone.data
         newPlace.email = self.email.data
         session.add(newPlace)
-        toLog.append({
-            'place' : {
-                'id': newPlace.id,
-                'created': newPlace.created,
-                'updated': newPlace.updated,
-                'deleted': newPlace.deleted,
-                'name': newPlace.name,
-                'type': newPlace.type,
-                'description': newPlace.description,
-                'number': newPlace.number,
-                'telephone': newPlace.telephone,
-                'email': newPlace.email,
-            }
-        })
+        toLog = {
+                'place' : {
+                    'id': newPlace.id,
+                    'created': newPlace.created,
+                    'updated': newPlace.updated,
+                    'deleted': newPlace.deleted,
+                    'name': newPlace.name,
+                    'type': newPlace.type,
+                    'description': newPlace.description,
+                    'number': newPlace.number,
+                    'telephone': newPlace.telephone,
+                    'email': newPlace.email,
+                }
+        }
         newLog = SilegLog()
         newLog.entity_id = newPlace.id
         newLog.authorizer_id = authorizer_id
@@ -139,7 +138,6 @@ class PlaceModifyForm(FlaskForm):
         places = silegModel.get_places(session,[pid])
         if places and len(places) == 1 and not places[0].deleted:
             place = places[0]
-            toLog = []
             place.updated = datetime.datetime.utcnow()
             place.name = self.name.data
             place.type = self.type.data
@@ -148,8 +146,7 @@ class PlaceModifyForm(FlaskForm):
             place.telephone = self.telephone.data
             place.email = self.email.data
             session.add(place)
-            toLog.append({  
-                'place' : {
+            toLog = {'place' : {
                     'id': place.id,
                     'created': place.created,
                     'updated': place.updated,
@@ -160,8 +157,8 @@ class PlaceModifyForm(FlaskForm):
                     'number': place.number,
                     'telephone': place.telephone,
                     'email': place.email,
-                }
-            })
+                    }
+            }
             newLog = SilegLog()
             newLog.entity_id = place.id
             newLog.authorizer_id = authorizer_id

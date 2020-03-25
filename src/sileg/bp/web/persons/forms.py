@@ -100,7 +100,7 @@ class PersonCreateForm(FlaskForm):
         """
         Persistencia de datos en DB
         """
-        toLog = []
+        toLog = {}
         uid = str(uuid.uuid4())
         with open_users_session() as users_session:
             if not usersModel.get_uid_person_number(users_session, self.person_number.data):
@@ -116,8 +116,7 @@ class PersonCreateForm(FlaskForm):
                 newUser.residence = self.residence.data
                 newUser.address = self.address.data
                 users_session.add(newUser)
-                toLog.append({  
-                    'user' : {
+                toLog['user'] : {
                         'id': newUser.id,
                         'created': newUser.created,
                         'updated': newUser.updated,
@@ -130,8 +129,7 @@ class PersonCreateForm(FlaskForm):
                         'birthdate': newUser.birthdate,
                         'residence': newUser.residence,
                         'address': newUser.address,
-                    }
-                })
+                }
 
                 """ Se carga archivo documento """
                 person_file_id = None
@@ -143,16 +141,14 @@ class PersonCreateForm(FlaskForm):
                     personNumberFile.mimetype = self.person_numberFile.data.mimetype
                     personNumberFile.content = base64.b64encode(self.person_numberFile.data.read()).decode()
                     users_session.add(personNumberFile)
-                    toLog.append({
-                        'file' : {
+                    toLog['file'] : {
                             'id': personNumberFile.id,
                             'created': personNumberFile.created,
                             'updated': personNumberFile.updated,
                             'deleted': personNumberFile.deleted,
                             'mimetype': personNumberFile.mimetype,
                             'content': personNumberFile.content,
-                        }
-                    })
+                    }
 
                 """ Se genera documento """
                 idNumber = IdentityNumber()
@@ -164,8 +160,7 @@ class PersonCreateForm(FlaskForm):
                 if person_file_id:
                     idNumber.file_id = person_file_id
                 users_session.add(idNumber)
-                toLog.append({  
-                    'identity_number' : {
+                toLog['identity_number'] : {
                         'id': idNumber.id,
                         'created': idNumber.created,
                         'updated': idNumber.updated,
@@ -173,8 +168,7 @@ class PersonCreateForm(FlaskForm):
                         'type': idNumber.type,
                         'number': idNumber.number,
                         'user_id': idNumber.user_id,
-                    }
-                })
+                }
 
                 """ Se genera correo laboral """
                 if self.work_email.data:
@@ -188,8 +182,7 @@ class PersonCreateForm(FlaskForm):
                     newWorkEmail.email = self.work_email.data
                     newWorkEmail.user_id = uid
                     users_session.add(newWorkEmail)
-                    toLog.append({  
-                        'mail' : {
+                    toLog['mail'] : {
                             'id': newWorkEmail.id,
                             'created': newWorkEmail.created,
                             'updated': newWorkEmail.updated,
@@ -198,8 +191,7 @@ class PersonCreateForm(FlaskForm):
                             'email': newWorkEmail.email,
                             'confirmed': newWorkEmail.confirmed,
                             'user_id': newWorkEmail.user_id,
-                        }
-                    })
+                    }
 
                 """ Se genera correo personal """
                 if self.personal_email.data:
@@ -211,8 +203,7 @@ class PersonCreateForm(FlaskForm):
                     newPersonalMail.user_id = uid
                     newPersonalMail.confirmed = datetime.datetime.utcnow()
                     users_session.add(newPersonalMail)
-                    toLog.append({  
-                        'mail' : {
+                    toLog['mail'] : {
                             'id': newPersonalMail.id,
                             'created': newPersonalMail.created,
                             'updated': newPersonalMail.updated,
@@ -221,8 +212,7 @@ class PersonCreateForm(FlaskForm):
                             'email': newPersonalMail.email,
                             'confirmed': newPersonalMail.confirmed,
                             'user_id': newPersonalMail.user_id,
-                        }
-                    })
+                    }
 
                 """ Se genera telefono fijo """
                 if self.land_line.data:
@@ -233,8 +223,7 @@ class PersonCreateForm(FlaskForm):
                     landLinePhone.number = self.land_line.data
                     landLinePhone.user_id = uid
                     users_session.add(landLinePhone)
-                    toLog.append({  
-                        'phone' : {
+                    toLog['phone'] : {
                             'id': landLinePhone.id,
                             'created': landLinePhone.created,
                             'updated': landLinePhone.updated,
@@ -242,8 +231,7 @@ class PersonCreateForm(FlaskForm):
                             'type': landLinePhone.type.value,
                             'number': landLinePhone.number,
                             'user_id': landLinePhone.user_id,
-                        }
-                    })
+                    }
 
                 """ Se genera telefono movil """
                 if self.mobile_number.data:
@@ -254,8 +242,7 @@ class PersonCreateForm(FlaskForm):
                     mobileNumber.number = self.mobile_number.data
                     mobileNumber.user_id = uid
                     users_session.add(mobileNumber)
-                    toLog.append({  
-                        'phone' : {
+                    toLog['phone'] : {
                             'id': mobileNumber.id,
                             'created': mobileNumber.created,
                             'updated': mobileNumber.updated,
@@ -263,8 +250,7 @@ class PersonCreateForm(FlaskForm):
                             'type': mobileNumber.type.value,
                             'number': mobileNumber.number,
                             'user_id': mobileNumber.user_id,
-                        }
-                    })
+                    }
 
                 if self.laboral_number.data:
                     cid = str(uuid.uuid4())
@@ -285,8 +271,7 @@ class PersonCreateForm(FlaskForm):
                         laboralNumberFile.mimetype = self.laboral_numberFile.data.mimetype
                         laboralNumberFile.content = base64.b64encode(self.laboral_numberFile.data.read()).decode()
                         users_session.add(laboralNumberFile)
-                        toLog.append({  
-                            'file' : {
+                        toLog['file'] : {
                                 'id': laboralNumberFile.id,
                                 'created': laboralNumberFile.created,
                                 'updated': laboralNumberFile.updated,
@@ -294,13 +279,11 @@ class PersonCreateForm(FlaskForm):
                                 'mimetype': laboralNumberFile.mimetype,
                                 'content': laboralNumberFile.content,
                                 'identityNumber': cid,
-                            }
-                        })
+                        }
                     if cfid:
                         cuil.file_id = cfid
                     users_session.add(cuil)
-                    toLog.append({
-                        'identity_number' : {
+                    toLog['identity_number'] : {
                             'id': cuil.id,
                             'created': cuil.created,
                             'updated': cuil.updated,
@@ -308,14 +291,13 @@ class PersonCreateForm(FlaskForm):
                             'type': cuil.type,
                             'number': cuil.number,
                             'user_id': cuil.user_id,
-                        }
-                    })  
+                    }
 
                 newLog = UsersLog()
                 newLog.entity_id = newUser.id
                 newLog.authorizer_id = authorizer_id
                 newLog.type = UserLogTypes.CREATE
-                newLog.data = json.dumps(toLog, default=str)
+                newLog.data = json.dumps([toLog], default=str)
                 users_session.add(newLog)
                 
                 with open_sileg_session() as sileg_session:
@@ -382,7 +364,7 @@ class DegreeAssignForm(FlaskForm):
 
     def save(self,uid,authorizer_id):
         """ Persiste datos del formulario en la base """
-        toLog = []
+        toLog = {}
         with open_users_session() as session:
             if usersModel.get_users(session, [uid])[0]:
                 """ Se carga archivo del titulo si existe """
@@ -395,16 +377,15 @@ class DegreeAssignForm(FlaskForm):
                     degreeFile.mimetype = self.degreeFile.data.mimetype
                     degreeFile.content = base64.b64encode(self.degreeFile.data.read()).decode()
                     session.add(degreeFile)
-                    toLog.append({  
-                        'file': {
+                    toLog['file'] : {
                             'id': degreeFile.id,
                             'created': degreeFile.created,
                             'updated': degreeFile.updated,
                             'deleted': degreeFile.deleted,
                             'mimetype': degreeFile.mimetype,
                             'content': degreeFile.content,
-                        }
-                    })
+                    }
+                    
                 did = str(uuid.uuid4())
                 newDegree = UserDegree()
                 newDegree.id = did
@@ -416,8 +397,7 @@ class DegreeAssignForm(FlaskForm):
                 if degree_file_id:
                     newDegree.file_id = degree_file_id
                 session.add(newDegree)
-                toLog.append({  
-                    'user_degree' : {
+                toLog['user_degree'] : {
                         'id': newDegree.id,
                         'created': newDegree.created,
                         'updated': newDegree.updated,
@@ -431,7 +411,7 @@ class DegreeAssignForm(FlaskForm):
                 newLog.entity_id = did
                 newLog.authorizer_id = authorizer_id
                 newLog.type = UserLogTypes.CREATE
-                newLog.data = json.dumps(toLog, default=str)
+                newLog.data = json.dumps([toLog], default=str)
                 session.add(newLog)
                 session.commit()
 
@@ -494,7 +474,7 @@ class PersonDataModifyForm(FlaskForm):
                 newLog.entity_id = person.id
                 newLog.authorizer_id = authorizer_id
                 newLog.type = UserLogTypes.UPDATE
-                newLog.data = json.dumps(personLog, default=str)
+                newLog.data = json.dumps([personLog], default=str)
                 session.add(newLog)
                 session.commit()
                 return 'Datos personales modificados'
@@ -548,7 +528,7 @@ class PersonIdNumberModifyForm(FlaskForm):
                         newLog.entity_id = person.id
                         newLog.authorizer_id = authorizer_id
                         newLog.type = UserLogTypes.UPDATE
-                        newLog.data = json.dumps(idNumberLog, default=str)
+                        newLog.data = json.dumps([idNumberLog], default=str)
                         session.add(newLog)
                         session.commit()
                         return 'Documento agregado con éxito'
@@ -604,7 +584,7 @@ class PersonMailModifyForm(FlaskForm):
                     newLog.entity_id = person.id
                     newLog.authorizer_id = authorizer_id
                     newLog.type = UserLogTypes.UPDATE
-                    newLog.data = json.dumps(newPersonalMailLog, default=str)
+                    newLog.data = json.dumps([newPersonalMailLog], default=str)
                     session.add(newLog)
                     session.commit()
                     return 'Correo agregado con éxito'
@@ -658,7 +638,7 @@ class PersonPhoneModifyForm(FlaskForm):
                     newLog.entity_id = person.id
                     newLog.authorizer_id = authorizer_id
                     newLog.type = UserLogTypes.UPDATE
-                    newLog.data = json.dumps(phoneToAddLog, default=str)
+                    newLog.data = json.dumps([phoneToAddLog], default=str)
                     session.add(newLog)
                     session.commit()
                     return 'Teléfono agregado con exito'
