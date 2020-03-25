@@ -66,7 +66,28 @@ class DesignationCreateForm(FlaskForm):
         self._load_values(session, silegModel)
 
     def _load_values(self, session, silegModel: SilegModel):
-        self.function.choices = [ (f.id, f.name) for f in silegModel.get_functions(session, silegModel.get_all_functions(session)) ]
+
+        """ 
+            /////////////////////////////////
+            TODO: HORRIBLE HACK 
+            ////////////////////////////////
+        """
+        _functions = silegModel.get_functions(session, silegModel.get_all_functions(session))
+        _functions_by_types = {}
+        for f in _functions:
+            if f.type not in _functions_by_types:
+                _functions_by_types[f.type] = []
+            _functions_by_types[f.type].append(f)
+        for t in _functions_by_types.keys():
+            _functions_by_types[t] = sorted(_functions_by_types[t], key=lambda x: x.name)
+        _final_functions = []
+        for t in _functions_by_types.keys():
+            _final_functions.extend(_functions_by_types[t])
+        """ 
+            ///////////////////
+        """
+
+        self.function.choices = [ (f.id, f.name) for f in _final_functions ]
         self.place.choices = [ (p.id, p.name) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session)) ]
         self.functionEndType.choices = [ (d.value, det2s(d)) for d in DesignationEndTypes ]
         self.status.choices = [(d.value, ds2s(d)) for d in DesignationStatus]
