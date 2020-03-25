@@ -69,9 +69,15 @@ def usersLogDetail(user,lid):
             authorizer = None
     campos = json.loads(log.data)
     #Horrible ---> Contencion para mostrar logs viejos que no tenian tipo
-    if 'id' in campos[0].keys():
-        content = campos[0]
-        campos = [{'legacy': content}]
+    if isinstance(campos, list):
+        if 'id' in campos[0].keys():
+            content = campos[0]
+            campos = [{'legacy_log': content}]
+    elif isinstance(campos, dict):
+        if 'id' in campos.keys():
+            content = campos
+            campos = {'legacy_log': content}
+        campos = [campos]
     return render_template('logDetail.html',user=user,authorizer=authorizer,log=log,campos=campos)
 
 @bp.route('/sileg/<lid>/detail')
@@ -91,7 +97,13 @@ def silegLogDetail(user,lid):
             authorizer = None
     campos = json.loads(log.data)
     #Horrible ---> Contencion para mostrar logs viejos que no tenian tipo
-    if 'id' in campos[0].keys():
-        content = campos[0]
-        campos = [{'legacy': content}]
+    if isinstance(campos, list):
+        if 'id' in campos[0].keys():
+            content = campos[0]
+            campos = [{'legacy_log': content}]
+    elif isinstance(campos, dict):
+        if 'id' in campos.keys():
+            content = campos
+            campos = {'legacy_log': content}
+        campos = [campos]
     return render_template('logDetail.html',user=user,authorizer=authorizer,log=log,campos=campos)

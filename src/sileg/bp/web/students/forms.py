@@ -40,7 +40,7 @@ class StudentCreateForm(FlaskForm):
         """
         Persistencia de datos en DB
         """
-        toLog = []
+        toLog = {}
         with open_users_session() as session:
             aux = usersModel.get_uid_person_number(session, self.person_number.data)
             if aux:
@@ -58,16 +58,14 @@ class StudentCreateForm(FlaskForm):
             newUser.lastname = self.lastname.data
             newUser.firstname = self.firstname.data
             session.add(newUser)
-            toLog.append({  
-                'user' : {
+            toLog['user'] = {
                     'id': newUser.id,
                     'created': newUser.created,
                     'updated': newUser.updated,
                     'deleted': newUser.deleted,
                     'lastname': newUser.lastname,
                     'firstname': newUser.firstname
-                }
-            })
+            }
 
             """ Se genera documento """
             idNumber = IdentityNumber()
@@ -77,8 +75,7 @@ class StudentCreateForm(FlaskForm):
             idNumber.number = self.person_number.data
             idNumber.user_id = uid
             session.add(idNumber)
-            toLog.append({ 
-                'identity_number': {
+            toLog['identity_number'] = {
                     'id': idNumber.id,
                     'created': idNumber.created,
                     'updated': idNumber.updated,
@@ -86,8 +83,7 @@ class StudentCreateForm(FlaskForm):
                     'type': idNumber.type,
                     'number': idNumber.number,
                     'user_id': idNumber.user_id,
-                }
-            })
+            }
             
             if self.student_number.data:
                 s_number = IdentityNumber()
@@ -97,8 +93,7 @@ class StudentCreateForm(FlaskForm):
                 s_number.number = self.student_number.data
                 s_number.user_id = uid
                 session.add(s_number)
-                toLog.append({
-                    'identity_number' : {
+                toLog['identity_number'] = {
                         'id': s_number.id,
                         'created': s_number.created,
                         'updated': s_number.updated,
@@ -106,14 +101,13 @@ class StudentCreateForm(FlaskForm):
                         'type': s_number.type,
                         'number': s_number.number,
                         'user_id': s_number.user_id,
-                    }
-                })  
+                }
 
             newLog = UsersLog()
             newLog.entity_id = newUser.id
             newLog.authorizer_id = authorizer_id
             newLog.type = UserLogTypes.CREATE
-            newLog.data = json.dumps(toLog, default=str)
+            newLog.data = json.dumps([toLog], default=str)
             session.add(newLog)
             session.commit()
             return self.person_number.data

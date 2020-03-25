@@ -41,7 +41,7 @@ class DesignationCreateForm(FlaskForm):
     function = SelectField('Cargo', coerce=str)
     functionEndType = SelectField('Finaliza', coerce=str)
 
-    start = DateTimeField('Fecha Desde', format='%d-%m-%Y', validators=[DataRequired()])
+    start = DateTimeField('Fecha Desde', format='%d-%m-%Y', validators=[Optional()])
     end = DateTimeField('Fecha Hasta', format='%d-%m-%Y', validators=[Optional()])
 
     res = StringField('Número de resolución')
@@ -111,7 +111,8 @@ class DesignationCreateForm(FlaskForm):
         """
 
         self.functionEndType.choices = [ (d.value, det2s(d)) for d in DesignationEndTypes ]
-        self.status.choices = [(d.value, ds2s(d)) for d in DesignationStatus]
+        #self.status.choices = [(d.value, ds2s(d)) for d in DesignationStatus]
+        self.status.choices = [('0','Pendiente')]
         
     def save(self, session, silegModel, uid, authorizer_id):
         d = Designation()
@@ -127,7 +128,7 @@ class DesignationCreateForm(FlaskForm):
         d.end_type = self.functionEndType.data
         d.place_id = self.place.data
         
-        d.status = self.status.data
+        #d.status = self.status.data
 
         d.comments = self.observations.data
 
