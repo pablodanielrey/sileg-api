@@ -86,9 +86,30 @@ class DesignationCreateForm(FlaskForm):
         """ 
             ///////////////////
         """
-
         self.function.choices = [ (f.id, f.name) for f in _final_functions ]
-        self.place.choices = [ (p.id, p.name) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session)) ]
+
+
+        """
+            ////////////////////////////////
+            TODO: OTRO HORRIBLE HACK!!!
+            /////////////////////////////
+        """
+        def _get_parent_names(session, place):
+            name = place.name
+            if place.parent_id is not None:
+                parent = silegModel.get_places(session, pids=[place.parent_id])[0]
+                return _get_parent_names(session, parent) + ' - ' + name
+            return name
+        
+        _places = [(p.id, _get_parent_names(session, p)) for p in silegModel.get_places(session, pids=silegModel.get_all_places(session))]
+        _places = sorted(_places, key=lambda x: x[1])
+        self.place.choices = _places
+
+
+        """
+            ////////////////////////////////////////////////////
+        """
+
         self.functionEndType.choices = [ (d.value, det2s(d)) for d in DesignationEndTypes ]
         self.status.choices = [(d.value, ds2s(d)) for d in DesignationStatus]
         
