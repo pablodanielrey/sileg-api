@@ -55,9 +55,9 @@
                 <div class="col m4">
                     <p>Ubicación: {{ designation.place.name }}, ({{designation.place.type.value}})</p>
                     <p>Cargo: {{ designation.function.name }}</p>
-                    <p>Expediente: {{designation.exp}}</p>
-                    <p>Resolución: {{designation.res}}</p>
-                    <p>Corresponde: {{designation.cor}}</p>
+                    <p>Expediente: {%if designation.exp%}{{designation.exp}}{%endif%}</p>
+                    <p>Resolución: {%if designation.res%}{{designation.res}}{%endif%}</p>
+                    <p>Corresponde: {%if designation.cor%}{{designation.cor}}{%endif%}</p>
                 </div>
                 <div class="col m2"></div>
             </div>
@@ -69,9 +69,9 @@
                         <p>Ajustada: Sí</p>
                         <p>Inicio: {{ adjusted.start.strftime('%d-%m-%Y') }}</p>
                         <p>Fin:    {{ adjusted.end.strftime('%d-%m-%Y') }}</p>
-                        <p>Expediente: {{ adjusted.exp }}</p>
-                        <p>Resolución: {{ adjusted.res }}</p>
-                        <p>Corresponde: {{ adjusted.cor }}</p>
+                        <p>Expediente: {%if adjusted.exp%}{{ adjusted.exp }}{%endif%}</p>
+                        <p>Resolución: {%if adjusted.res%}{{ adjusted.res }}{%endif%}</p>
+                        <p>Corresponde: {%if adjusted.cor%}{{ adjusted.cor }}{%endif%}</p>
                         {% endfor %}
                     {% endif %}
                 </div>
@@ -85,13 +85,15 @@
             </div>            
 
             <div class="row">
-                <div class="col m4">
-                    Comentarios
-                    <p>{{ designation.comments }}</p>
+                <div class="col m2">
+                    <h5>Observaciones:</h5>
+                </div>
+                <div class="col m10">
+                    <p>{%if designation.comments%}{{ designation.comments }}{%else%}<h5>No existen observaciones</h5>{%endif%}</p>
                 </div>
             </div>
             <div class="divider"></div>
-
+            <br>
             <div class="row">
                 <div class="col m2"></div>
                 <div class="col m8 center">
