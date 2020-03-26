@@ -118,7 +118,8 @@ def delete_personal_leave(user, uid, lid):
                     'end_type': l.end_type,
                     'exp': l.exp,
                     'res': l.res,
-                    'cor': l.cor
+                    'cor': l.cor,
+                    'perceive_salary': l.perceive_salary
                 }
             }
             log = SilegLog()
