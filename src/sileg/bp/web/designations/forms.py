@@ -9,7 +9,7 @@ from wtforms.validators import ValidationError, DataRequired, EqualTo, Optional
 #from wtforms.fields.html5 import DateTimeField
 
 from sileg_model.model.SilegModel import SilegModel
-from sileg_model.model.entities.Designation import Designation, DesignationTypes, DesignationEndTypes, DesignationStatus
+from sileg_model.model.entities.Designation import Designation, DesignationTypes, DesignationEndTypes, DesignationStatus, DesignationAdjusted
 from sileg_model.model.entities.Log import SilegLog, SilegLogTypes
 
 def det2s(d: DesignationEndTypes):
@@ -50,7 +50,7 @@ class DesignationCreateForm(FlaskForm):
 
     place = SelectField('Ubicación',coerce=str)
 
-    status = SelectField('Estado', coerce=str)
+    #status = SelectField('Estado', coerce=str)
 
     observations = StringField('Observaciones', widget=TextArea())
 
@@ -112,7 +112,6 @@ class DesignationCreateForm(FlaskForm):
 
         self.functionEndType.choices = [ (d.value, det2s(d)) for d in DesignationEndTypes ]
         #self.status.choices = [(d.value, ds2s(d)) for d in DesignationStatus]
-        self.status.choices = [('0','Pendiente')]
         
     def save(self, session, silegModel, uid, authorizer_id):
         d = Designation()
@@ -160,6 +159,24 @@ class DesignationCreateForm(FlaskForm):
                 'comments': d.comments
             }
         }
+        if self.adjusted174.data:
+            adj174 = DesignationAdjusted()
+            adj174.id = str(uuid.uuid4())
+            adj174.created = datetime.datetime.utcnow()
+            adj174.designation_id = d.id
+            session.add(adj174)
+            designationToLog['designationAdjusted'] = {
+                'id': adj174.id,
+                'created': adj174.created,
+                'updated': adj174.updated,
+                'deleted': adj174.deleted,
+                'designation_id': adj174.designation_id,
+                'start': adj174.start,
+                'end': adj174.end,
+                'exp': adj174.exp,
+                'res': adj174.res,
+                'cor': adj174.cor
+            }
         log = SilegLog()
         log.type = SilegLogTypes.CREATE
         log.entity_id = d.id
@@ -305,7 +322,7 @@ class ConvalidateDesignationForm(FlaskForm):
                 'res': d.res,
                 'cor': d.cor,
                 'status': d.status,
-                'type': d.type,
+                'type': d.type.value,
                 'designation_id': d.designation_id,
                 'user_id': d.user_id,
                 'function_id': d.function_id,
@@ -313,6 +330,25 @@ class ConvalidateDesignationForm(FlaskForm):
                 'comments': d.comments,
             }
         }
+        if self.adjusted174.data:
+            adj174 = DesignationAdjusted()
+            adj174.id = str(uuid.uuid4())
+            adj174.created = datetime.datetime.utcnow()
+            adj174.designation_id = d.id
+            session.add(adj174)
+            convalidateToLog['designationAdjusted'] = {
+                'id': adj174.id,
+                'created': adj174.created,
+                'updated': adj174.updated,
+                'deleted': adj174.deleted,
+                'designation_id': adj174.designation_id,
+                'start': adj174.start,
+                'end': adj174.end,
+                'exp': adj174.exp,
+                'res': adj174.res,
+                'cor': adj174.cor
+            }
+        
         log = SilegLog()
         log.type = SilegLogTypes.CREATE
         log.entity_id = d.id
