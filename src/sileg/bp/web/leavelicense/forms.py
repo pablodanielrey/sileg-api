@@ -71,9 +71,10 @@ class LeaveLicensePersonalCreateForm(FlaskForm):
         l.start = self.start.data
         l.end = self.end.data
         l.end_type = self.end_type.data
-        l.cor = self.cor.data
         l.exp = self.exp.data
         l.res = self.res.data
+        l.cor = self.cor.data
+        l.perceive_salary = self.paid.data
         session.add(l)
         licenseToLog = {
             'personalLeaveLicence': {
@@ -88,7 +89,8 @@ class LeaveLicensePersonalCreateForm(FlaskForm):
                 'end_type': l.end_type,
                 'exp': l.exp,
                 'res': l.res,
-                'cor': l.cor
+                'cor': l.cor,
+                'perceive_salary': l.perceive_salary
             }
         }
         log = SilegLog()
@@ -128,9 +130,10 @@ class DesignationLeaveLicenseCreateForm(FlaskForm):
         l.start = self.start.data
         l.end = self.end.data
         l.end_type = self.end_type.data
-        l.cor = self.cor.data
         l.exp = self.exp.data
         l.res = self.res.data
+        l.cor = self.cor.data
+        l.perceive_salary = self.paid.data
         session.add(l)
 
         leaveToLog = {
@@ -144,9 +147,10 @@ class DesignationLeaveLicenseCreateForm(FlaskForm):
                 'start' : l.start,
                 'end' : l.end,
                 'end_type' : l.end_type,
-                'cor' : l.cor,
                 'exp' : l.exp,
                 'res' : l.res,
+                'cor' : l.cor,
+                'perceive_salary' : l.perceive_salary
             }
         }
 
