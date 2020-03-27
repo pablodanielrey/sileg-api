@@ -586,7 +586,11 @@ def personDesignations(user, uid):
             related = [d]
             for dr in d.designations:
                 if not (dr.historic or dr.deleted):
-                    if dr.type is DesignationTypes.PROMOTION or dr.type is DesignationTypes.ORIGINAL:
+                    if dr.type is DesignationTypes.PROMOTION or \
+                       dr.type is DesignationTypes.ORIGINAL or \
+                       dr.type is DesignationTypes.DISCHARGE or \
+                       dr.type is DesignationTypes.FUNCTION or \
+                       dr.type is DesignationTypes.RELATED_FUNCTION:
                         related.append(dr)
             active.append(related)
         
