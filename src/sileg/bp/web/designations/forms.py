@@ -184,6 +184,66 @@ class DesignationCreateForm(FlaskForm):
         log.data = json.dumps([designationToLog], default=str)
         session.add(log)
 
+class DesignationModifyForm(FlaskForm):
+    functionEndType = SelectField('Finaliza', coerce=str)
+    res = StringField('Número de resolución')
+    exp = StringField('Expediente')
+    cor = StringField('Corresponde')
+    observations = StringField('Observaciones', widget=TextArea())
+
+    def __init__(self, designation=None):
+        super().__init__()
+        self.functionEndType.choices = [ (d.value, det2s(d)) for d in DesignationEndTypes ]
+        if designation:
+            self.functionEndType.default = designation.end_type.value
+            self.process()
+            self.res.data = designation.res
+            self.exp.data = designation.exp
+            self.cor.data = designation.cor
+            self.observations.data = designation.comments
+        
+    def save(self, session, silegModel, did, authorizer_id):
+        d = silegModel.get_designations(session,[did])[0]
+        if d:
+            d.end_type = self.functionEndType.data
+            d.comments = self.observations.data
+            d.exp = self.exp.data
+            d.res = self.res.data
+            d.cor = self.cor.data
+
+            designationToLog = {
+                'designation': {
+                    'id': d.id,
+                    'created': d.created,
+                    'updated': d.updated,
+                    'deleted': d.deleted,
+                    'start': d.start,
+                    'end': d.end,
+                    'end_type': d.end_type,
+                    'historic': d.historic,
+                    'exp': d.exp,
+                    'res': d.res,
+                    'cor': d.cor,
+                    'status': d.status,
+                    'type': d.type,
+                    'designation_id': d.designation_id,
+                    'user_id': d.user_id,
+                    'function_id': d.function_id,
+                    'place_id': d.place_id,
+                    'comments': d.comments
+                }
+            }
+            
+            log = SilegLog()
+            log.type = SilegLogTypes.UPDATE
+            log.entity_id = d.id
+            log.authorizer_id = authorizer_id
+            log.data = json.dumps([designationToLog], default=str)
+            session.add(log)
+            return d.id
+        else:
+            return None
+
 class ReplacementDesignationCreateForm(FlaskForm):
     # Datos del cargo
     function = SelectField('Cargo', coerce=str)
