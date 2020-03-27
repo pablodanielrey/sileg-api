@@ -19,7 +19,9 @@ from .forms import ExtendDesignationForm, \
                 DischargeDesignationForm, \
                 DeleteDesignationForm, \
                 DesignationSearchForm, \
-                PersonSearchForm 
+                PersonSearchForm, \
+                DesignationModifyForm
+
 
 
 """
@@ -701,5 +703,46 @@ def create_post(user, uid):
         flash(Markup('<span>¡Designación Creada!</span>'))
 
     return redirect(url_for('designations.personDesignations', uid=uid))
+
+@bp.route('/modificar/<did>')
+@require_user
+@verify_sileg_permission
+def modifyDesignation_get(user, did):
+    """
+        Pagina de modificacion de designacion
+    """
+    assert did is not None
+    
+    with open_sileg_session() as session:
+        designation = silegModel.get_designations(session,[did])[0]
+        form = DesignationModifyForm(designation)
+        with open_users_session() as session2:
+            person = usersModel.get_users(session2, uids=[designation.user_id])[0]
+        return render_template('modifyDesignation.html', user=user, person=person, designation=designation,form=form,dt2s=dt2s)
+
+@bp.route('/modificar/<did>', methods=['POST'])
+@require_user
+@verify_sileg_permission
+def modifyDesignation_post(user, did):
+    """
+        Pagina de modificacion de designacion POST
+    """
+    assert did is not None
+    
+    with open_sileg_session() as session:
+        form = DesignationModifyForm()
+
+        if not form.validate_on_submit():
+            flash(Markup('<span>Error al modificar designación!</span>'))
+            print(form.errors)
+            abort(404)
+
+        if form.save(session, silegModel, did, user['sub']) == did:
+            session.commit()
+            flash(Markup('<span>¡Designación actualizada!</span>'))
+        else:
+            flash(Markup('<span>Error al modificar designación!</span>'))
+            return redirect(url_for('designations.designation_detail', did=did))
+    return redirect(url_for('designations.designation_detail', did=did))
 
 

@@ -95,8 +95,9 @@
             <div class="divider"></div>
             <br>
             <div class="row">
-                <div class="col m2"></div>
-                <div class="col m8 center">
+                <div class="col m1"></div>
+                <div class="col m10 center">
+                    <a class="btn waves-effect blue lighten-1" href="{{url_for('designations.modifyDesignation_get', did=designation.id)}}">Modificar</a>
                     <a class="btn waves-effect blue lighten-1" href="{{url_for('designations.extend', did=designation.id)}}">Prorrogar</a>
                     <a class="btn waves-effect blue lighten-1" href="{{url_for('designations.promote', did=designation.id)}}">Extender</a>
                     <a class="btn waves-effect blue lighten-1" href="{{url_for('leavelicense.create_designation_leave_license', did=designation.id)}}">Licencia</a>
@@ -111,7 +112,7 @@
                     <a class="btn waves-effect red lighten-1" href="{{url_for('designations.delete', did=designation.id)}}">Eliminar</a>
                     {% endif %}
                 </div>
-                <div class="col m2"></div>
+                <div class="col m1"></div>
             </div>
             <div class="divider"></div>
             <br>

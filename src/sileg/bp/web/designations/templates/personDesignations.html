@@ -110,7 +110,9 @@
                         </tr>
                         <ul id="dropdown-{{d.id}}" class="dropdown-content">
                             <li><a class="blue-text darken-4"
-                                    href="{{url_for('designations.designation_detail', did=d.id)}}">Detalle</a></li>
+                                 href="{{url_for('designations.designation_detail', did=d.id)}}">Detalle</a></li>
+                            <li><a class="blue-text darken-4"
+                                 href="{{url_for('designations.modifyDesignation_get', did=d.id)}}">Modificar</a></li>                                    
                             <li><a class="blue-text darken-4"
                                     href="{{url_for('designations.promote', did=d.id)}}">Extender</a></li>
                             <li><a class="blue-text darken-4"
