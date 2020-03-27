@@ -190,7 +190,7 @@
                                     <td style="padding-top: 5px; padding-bottom: 5px;">{{pi.type.value}}</td>
                                     {% endif %}
                                     <td style="padding-top: 5px; padding-bottom: 5px;">{{pi.number}}</td>
-                                    {% if pi.type.value != 'DNI' %}
+                                    {% if person.identity_numbers|length > 1 and pi.type.value != 'DNI' %}
                                     <td style="padding-top: 5px; padding-bottom: 5px;"><a class="modal-trigger btn-floating waves-effect waves-light red" href="#eliminarDocumento{{pi.id}}"><i class="material-icons">delete</i></a></td>
                                     <!-- Modal eliminar documento --> 
                                     <div id="eliminarDocumento{{pi.id}}" class="modal">
