@@ -488,7 +488,7 @@ class PersonIdNumberModifyForm(FlaskForm):
     
     def __init__(self):
         super(PersonIdNumberModifyForm,self).__init__()
-        self.person_number_type.choices = [('0','Seleccione una opción...'),('DNI','DNI'),('LC','LC'),('LE','LE'),('PASSPORT','Pasaporte'),('CUIT','CUIT'),('CUIL','CUIL')]
+        self.person_number_type.choices = [('0','Seleccione una opción...'),('DNI','DNI'),('LC','LC'),('LE','LE'),('PASSPORT','Pasaporte'),('CUIT','CUIT'),('CUIL','CUIL'),('STUDENT','Legajo')]
 
     def validate_person_number_type(self, person_number_type):
         if self.person_number_type.raw_data[0] == '0':

@@ -251,12 +251,14 @@ def modifyPersonData(user,uid):
         
         ### formModifyIdNumber
         if len(person.identity_numbers) > 0:
-           for pi in person.identity_numbers:
-               if not pi.deleted:
-                   if pi.type.value != 'PASSPORT':
-                       formModifyIdNumber.person_number_type.choices.remove((pi.type.value,pi.type.value))
-                   else:
-                       formModifyIdNumber.person_number_type.choices.remove((pi.type.value,'Pasaporte'))
+            for pi in person.identity_numbers:
+                if not pi.deleted:
+                    if pi.type.value == 'PASSPORT':
+                        formModifyIdNumber.person_number_type.choices.remove((pi.type.value,'Pasaporte'))
+                    elif pi.type.value == 'STUDENT':
+                        formModifyIdNumber.person_number_type.choices.remove((pi.type.value,'Legajo'))
+                    else:
+                        formModifyIdNumber.person_number_type.choices.remove((pi.type.value,pi.type.value))
         if 'idNumber' in request.form:
             if formModifyIdNumber.validate_on_submit():
                 message = formModifyIdNumber.saveModifyIdNumber(person.id,user['sub'])
