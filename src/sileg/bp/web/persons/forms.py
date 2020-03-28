@@ -552,7 +552,7 @@ class PersonMailModifyForm(FlaskForm):
         """ 
         Agregar correo personal
         """
-        if (re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]*.unlp.edu.ar$",self.email.data)):
+        if re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]*unlp.edu.ar$",self.email.data) or self.email_type.data == 'INSTITUTIONAL':
             return 'No está permitido agregar correo institucional'
 
         with open_users_session() as session:
@@ -563,7 +563,7 @@ class PersonMailModifyForm(FlaskForm):
                     newPersonalMail = Mail()
                     newPersonalMail.id = str(uuid.uuid4())
                     newPersonalMail.created = datetime.datetime.utcnow()
-                    newPersonalMail.type = MailTypes.ALTERNATIVE
+                    newPersonalMail.type = self.email_type.data
                     newPersonalMail.email = self.email.data
                     newPersonalMail.user_id = person.id
                     newPersonalMail.confirmed = datetime.datetime.utcnow()

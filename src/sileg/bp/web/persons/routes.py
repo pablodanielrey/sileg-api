@@ -12,7 +12,11 @@ from sileg.helpers.permissionsHelper import verify_admin_permissions, verify_sil
 from sileg.auth import require_user
 
 from sileg.auth import oidc
-from sileg.models import usersModel, open_users_session, silegModel, open_sileg_session, open_login_session, loginModel
+from sileg.models import usersModel, open_users_session, _get_institutional_mails, \
+                         silegModel, open_sileg_session, \
+                         loginModel, open_login_session, \
+                         eventsModel
+
 from sileg.models import IdentityNumberTypes
 
 
@@ -67,6 +71,8 @@ def reset_credentials(user, uid):
             return render_template('resetCredentials.html', error=error, user=user)
         username = usernames[0]
 
+        institutional_mails = _get_institutional_mails(person)
+
     """
     with open_sileg_session() as session:
         desigs = silegModel.get_designations_by_uuid(session, uid)
@@ -81,6 +87,8 @@ def reset_credentials(user, uid):
         with open_login_session() as session:
             credentials = loginModel.generate_temporal_credentials(session, uid, username)
             session.commit()
+            if len(institutional_mails) > 0:
+                eventsModel.send(username, credentials)
         return render_template('resetCredentials.html', error=None, user=user, person=person, username=username, credentials=credentials, form=form)
     
     return render_template('resetCredentials.html', error=None, user=user, person=person, usernmae=None, credentials=None, form=form)

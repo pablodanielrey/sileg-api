@@ -35,6 +35,7 @@ setup(name='sileg-api',
                             'flask-cors',
                             'Flask-OIDC',
                             'SQLAlchemy',
+                            'pulsar-client',
                             'sileg-model',
                             'users-model',
                             'login-model'
