@@ -660,7 +660,7 @@ def placeDesignations(user, pid):
 
         for p in persons_designations.values():
             active.append(p)
-        return render_template('placeDesignations.html', dt2s=dt2s, cend=calculate_end, user=user, persons=active, place=place, is_secondary=_is_secondary, is_suplencia=_is_suplencia, find_user=_find_user, placeTypeToString=placeTypeToString)
+        return render_template('placeDesignations.html', dt2s=dt2s, cend=calculate_end, user=user, persons=active, place=place, is_secondary=_is_secondary, has_extension=_has_extension, is_suplencia=_is_suplencia, find_user=_find_user, placeTypeToString=placeTypeToString)
 
 
 @bp.route('/crear/<uid>')
