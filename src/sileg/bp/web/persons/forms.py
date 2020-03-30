@@ -1,4 +1,3 @@
-import logging
 import json
 import uuid
 import base64
@@ -537,8 +536,6 @@ class PersonIdNumberModifyForm(FlaskForm):
                         return 'Error interno'
 
 
-PersonalMailModifyForm.email_type
-
 class PersonMailModifyForm(FlaskForm):
     email_type = SelectField('Tipo de correo electrónico', coerce=str)
         
@@ -546,7 +543,6 @@ class PersonMailModifyForm(FlaskForm):
         super(PersonMailModifyForm,self).__init__()
         self.email_type.choices = [('0','Seleccione una opción...'),('INSTITUTIONAL','Institucional'),('ALTERNATIVE','Personal')]
         self.email = EmailField('Correo electrónico',  validators=[InputRequired()])
-        self.logging = logging.getLogger(self.__class__.__qualname__)
 
     def validate_email_type(self, email_type):
         if self.email_type.raw_data[0] == '0':
@@ -557,7 +553,6 @@ class PersonMailModifyForm(FlaskForm):
         Agregar correo personal
         """
         if re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]*unlp.edu.ar$",self.email.data) or self.email_type.data == 'INSTITUTIONAL':
-            self.logging.warn(f"{self.email.data} {self.email_type.data} no se permite agregar")
             return 'No está permitido agregar correo institucional'
 
         with open_users_session() as session:
