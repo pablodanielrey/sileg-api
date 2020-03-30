@@ -537,13 +537,15 @@ class PersonIdNumberModifyForm(FlaskForm):
                         return 'Error interno'
 
 
+PersonalMailModifyForm.email_type
+
 class PersonMailModifyForm(FlaskForm):
     email_type = SelectField('Tipo de correo electrónico', coerce=str)
-    email = EmailField('Correo electrónico',  validators=[InputRequired()])
         
     def __init__(self):
         super(PersonMailModifyForm,self).__init__()
         self.email_type.choices = [('0','Seleccione una opción...'),('INSTITUTIONAL','Institucional'),('ALTERNATIVE','Personal')]
+        self.email = EmailField('Correo electrónico',  validators=[InputRequired()])
         self.logging = logging.getLogger(self.__class__.__qualname__)
 
     def validate_email_type(self, email_type):
