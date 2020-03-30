@@ -488,7 +488,7 @@ class PersonIdNumberModifyForm(FlaskForm):
     
     def __init__(self):
         super(PersonIdNumberModifyForm,self).__init__()
-        self.person_number_type.choices = [('0','Seleccione una opción...'),('DNI','DNI'),('LC','LC'),('LE','LE'),('PASSPORT','Pasaporte'),('CUIT','CUIT'),('CUIL','CUIL')]
+        self.person_number_type.choices = [('0','Seleccione una opción...'),('DNI','DNI'),('LC','LC'),('LE','LE'),('PASSPORT','Pasaporte'),('CUIT','CUIT'),('CUIL','CUIL'),('STUDENT','Legajo')]
 
     def validate_person_number_type(self, person_number_type):
         if self.person_number_type.raw_data[0] == '0':
@@ -503,7 +503,7 @@ class PersonIdNumberModifyForm(FlaskForm):
             if len(persons) == 1:
                 person = persons[0]
                 if self.person_number.data and self.person_number_type.data:
-                    if self.person_number_type.data != 'DNI' or self.person_number_type.data != 'LC' or self.person_number_type.data != 'LE':
+                    if len(person.identity_numbers) > 1 and self.person_number_type.data != 'DNI':
                         idNumber = IdentityNumber()
                         idNumber.id = str(uuid.uuid4())
                         idNumber.created = datetime.datetime.utcnow()
@@ -552,7 +552,7 @@ class PersonMailModifyForm(FlaskForm):
         """ 
         Agregar correo personal
         """
-        if (re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]*.unlp.edu.ar$",self.email.data)):
+        if re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]*unlp.edu.ar$",self.email.data) or self.email_type.data == 'INSTITUTIONAL':
             return 'No está permitido agregar correo institucional'
 
         with open_users_session() as session:
@@ -563,7 +563,7 @@ class PersonMailModifyForm(FlaskForm):
                     newPersonalMail = Mail()
                     newPersonalMail.id = str(uuid.uuid4())
                     newPersonalMail.created = datetime.datetime.utcnow()
-                    newPersonalMail.type = MailTypes.ALTERNATIVE
+                    newPersonalMail.type = self.email_type.data
                     newPersonalMail.email = self.email.data
                     newPersonalMail.user_id = person.id
                     newPersonalMail.confirmed = datetime.datetime.utcnow()
