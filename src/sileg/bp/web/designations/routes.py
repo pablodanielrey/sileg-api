@@ -1,4 +1,5 @@
 import json
+import logging
 from flask import render_template, flash, redirect,request, Markup, url_for, abort
 
 from sileg.auth import require_user
@@ -211,7 +212,7 @@ def replacement_create_designation_post(user, did, uid):
 
         if not form.is_submitted():
             flash(Markup('<span>¡Error en la creación de suplencia!</span>'))
-            print(form.errors)
+            logging.errors(forms.errors)
             abort(404)
 
         form.save(session, silegModel, uid, did, user['sub'])
