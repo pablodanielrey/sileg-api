@@ -47,6 +47,29 @@
                         href="{{url_for('designations.create_get', uid=person.id)}}">Nueva Designación</a>
                 </div>
             </div>
+            <div class="divider"></div>
+            <br>
+            <br>
+            <form method="POST">
+                <div class="row">
+                    <div class="col m5">
+                        <h5 class="grey-text text-darken-2">Filtros de designaciones</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m2"></div>
+                    <div class="col m2 center">
+                        <label>{{ form.historic(class="filled-in") }}<span>Históricas</span></label>
+                    </div>
+                    <div class="col m2 center">
+                        <label>{{ form.active(class="filled-in") }}<span>Activas</span></label>
+                    </div>
+                    <div class="col m4 center">
+                        <button class="btn waves-effect blue lighten-1">Visualizar</button>
+                    </div>
+                    <div class="col m2"></div>
+                </div>
+            </form>
             <!-- grupos de designaciones por cargo -->
             {% for ds in designations %}
             <br>

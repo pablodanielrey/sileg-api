@@ -701,4 +701,8 @@ class PersonSearchForm(FlaskForm):
         csrf = False        
 
 
-    
+class DesignationFilterForm(FlaskForm):
+    historic = BooleanField('Historicas')
+    active = BooleanField('Activas')
+    class Meta:
+        csrf = False
