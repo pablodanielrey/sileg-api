@@ -1,5 +1,4 @@
 import json
-import logging
 from flask import render_template, flash, redirect,request, Markup, url_for, abort
 
 from sileg.auth import require_user
@@ -21,7 +20,9 @@ from .forms import ExtendDesignationForm, \
                 DeleteDesignationForm, \
                 DesignationSearchForm, \
                 PersonSearchForm, \
-                DesignationModifyForm
+                DesignationModifyForm, \
+                DesignationFilterForm
+                
 
 
 
@@ -212,7 +213,7 @@ def replacement_create_designation_post(user, did, uid):
 
         if not form.is_submitted():
             flash(Markup('<span>¡Error en la creación de suplencia!</span>'))
-            self.logging.errors(forms.errors)
+            print(form.errors)
             abort(404)
 
         form.save(session, silegModel, uid, did, user['sub'])
@@ -562,7 +563,7 @@ def designation_detail(user, did):
         return render_template('designationDetail.html', dt2s=dt2s, det2s=det2s, ie=_is_extension, ip=_is_promotion, user=user, person=person, designation=designation, extensions=extensions, promotions=promotions, discharges=discharges)
 
 
-@bp.route('/listado/<uid>')
+@bp.route('/listado/<uid>', methods=['GET','POST'])
 @require_user
 @verify_sileg_permission
 def personDesignations(user, uid):
@@ -572,6 +573,16 @@ def personDesignations(user, uid):
     """
     assert uid is not None
 
+    form = DesignationFilterForm()
+    if form.validate_on_submit():
+        historic = form.historic.data
+        active = form.active.data
+    else:
+        historic = False
+        active = True
+        form.historic.data = historic
+        form.active.data = active
+
     with open_users_session() as session:
         person = usersModel.get_users(session, [uid])[0]
 
@@ -579,8 +590,15 @@ def personDesignations(user, uid):
         dids = silegModel.get_designations_by_uuid(session, uid)
         designations = silegModel.get_designations(session, dids)
 
-        original = [d for d in designations if d.deleted is None and (d.type == DesignationTypes.ORIGINAL or d.type == DesignationTypes.REPLACEMENT)]
-
+        original = []
+        original_tmp = [d for d in designations if d.deleted is None and (d.type == DesignationTypes.ORIGINAL or d.type == DesignationTypes.REPLACEMENT)]
+        for o in original_tmp:
+            if historic:
+                if o.historic:
+                    original.append(o)
+            if active:
+                if not o.historic:
+                    original.append(o)
         #armo el grupo de las designaciones relacionadas con el cargo original
         active = []
         for d in original:
@@ -598,7 +616,8 @@ def personDesignations(user, uid):
 
         active = sorted(active, key=lambda d: d[0].start, reverse=True)
 
-        return render_template('personDesignations.html', 
+        return render_template('personDesignations.html',
+                    form=form, 
                     dt2s=dt2s, cend=calculate_end, user=user, 
                     designations=active, 
                     person=person, 
