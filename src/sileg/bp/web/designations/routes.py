@@ -38,7 +38,7 @@ def calculate_end(d:Designation):
     if d.designations:
         for d2 in d.designations:
             if not d2.deleted:
-                if not end or (d2.type is DesignationTypes.EXTENSION and d2.end and d2.end > end):
+                if not end or ((d2.type is DesignationTypes.EXTENSION or d2.type is DesignationTypes.DISCHARGE) and d2.end and d2.end > end):
                     end = d2.end
     return end
 
@@ -212,7 +212,7 @@ def replacement_create_designation_post(user, did, uid):
 
         if not form.is_submitted():
             flash(Markup('<span>¡Error en la creación de suplencia!</span>'))
-            logging.errors(forms.errors)
+            self.logging.errors(forms.errors)
             abort(404)
 
         form.save(session, silegModel, uid, did, user['sub'])
