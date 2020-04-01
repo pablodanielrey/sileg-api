@@ -29,6 +29,7 @@ def listUserLogs(user):
     usersLogs = {}
     for user in users:
         usersLogs[user.id] = user
+    logs = sorted(logs, key=lambda x: x.created, reverse=True)
     return render_template('listUserLogs.html', user=user, usersLogs=usersLogs, logs=logs)
 
 @bp.route('/sileg')
@@ -51,6 +52,7 @@ def listSilegLogs(user):
     usersLogs = {}
     for user in users:
         usersLogs[user.id] = user
+    logs = sorted(logs, key=lambda x: x.created, reverse=True)
     return render_template('listSilegLogs.html',user=user, usersLogs=usersLogs, logs=logs)
 
 @bp.route('/users/<lid>/detail')
