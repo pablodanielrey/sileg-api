@@ -316,7 +316,7 @@ def modifyPersonData(user,uid):
                             flash(message)
                             return redirect(url_for('persons.modifyPersonData', uid=uid))
 
-    return render_template('modifyPerson.html', user=user, person=person, formModifyPersonData=formModifyPersonData, formModifyIdNumber=formModifyIdNumber, formModifyMail=formModifyMail, formModifyPhone=formModifyPhone, formModifySeniority=formModifySeniority)
+        return render_template('modifyPerson.html', user=user, person=person, formModifyPersonData=formModifyPersonData, formModifyIdNumber=formModifyIdNumber, formModifyMail=formModifyMail, formModifyPhone=formModifyPhone, formModifySeniority=formModifySeniority)
 
 @bp.route('<uid>/documento/<pidnumberid>/eliminar')
 @require_user

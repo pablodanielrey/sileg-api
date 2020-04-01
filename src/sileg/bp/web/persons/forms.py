@@ -538,11 +538,11 @@ class PersonIdNumberModifyForm(FlaskForm):
 
 class PersonMailModifyForm(FlaskForm):
     email_type = SelectField('Tipo de correo electrónico', coerce=str)
+    email = EmailField('Correo electrónico',  validators=[InputRequired()])
         
     def __init__(self):
         super(PersonMailModifyForm,self).__init__()
         self.email_type.choices = [('0','Seleccione una opción...'),('INSTITUTIONAL','Institucional'),('ALTERNATIVE','Personal')]
-        self.email = EmailField('Correo electrónico',  validators=[InputRequired()])
 
     def validate_email_type(self, email_type):
         if self.email_type.raw_data[0] == '0':
