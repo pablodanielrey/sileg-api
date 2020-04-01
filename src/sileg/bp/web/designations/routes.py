@@ -1,4 +1,5 @@
 import json
+import datetime
 from flask import render_template, flash, redirect,request, Markup, url_for, abort
 
 from sileg.auth import require_user
@@ -613,8 +614,7 @@ def personDesignations(user, uid):
                         related.append(dr)
             active.append(related)
         
-
-        active = sorted(active, key=lambda d: d[0].start, reverse=True)
+        active = sorted(active, key=lambda d: d[0].start if d[0].start else datetime.date(1980,1,1), reverse=True)
 
         return render_template('personDesignations.html',
                     form=form, 
