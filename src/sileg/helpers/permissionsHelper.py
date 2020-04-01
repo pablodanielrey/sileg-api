@@ -35,7 +35,8 @@ def verify_students_permission(fn):
             '27528150':'853cd3dd-739c-4423-a88e-4fe722209fc7',
             '27528195':'af2ba1fb-66ce-4857-b226-1b19b1d3a0c5',
             '32393755':'15022185-5e14-4772-a620-53fadf843bc0',
-            '30001823':'205de802-2a15-4652-8fde-f23c674a1246'
+            '30001823':'205de802-2a15-4652-8fde-f23c674a1246',      # blanco
+            '31433408':'8ade8f8d-c9e1-4a0c-8d9d-16d5e4b721af'       # alustiza - a pedido de emilio
         }
 
         if uid in nuestros_uids.values():
