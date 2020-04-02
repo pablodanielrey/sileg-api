@@ -543,6 +543,8 @@ def designation_detail(user, did):
 
     with open_sileg_session() as session:
         designations = silegModel.get_designations(session, [did])
+        if len(designations) <= 0:
+            raise Exception(f"No existe la designacion con id {did}")
         designation = designations[0]
         uid = designation.user_id
 
