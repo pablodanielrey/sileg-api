@@ -168,7 +168,7 @@ class PlaceModifyForm(FlaskForm):
             place.number = self.number.data
             place.telephone = self.telephone.data
             place.email = self.email.data
-            place.parent_id = self.parent.data if self.parent.data != '0' else None
+            place.parent_id = self.parent.data if (self.parent.data != '0' and self.parent.data != pid) else None
             place.start = datetime.datetime.strptime(self.start.data,'%d-%m-%Y') if self.start.data else None
             place.end = datetime.datetime.strptime(self.end.data,'%d-%m-%Y') if self.end.data else None
             session.add(place)
