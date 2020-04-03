@@ -18,7 +18,8 @@ def create(user):
     """
     Pagina de creacion de lugares GET
     """
-    form = PlaceCreateForm()
+    with open_sileg_session() as session:
+        form = PlaceCreateForm(session)
     return render_template('createPlace.html',user=user,form=form)
 
 @bp.route('/crear', methods=['POST'])
@@ -28,15 +29,15 @@ def create_post(user):
     """
     Pagina de creacion de lugares POST
     """
-    form = PlaceCreateForm()
-    if not form.validate_on_submit():
-        flash(Markup('<span>Error al crear lugar!</span>'))
-        print(form.errors)
-        return render_template('createPlace.html',user=user,form=form)
-    if form.type.data == '0':
-        flash(Markup('<span>Por favor seleccione un tipo de lugar!</span>'))
-        return render_template('createPlace.html',user=user,form=form)
-    with open_sileg_session() as session:     
+    with open_sileg_session() as session:
+        form = PlaceCreateForm(session)
+        if not form.validate_on_submit():
+            flash(Markup('<span>Error al crear lugar!</span>'))
+            print(form.errors)
+            return render_template('createPlace.html',user=user,form=form)
+        if form.type.data == '0':
+            flash(Markup('<span>Por favor seleccione un tipo de lugar!</span>'))
+            return render_template('createPlace.html',user=user,form=form)     
         form.save(session, user['sub'])
         session.commit()
         flash(Markup('<span>¡Lugar Creado!</span>'))
@@ -109,9 +110,9 @@ def modifyPlace_post(user,pid):
     """
     Pagina de modificacion de lugar POST
     """
-    form = PlaceModifyForm()
-    if form.validate_on_submit():
-        with open_sileg_session() as session:
+    with open_sileg_session() as session:
+        form = PlaceModifyForm(session)
+        if form.validate_on_submit():
             ok = form.save(session,pid,user['sub'])
             if ok == pid:
                 flash(Markup('<span>¡Lugar Actualizado!</span>'))
@@ -120,6 +121,6 @@ def modifyPlace_post(user,pid):
             else:
                 flash(Markup('<span>¡Error al modificar!</span>'))
                 return redirect(url_for('places.modifyPlace', pid=pid))
-    if 'email' in form.errors:
-        flash(Markup('<span>¡Error al actualizar correo!</span>'))
+        if 'email' in form.errors:
+            flash(Markup('<span>¡Error al actualizar correo!</span>'))
     return redirect(url_for('places.modifyPlace', pid=pid))

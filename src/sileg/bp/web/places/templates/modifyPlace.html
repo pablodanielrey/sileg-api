@@ -107,6 +107,47 @@
                     <div class="col m1"></div>
                 </div>
                 <div class="divider"></div>
+                <div class="row">
+                    <div class="col m5">
+                        <h5>Estructura</h5>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        {{ form.parent.label }}
+                        {% if form.parent.errors %}
+                        {{ form.parent(class="validate invalid") }}
+                        <span class="helper-text red-text">Debe seleccionar una opción</span>
+                        {% else %}
+                        {{ form.parent(class="validate") }}
+                        {% endif %}
+                    </div>
+                    <div class="col m1"></div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m3">
+                        {{ form.start.label }}
+                        {% if form.start.errors %}
+                        {{ form.start(class="validate invalid datepicker") }}
+                        <span class="helper-text" data-error="{{form.start.errors[0]}}"></span>
+                        {% else %}
+                        {{ form.start(class="validate datepicker") }}
+                        {% endif %}
+                    </div>
+                    <div class="col m3">
+                        {{ form.end.label }}
+                        {% if form.end.errors %}
+                        {{ form.end(class="validate invalid datepicker") }}
+                        <span class="helper-text" data-error="{{form.end.errors[0]}}"></span>
+                        {% else %}
+                        {{ form.end(class="validate datepicker") }}
+                        {% endif %}
+                    </div>
+                    <div class="col m5"></div>
+                </div>
+                <div class="divider"></div>
                 <br>
                 <div class="row">
                     <div class="col m4"></div>
