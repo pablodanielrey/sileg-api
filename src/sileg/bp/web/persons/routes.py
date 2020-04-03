@@ -19,7 +19,6 @@ from sileg.models import usersModel, open_users_session, _get_institutional_mail
 
 from sileg.models import IdentityNumberTypes
 
-
 @bp.route('/crear',methods=['GET','POST'])
 @require_user
 @verify_sileg_permission

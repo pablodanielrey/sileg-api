@@ -13,12 +13,38 @@ from wtforms.validators import ValidationError, DataRequired, EqualTo, Email, In
 from sileg.helpers.apiHandler import getStates
 from sileg.helpers.namesHandler import id2sDegrees, id2sIdentityNumber
 
-from sileg.models import usersModel, open_users_session, silegModel, open_sileg_session
+from sileg.models import usersModel, open_users_session, \
+                         silegModel, open_sileg_session, \
+                         eventsModel
 from users.model.entities.User import User, IdentityNumber, Mail, Phone, File, MailTypes, PhoneTypes, UsersLog, UserLogTypes, IdentityNumberTypes, DegreeTypes, UserDegree
 
 from sileg_model.model.SilegModel import SilegModel
 from sileg_model.model.entities.ExternalSeniority import ExternalSeniority
 from sileg_model.model.entities.Log import SilegLog, SilegLogTypes
+
+
+
+def _send_created_user(user:User):
+    """
+    for m in user.mails:
+        m.id
+    for t in user.phones:
+        t.id
+    for i in user.identity_numbers:
+        i.id
+    """
+    eventsModel.send_created_user(user)
+
+def _send_updated_user(user):
+    """
+    for m in user.mails:
+        m.id
+    for t in user.phones:
+        t.id
+    for i in user.identity_numbers:
+        i.id
+    """
+    eventsModel.send_updated_user(user)
 
 class ResetCredentialsForm(FlaskForm):
     modifyCredentials = SubmitField('Blanquear Clave')
@@ -62,7 +88,7 @@ class PersonCreateForm(FlaskForm):
             raise ValidationError('Debe seleccionar una opción')   
 
     def validate_personal_email(self, personal_email):
-        if re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]*econo.unlp.edu.ar$",self.personal_email.data) != None:
+        if re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]*unlp.edu.ar$", self.personal_email.data) != None:
             raise ValidationError('El correo electrónico personal no puede ser institucional')
 
     def validate_seniority_external_years(self,seniority_external_years):
@@ -181,6 +207,7 @@ class PersonCreateForm(FlaskForm):
                     newWorkEmail.type = emailType
                     newWorkEmail.email = self.work_email.data
                     newWorkEmail.user_id = uid
+                    newWorkEmail.confirmed = datetime.datetime.utcnow()
                     users_session.add(newWorkEmail)
                     toLog['workMail'] = {
                             'id': newWorkEmail.id,
@@ -340,6 +367,13 @@ class PersonCreateForm(FlaskForm):
                             return None
                     else:
                         users_session.commit()
+                
+                """
+                    Disparo el evento de creación de usuario
+                """
+                created_user = usersModel.get_users(users_session, uids=[uid])
+                _send_created_user(created_user)
+
                 return self.person_number.data
             else:
                 return None
@@ -477,9 +511,16 @@ class PersonDataModifyForm(FlaskForm):
                 newLog.data = json.dumps([personLog], default=str)
                 session.add(newLog)
                 session.commit()
+
+                """
+                    disparo el evento de modificación.
+                """
+                users = usersModel.get_users(session, uids=[uid])
+                _send_updated_user(users[0])
+
                 return 'Datos personales modificados'
             else:
-                return 'Error interno'
+                return f'No existe la persona {uid}'
 
 
 class PersonIdNumberModifyForm(FlaskForm):
@@ -531,6 +572,13 @@ class PersonIdNumberModifyForm(FlaskForm):
                         newLog.data = json.dumps([idNumberLog], default=str)
                         session.add(newLog)
                         session.commit()
+                        
+                        """
+                            disparo el evento de modificación.
+                        """
+                        users = usersModel.get_users(session, uids=[uid])
+                        _send_updated_user(users[0])
+
                         return 'Documento agregado con éxito'
                     else:
                         return 'Error interno'
@@ -587,6 +635,13 @@ class PersonMailModifyForm(FlaskForm):
                     newLog.data = json.dumps([newPersonalMailLog], default=str)
                     session.add(newLog)
                     session.commit()
+
+                    """
+                        disparo el evento de modificación.
+                    """
+                    users = usersModel.get_users(session, uids=[uid])
+                    _send_updated_user(users[0])
+
                     return 'Correo agregado con éxito'
                 else:
                     return 'Error'
@@ -641,6 +696,13 @@ class PersonPhoneModifyForm(FlaskForm):
                     newLog.data = json.dumps([phoneToAddLog], default=str)
                     session.add(newLog)
                     session.commit()
+
+                    """
+                        disparo el evento de modificación.
+                    """
+                    users = usersModel.get_users(session, uids=[uid])
+                    _send_updated_user(users[0])
+
                     return 'Teléfono agregado con exito'
                 else:
                     return 'Error interno'
