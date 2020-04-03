@@ -53,12 +53,19 @@ class PlaceCreateForm(FlaskForm):
     number = StringField('Número')
     telephone = StringField('Teléfono')
     email = EmailField('Correo electrónico')
+    parent = SelectField('Lugar Padre', coerce=str)
+    start = StringField('Inicio')
+    end = StringField('Fin')
         
-    def __init__(self):
+    def __init__(self,session=None):
         super(PlaceCreateForm,self).__init__()
         typeChoices = [(d.value, placeTypeToString(d)) for d in PlaceTypes ]
         typeChoices.insert(0,('0','Seleccione una opción...'))
         self.type.choices = typeChoices
+        avalilablePlaces = silegModel.get_all_places(session)
+        parentChoices = [(p.id, p.name) for p in silegModel.get_places(session,avalilablePlaces)]
+        parentChoices.insert(0,('0','Seleccione un lugar padre...'))
+        self.parent.choices = parentChoices
         
     def validate_email(self, email):
         if self.email.data and self.email.data != '':
@@ -79,6 +86,9 @@ class PlaceCreateForm(FlaskForm):
         newPlace.number = self.number.data
         newPlace.telephone = self.telephone.data
         newPlace.email = self.email.data
+        newPlace.parent_id = self.parent.data if self.parent.data != '0' else None
+        newPlace.start = datetime.datetime.strptime(self.start.data,'%d-%m-%Y') if self.start.data else None
+        newPlace.end = datetime.datetime.strptime(self.end.data,'%d-%m-%Y') if self.end.data else None
         session.add(newPlace)
         toLog = {
                 'place' : {
@@ -92,6 +102,9 @@ class PlaceCreateForm(FlaskForm):
                     'number': newPlace.number,
                     'telephone': newPlace.telephone,
                     'email': newPlace.email,
+                    'parent_id': newPlace.parent_id,
+                    'start': newPlace.start,
+                    'end': newPlace.end
                 }
         }
         newLog = SilegLog()
@@ -108,23 +121,33 @@ class PlaceModifyForm(FlaskForm):
     number = StringField('Número')
     telephone = StringField('Teléfono')
     email = EmailField('Correo electrónico')
+    parent = SelectField('Lugar Padre', coerce=str)
+    start = StringField('Inicio')
+    end = StringField('Fin')
         
     def __init__(self,session=None,pid=None):
         super(PlaceModifyForm,self).__init__()
         typeChoices = [(d.value, placeTypeToString(d)) for d in PlaceTypes ]
         typeChoices.insert(0,('0','Seleccione una opción...'))
         self.type.choices = typeChoices
+        avalilablePlaces = silegModel.get_all_places(session)
+        parentChoices = [(p.id, p.name) for p in silegModel.get_places(session,avalilablePlaces)]
+        parentChoices.insert(0,('0','Seleccione un lugar padre...'))
+        self.parent.choices = parentChoices
         if session and pid:
             places = silegModel.get_places(session,[pid])
             if places and len(places) == 1:
                 place = places[0]
                 self.type.default = place.type.value
+                self.parent.default = place.parent_id if place.parent_id else '0'
                 self.process()
                 self.name.data = place.name
                 self.description.data = place.description
                 self.number.data = place.number
                 self.telephone.data = place.number
-                self.email.data = place.email      
+                self.email.data = place.email
+                self.start.data = place.start.strftime('%d-%m-%Y') if place.start else ''
+                self.end.data = place.end.strftime('%d-%m-%Y') if place.end else ''
         
     def validate_email(self, email):
         if self.email.data and self.email.data != '':
@@ -145,6 +168,9 @@ class PlaceModifyForm(FlaskForm):
             place.number = self.number.data
             place.telephone = self.telephone.data
             place.email = self.email.data
+            place.parent_id = self.parent.data if self.parent.data != '0' else None
+            place.start = datetime.datetime.strptime(self.start.data,'%d-%m-%Y') if self.start.data else None
+            place.end = datetime.datetime.strptime(self.end.data,'%d-%m-%Y') if self.end.data else None
             session.add(place)
             toLog = {'place' : {
                     'id': place.id,
@@ -157,6 +183,9 @@ class PlaceModifyForm(FlaskForm):
                     'number': place.number,
                     'telephone': place.telephone,
                     'email': place.email,
+                    'parent_id': place.parent_id,
+                    'start': place.start,
+                    'end': place.end
                     }
             }
             newLog = SilegLog()
