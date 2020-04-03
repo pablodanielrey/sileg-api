@@ -1,3 +1,5 @@
+import datetime
+
 from flask import render_template, flash, redirect,request, Markup, url_for, abort
 from sileg.auth import require_user
 
@@ -55,14 +57,14 @@ def organigrama(user):
         return r
 
     with open_sileg_session() as session:
-        result = silegModel.get_all_places(session)
+        result = silegModel.get_all_places(session, historic=True, deleted=True)
         if result:
             places = silegModel.get_places(session,result)
             """ genero la estructura de organigrama """
             roots = [p for p in places if p.parent_id is None]
             trees = [_get_tree(p) for p in roots]
         else:
-            result = []
+            trees = []
     return render_template('showPlacesTree.html', user=user, places=trees, placeTypeToString=placeTypeToString)
 
 @bp.route('/buscar')
