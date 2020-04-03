@@ -2,14 +2,44 @@
 {% block content %}
     <ul style="display:block; padding:10px 10px 10px 10px;">
         {% for r in places recursive %}
-            <li style="border-color: coral; padding:5px 0px 5px 0px;">
-                {{ r['root'].name }}
-                <a class="blue-text darken-4" href="{{url_for('designations.placeDesignations', pid=r['root'].id)}}">designaciones</a>
-                {% if r['children'] %}
-                <ul style="margin-left: {{loop.depth * 40}}px;">
-                        {{loop(r['children'])}}
-                    </ul>
+            <li style="display:gid; grid-template-rows:1fr 1fr 1fr 1fr 1fr; padding:5px 0px 5px 0px;">
+                <div><h5>{{ r['root'].name }}</h5> <h6>({{ r['root'].type.value }})</h6></div>
+                
+                <div>
+                    <a href="{{url_for('places.modifyPlace', pid=r['root'].id)}}">Modificar</a>
+                </div>
+
+                <div>
+                    Eliminado:
+                {% if r['root'].deleted %}
+                    <label>SI</label>
+                {% else %}
+                    <label>NO</label>
                 {% endif %}
+                </div>
+
+                <div>
+                    Válido Hasta: 
+                {% if r['root'].end %}
+                    <label>{{r['root'].end.strftime('%d-%m-%Y')}}</label>
+                    <button>mostrar</button>
+                {% else %}
+                    <label>siempre</label>
+                    <button>ocultar</button>
+                {% endif %}
+                </div>
+
+                <div>
+                <a class="blue-text darken-4" href="{{url_for('designations.placeDesignations', pid=r['root'].id)}}">designaciones</a>
+                </div>
+
+                <div>
+                    {% if r['children'] %}
+                    <ul style="margin-left: {{loop.depth * 40}}px;">
+                            {{loop(r['children'])}}
+                        </ul>
+                    {% endif %}
+                </div>
             </li>
         {% endfor %}
     </ul>
