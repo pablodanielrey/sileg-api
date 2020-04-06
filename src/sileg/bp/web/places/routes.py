@@ -68,6 +68,40 @@ def organigrama(user):
             trees = []
     return render_template('showPlacesTree.html', user=user, places=trees, placeTypeToString=placeTypeToString)
 
+@bp.route('<pid>/mostrar')
+@require_user
+@verify_admin_permissions
+def showPlace(user,pid):
+    """
+    Elmina la fecha de finalización de un lugar.
+    """
+    with open_sileg_session() as session:
+        from sileg_model.model.entities.Place import Place
+        p = session.query(Place).filter(Place.id == pid).one_or_none()
+        if p:
+            p.end = None
+            p.modified = datetime.datetime.utcnow()
+            session.commit()
+    return redirect(url_for('places.organigrama'))
+
+@bp.route('<pid>/ocultar')
+@require_user
+@verify_admin_permissions
+def hidePlace(user,pid):
+    """
+    Configura la fecha de finalización de un lugar.
+    """
+    with open_sileg_session() as session:
+        from sileg_model.model.entities.Place import Place
+        p = session.query(Place).filter(Place.id == pid).one_or_none()
+        if p:
+            p.end = datetime.datetime.utcnow()
+            p.modified = datetime.datetime.utcnow()
+            session.commit()
+    return redirect(url_for('places.organigrama'))
+
+
+
 @bp.route('/buscar')
 @require_user
 @verify_sileg_permission

@@ -22,10 +22,10 @@
                     Válido Hasta: 
                 {% if r['root'].end %}
                     <label>{{r['root'].end.strftime('%d-%m-%Y')}}</label>
-                    <button>mostrar</button>
+                    <a href="{{url_for('places.showPlace', pid=r['root'].id)}}">mostrar</a>
                 {% else %}
                     <label>siempre</label>
-                    <button>ocultar</button>
+                    <a href="{{url_for('places.hidePlace', pid=r['root'].id)}}">ocultar</a>
                 {% endif %}
                 </div>
 
