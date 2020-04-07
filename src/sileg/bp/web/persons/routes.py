@@ -250,11 +250,10 @@ def modifyPersonData(user,uid):
             formModifyPersonData.address.data = person.address
         if person.residence:
             formModifyPersonData.residence.data = person.residence
-        if formModifyPersonData.personDataModify.data and (formModifyPersonData.residence.data != formModifyPersonData.residence.raw_data[0] or formModifyPersonData.lastname.data != formModifyPersonData.lastname.raw_data[0] or formModifyPersonData.firstname.data != formModifyPersonData.firstname.raw_data[0] or formModifyPersonData.gender.data != formModifyPersonData.gender.raw_data[0] or formModifyPersonData.marital_status.data != formModifyPersonData.marital_status.raw_data[0] or formModifyPersonData.birthplace.data != formModifyPersonData.birthplace.raw_data[0] or formModifyPersonData.birthdate.data != formModifyPersonData.birthdate.raw_data[0] or formModifyPersonData.address.data != formModifyPersonData.address.raw_data[0]):
-            if formModifyPersonData.validate_on_submit():
-                message = formModifyPersonData.saveModifyPersonData(person.id,user['sub'])
-                flash(message)
-                return redirect(url_for('persons.modifyPersonData', uid=uid))
+        if formModifyPersonData.validate_on_submit():
+            message = formModifyPersonData.saveModifyPersonData(person.id,user['sub'])
+            flash(message)
+            return redirect(url_for('persons.modifyPersonData', uid=uid))
         
         ### formModifyIdNumber
         if len(person.identity_numbers) > 0:
