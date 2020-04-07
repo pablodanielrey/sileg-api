@@ -773,3 +773,15 @@ def modifyDesignation_post(user, did):
     return redirect(url_for('designations.designation_detail', did=did))
 
 
+@bp.route('/pendientes')
+@require_user
+@verify_admin_permissions
+def pendingDesignations(user):
+    """
+    Listado de designaciones en estado pendiente
+    """
+    with open_sileg_session() as session:
+        pendingIds = silegModel.get_designations_pending(session)
+        pendingsAll = silegModel.get_designations(session,pendingIds)
+        pendings = [p for p in pendingsAll if not p.deleted]
+        return render_template('pendingDesignations.html', user=user, pendings=pendings, dt2s=dt2s, find_user=_find_user)

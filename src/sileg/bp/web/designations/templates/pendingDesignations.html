@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="row">
+        <div class="col m2"></div>
+        <div class="col m8 center">
+            <h4>Listado de Designaciones Pendientes</h4>
+        </div>
+        <div class="col m2"></div>
+    </div>
+    <ul style="display:block; padding:10px 10px 10px 10px;">
+        {% for p in pendings %}
+            <li style="display:gid; grid-template-rows:1fr 1fr 1fr 1fr 1fr; padding:5px 0px 5px 0px;">
+                <div>
+                    <h5>{{find_user(p)}}</h5>
+                    <h6>Tipo: {{dt2s(p.type)}}</h6>
+                    <h6>{{p.place.name}}</h6>
+                    <h6>{{ p.function.name.split('-')[0] }}-{{ p.function.name.split('-')[2]}} - {{dt2s(p.type)}} - {{ p.function.name.split('-')[1] }}</h6>
+                    <h6>Inicio: {{p.start.strftime('%d-%m-%Y') if p.start}} - Fin: {{p.end.strftime('%d-%m-%Y') if p.end}}</h6>
+                </div>
+                <div>
+                    <a href="{{url_for('designations.designation_detail', did=p.id)}}">Detalle</a>
+                </div>                
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

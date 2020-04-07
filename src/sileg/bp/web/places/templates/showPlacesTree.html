@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
+    <div class="row">
+        <div class="col m2"></div>
+        <div class="col m8 center">
+            <h4>Organigrama</h4>
+        </div>
+        <div class="col m2"></div>
+    </div>    
     <ul style="display:block; padding:10px 10px 10px 10px;">
         {% for r in places recursive %}
             <li style="display:gid; grid-template-rows:1fr 1fr 1fr 1fr 1fr; padding:5px 0px 5px 0px;">
