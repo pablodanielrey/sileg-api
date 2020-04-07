@@ -610,10 +610,11 @@ def personDesignations(user, uid):
                 if not (dr.historic or dr.deleted):
                     if dr.type is DesignationTypes.PROMOTION or \
                        dr.type is DesignationTypes.ORIGINAL or \
-                       dr.type is DesignationTypes.DISCHARGE or \
                        dr.type is DesignationTypes.FUNCTION or \
                        dr.type is DesignationTypes.RELATED_FUNCTION:
                         related.append(dr)
+                elif (dr.historic and dr.type is DesignationTypes.DISCHARGE):
+                    related.append(dr)
             active.append(related)
         
         active = sorted(active, key=lambda d: d[0].start if d[0].start else datetime.date(1980,1,1), reverse=True)
