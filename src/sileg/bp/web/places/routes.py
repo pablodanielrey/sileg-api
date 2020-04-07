@@ -13,7 +13,7 @@ from . import bp
 
 @bp.route('/crear')
 @require_user
-@verify_admin_permissions
+@verify_sileg_permissions
 def create(user):
     """
     Pagina de creacion de lugares GET
@@ -24,7 +24,7 @@ def create(user):
 
 @bp.route('/crear', methods=['POST'])
 @require_user
-@verify_admin_permissions
+@verify_sileg_permissions
 def create_post(user):
     """
     Pagina de creacion de lugares POST
@@ -70,7 +70,7 @@ def organigrama(user):
 
 @bp.route('<pid>/mostrar')
 @require_user
-@verify_admin_permissions
+@verify_sileg_permissions
 def showPlace(user,pid):
     """
     Elmina la fecha de finalización de un lugar.
@@ -86,7 +86,7 @@ def showPlace(user,pid):
 
 @bp.route('<pid>/ocultar')
 @require_user
-@verify_admin_permissions
+@verify_sileg_permissions
 def hidePlace(user,pid):
     """
     Configura la fecha de finalización de un lugar.
@@ -128,7 +128,7 @@ def search(user):
 
 @bp.route('<pid>/modificar')
 @require_user
-@verify_admin_permissions
+@verify_sileg_permissions
 def modifyPlace(user,pid):
     """
     Pagina de modificacion de lugar GET
@@ -139,7 +139,7 @@ def modifyPlace(user,pid):
 
 @bp.route('<pid>/modificar',methods=['POST'])
 @require_user
-@verify_admin_permissions
+@verify_sileg_permissions
 def modifyPlace_post(user,pid):
     """
     Pagina de modificacion de lugar POST
