@@ -460,8 +460,8 @@ class PersonSearchForm(FlaskForm):
         csrf = False
 
 class PersonDataModifyForm(FlaskForm):
-    lastname = StringField('Apellidos', validators=[DataRequired()])
-    firstname = StringField('Nombres', validators=[DataRequired()])
+    lastname = StringField('Apellidos', validators=[InputRequired()])
+    firstname = StringField('Nombres', validators=[InputRequired()])
     gender = SelectField('Género', coerce=str)
     marital_status = SelectField('Estado Civil', coerce=str)
     birthplace = StringField('Ciudad de Nacimiento')
