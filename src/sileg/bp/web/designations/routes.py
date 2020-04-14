@@ -7,6 +7,7 @@ from sileg.models import silegModel, open_sileg_session, usersModel, open_users_
 from sileg_model.model.entities.Designation import Designation, DesignationTypes, DesignationEndTypes
 from sileg_model.model.entities.Place import PlaceTypes
 from sileg_model.model.entities.Log import SilegLog, SilegLogTypes
+from sileg_model.model.entities.LeaveLicense import LicenseEndTypes, LicenseTypes
 
 from sileg.helpers.permissionsHelper import verify_admin_permissions, verify_sileg_permission, verify_students_permission
 
@@ -104,7 +105,37 @@ def placeTypeToString(p:PlaceTypes):
     if p == PlaceTypes.CATEDRA:
         return 'Catedra'
 
+def lt2s(t:LicenseTypes):
+    if t == LicenseTypes.INDETERMINATE:
+        return 'Indeterminado'
+    if t == LicenseTypes.LICENSE:
+        return 'Licencia'
+    if t == LicenseTypes.DESIGNATION_RETENTION:
+        return 'Retención Cargo'
+    if t == LicenseTypes.SUSPENDED_PAYMENT:
+        return 'Renta Suspendida'
+    if t == LicenseTypes.SUSPENSION:
+        return 'Suspención'
+    if t == LicenseTypes.TRANSITORY_SUSPENSION:
+        return 'Suspención Transitoria'
+    if t == LicenseTypes.EXTENSION:
+        return 'Prórroga'
+    if t == LicenseTypes.DISCHARGE:
+        return 'Baja'
+    return ''
 
+def et2s(t:LicenseEndTypes):
+    if t == LicenseEndTypes.INDETERMINATE:
+        return 'Indeterminado'
+    if t == LicenseEndTypes.LICENSE_END:
+        return 'Fin de licencia'
+    if t == LicenseEndTypes.LICENSE_CHANGE:
+        return 'Cambio de licencia'
+    if t == LicenseEndTypes.DESIGNATION_END:
+        return 'Fin de designación'
+    if t == LicenseEndTypes.REINCORPORATION:
+        return 'Reincorporación'
+    return ''
 
 def _is_extension(d):
     return d.type == DesignationTypes.EXTENSION
@@ -593,6 +624,14 @@ def personDesignations(user, uid):
         dids = silegModel.get_designations_by_uuid(session, uid)
         designations = silegModel.get_designations(session, dids)
 
+        licensesIDs = silegModel.get_user_designation_licenses(session,uid)
+        designationsLicenses = {}
+        for l in silegModel.get_dlicenses(session,licensesIDs):
+            if not ( l.deleted or l.historic ):
+                if not l.designation_id in designationsLicenses:
+                    designationsLicenses[l.designation_id] = []
+                designationsLicenses[l.designation_id].append(l)
+
         original = []
         original_tmp = [d for d in designations if d.deleted is None and (d.type == DesignationTypes.ORIGINAL or d.type == DesignationTypes.REPLACEMENT)]
         for o in original_tmp:
@@ -622,13 +661,16 @@ def personDesignations(user, uid):
         return render_template('personDesignations.html',
                     form=form, 
                     dt2s=dt2s, cend=calculate_end, user=user, 
-                    designations=active, 
+                    designations=active,
+                    licenses=designationsLicenses, 
                     person=person, 
                     is_secondary=_is_secondary, 
                     is_suplencia=_is_suplencia, 
                     find_user=_find_user,
                     has_suplencia=_has_suplencia,
-                    has_extension=_has_extension)
+                    has_extension=_has_extension,
+                    lt2s=lt2s,
+                    et2s=et2s)
 
 @bp.route('/cargo/<cid>')
 @require_user

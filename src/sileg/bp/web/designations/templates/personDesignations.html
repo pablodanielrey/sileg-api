@@ -123,6 +123,10 @@
                                             onclick="toggle('suplencia-{{d.id}}')">S</button>
                                     {% endif %}
                                 {% endif %}
+                                {% if d.id in licenses.keys() %}
+                                    <button class="btn-floating waves-effect red"
+                                        onclick="toggle('license-{{d.id}}')">L</button>
+                                {% endif %}
                             </td>
                             <td class="center">
                                 <a class="dropdown-trigger btn-floating waves-effect waves-light yellow darken-3"
@@ -241,6 +245,33 @@
                                         </ul>
                                         {% endif %}
                                         {% endfor %}
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        <!-- Licencias del la designacion -->
+                        {% if d.id in licenses.keys() %}
+                        <tr id="license-{{d.id}}" style="visibility: collapse;">
+                            <td colspan="8">
+                                <table class="responsive-table highlight">
+                                    <thead class="red">
+                                        <tr>
+                                            <th class="center white-text">Tipo</th>
+                                            <th class="center white-text">Inicio</th>
+                                            <th class="center white-text">Fin</th>
+                                            <th class="center white-text">Tipo de Fin</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {%for lic in licenses[d.id]%}
+                                        <tr>
+                                            <td class="center blue-text darken-4">{{lt2s(lic.type)}}</td>
+                                            <td class="center blue-text darken-4">{% if lic.start %}{{ lic.start.strftime('%d-%m-%Y')}}{% endif %}</td>
+                                            <td class="center blue-text darken-4">{% if lic.end %}{{ lic.end.strftime('%d-%m-%Y')}}{% endif %}</td>
+                                            <td class="center blue-text darken-4">{{et2s(lic.end_type)}}</td>
+                                        </tr>
+                                        {%endfor%}
                                     </tbody>
                                 </table>
                             </td>
