@@ -549,7 +549,7 @@ class PersonIdNumberModifyForm(FlaskForm):
             if len(persons) == 1:
                 person = persons[0]
                 if self.person_number.data and self.person_number_type.data:
-                    if len(person.identity_numbers) > 1 and self.person_number_type.data != 'DNI':
+                    if self.person_number_type.data != 'DNI':
                         idNumber = IdentityNumber()
                         idNumber.id = str(uuid.uuid4())
                         idNumber.created = datetime.datetime.utcnow()
