@@ -86,6 +86,11 @@ class PersonCreateForm(FlaskForm):
     def validate_person_number_type(self, person_number_type):
         if self.person_number_type.data == '0':
             raise ValidationError('Debe seleccionar una opción')   
+    
+    def validate_work_email(self, work_email):
+        with open_users_session() as users_session:
+            if usersModel.get_uid_email(users_session, self.work_email.data):
+                raise ValidationError('La dirección de correo electrónico institucional ya existe')
 
     def validate_personal_email(self, personal_email):
         if re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]*unlp.edu.ar$", self.personal_email.data) != None:
@@ -198,30 +203,27 @@ class PersonCreateForm(FlaskForm):
 
                 """ Se genera correo laboral """
                 if self.work_email.data:
-                    if not usersModel.get_uid_email(users_session, self.work_email.data):
-                        newWorkEmail = Mail()
-                        newWorkEmail.id = str(uuid.uuid4())
-                        newWorkEmail.created = datetime.datetime.utcnow()
-                        emailType = MailTypes.NOTIFICATION
-                        if re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]*econo.unlp.edu.ar$",self.work_email.data) != None:
-                            emailType = MailTypes.INSTITUTIONAL
-                        newWorkEmail.type = emailType
-                        newWorkEmail.email = self.work_email.data
-                        newWorkEmail.user_id = uid
-                        newWorkEmail.confirmed = datetime.datetime.utcnow()
-                        users_session.add(newWorkEmail)
-                        toLog['workMail'] = {
-                                'id': newWorkEmail.id,
-                                'created': newWorkEmail.created,
-                                'updated': newWorkEmail.updated,
-                                'deleted': newWorkEmail.deleted,
-                                'type': newWorkEmail.type.value,
-                                'email': newWorkEmail.email,
-                                'confirmed': newWorkEmail.confirmed,
-                                'user_id': newWorkEmail.user_id,
-                        }
-                    else:
-                        return None
+                    newWorkEmail = Mail()
+                    newWorkEmail.id = str(uuid.uuid4())
+                    newWorkEmail.created = datetime.datetime.utcnow()
+                    emailType = MailTypes.NOTIFICATION
+                    if re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]*econo.unlp.edu.ar$",self.work_email.data) != None:
+                        emailType = MailTypes.INSTITUTIONAL
+                    newWorkEmail.type = emailType
+                    newWorkEmail.email = self.work_email.data
+                    newWorkEmail.user_id = uid
+                    newWorkEmail.confirmed = datetime.datetime.utcnow()
+                    users_session.add(newWorkEmail)
+                    toLog['workMail'] = {
+                            'id': newWorkEmail.id,
+                            'created': newWorkEmail.created,
+                            'updated': newWorkEmail.updated,
+                            'deleted': newWorkEmail.deleted,
+                            'type': newWorkEmail.type.value,
+                            'email': newWorkEmail.email,
+                            'confirmed': newWorkEmail.confirmed,
+                            'user_id': newWorkEmail.user_id,
+                    }
 
                 """ Se genera correo personal """
                 if self.personal_email.data:
@@ -458,8 +460,8 @@ class PersonSearchForm(FlaskForm):
         csrf = False
 
 class PersonDataModifyForm(FlaskForm):
-    lastname = StringField('Apellidos', validators=[InputRequired()])
-    firstname = StringField('Nombres', validators=[InputRequired()])
+    lastname = StringField('Apellidos', validators=[DataRequired()])
+    firstname = StringField('Nombres', validators=[DataRequired()])
     gender = SelectField('Género', coerce=str)
     marital_status = SelectField('Estado Civil', coerce=str)
     birthplace = StringField('Ciudad de Nacimiento')
@@ -598,6 +600,11 @@ class PersonMailModifyForm(FlaskForm):
     def validate_email_type(self, email_type):
         if self.email_type.raw_data[0] == '0':
             raise ValidationError('Debe seleccionar una opción')
+
+    def validate_email(self, email):
+        with open_users_session() as session:
+            if usersModel.get_uid_email(session, self.email.data):
+                raise ValidationError('La dirección de correo electrónico institucional ya existe')
      
     def saveModifyMail(self,uid,authorizer_id):
         """ 
