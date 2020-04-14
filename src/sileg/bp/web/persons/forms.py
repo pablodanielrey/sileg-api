@@ -198,27 +198,30 @@ class PersonCreateForm(FlaskForm):
 
                 """ Se genera correo laboral """
                 if self.work_email.data:
-                    newWorkEmail = Mail()
-                    newWorkEmail.id = str(uuid.uuid4())
-                    newWorkEmail.created = datetime.datetime.utcnow()
-                    emailType = MailTypes.NOTIFICATION
-                    if re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]*econo.unlp.edu.ar$",self.work_email.data) != None:
-                        emailType = MailTypes.INSTITUTIONAL
-                    newWorkEmail.type = emailType
-                    newWorkEmail.email = self.work_email.data
-                    newWorkEmail.user_id = uid
-                    newWorkEmail.confirmed = datetime.datetime.utcnow()
-                    users_session.add(newWorkEmail)
-                    toLog['workMail'] = {
-                            'id': newWorkEmail.id,
-                            'created': newWorkEmail.created,
-                            'updated': newWorkEmail.updated,
-                            'deleted': newWorkEmail.deleted,
-                            'type': newWorkEmail.type.value,
-                            'email': newWorkEmail.email,
-                            'confirmed': newWorkEmail.confirmed,
-                            'user_id': newWorkEmail.user_id,
-                    }
+                    if not usersModel.get_uid_email(users_session, self.work_email.data):
+                        newWorkEmail = Mail()
+                        newWorkEmail.id = str(uuid.uuid4())
+                        newWorkEmail.created = datetime.datetime.utcnow()
+                        emailType = MailTypes.NOTIFICATION
+                        if re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-.]*econo.unlp.edu.ar$",self.work_email.data) != None:
+                            emailType = MailTypes.INSTITUTIONAL
+                        newWorkEmail.type = emailType
+                        newWorkEmail.email = self.work_email.data
+                        newWorkEmail.user_id = uid
+                        newWorkEmail.confirmed = datetime.datetime.utcnow()
+                        users_session.add(newWorkEmail)
+                        toLog['workMail'] = {
+                                'id': newWorkEmail.id,
+                                'created': newWorkEmail.created,
+                                'updated': newWorkEmail.updated,
+                                'deleted': newWorkEmail.deleted,
+                                'type': newWorkEmail.type.value,
+                                'email': newWorkEmail.email,
+                                'confirmed': newWorkEmail.confirmed,
+                                'user_id': newWorkEmail.user_id,
+                        }
+                    else:
+                        return None
 
                 """ Se genera correo personal """
                 if self.personal_email.data:
@@ -609,41 +612,44 @@ class PersonMailModifyForm(FlaskForm):
                 person = persons[0]
                 #if self.email.data and self.email_type.data == 'ALTERNATIVE':
                 if self.email.data:
-                    newPersonalMail = Mail()
-                    newPersonalMail.id = str(uuid.uuid4())
-                    newPersonalMail.created = datetime.datetime.utcnow()
-                    newPersonalMail.type = self.email_type.data
-                    newPersonalMail.email = self.email.data
-                    newPersonalMail.user_id = person.id
-                    newPersonalMail.confirmed = datetime.datetime.utcnow()
-                    session.add(newPersonalMail)
-                    newPersonalMailLog = {  
-                        'mail': {
-                            'id': newPersonalMail.id,
-                            'created': newPersonalMail.created,
-                            'updated': newPersonalMail.updated,
-                            'deleted': newPersonalMail.deleted,
-                            'type': newPersonalMail.type,
-                            'email': newPersonalMail.email,
-                            'confirmed': newPersonalMail.confirmed,
-                            'user_id': newPersonalMail.user_id,
+                    if not usersModel.get_uid_email(session, self.email.data):
+                        newPersonalMail = Mail()
+                        newPersonalMail.id = str(uuid.uuid4())
+                        newPersonalMail.created = datetime.datetime.utcnow()
+                        newPersonalMail.type = self.email_type.data
+                        newPersonalMail.email = self.email.data
+                        newPersonalMail.user_id = person.id
+                        newPersonalMail.confirmed = datetime.datetime.utcnow()
+                        session.add(newPersonalMail)
+                        newPersonalMailLog = {  
+                            'mail': {
+                                'id': newPersonalMail.id,
+                                'created': newPersonalMail.created,
+                                'updated': newPersonalMail.updated,
+                                'deleted': newPersonalMail.deleted,
+                                'type': newPersonalMail.type,
+                                'email': newPersonalMail.email,
+                                'confirmed': newPersonalMail.confirmed,
+                                'user_id': newPersonalMail.user_id,
+                            }
                         }
-                    }
-                    newLog = UsersLog()
-                    newLog.entity_id = person.id
-                    newLog.authorizer_id = authorizer_id
-                    newLog.type = UserLogTypes.UPDATE
-                    newLog.data = json.dumps([newPersonalMailLog], default=str)
-                    session.add(newLog)
-                    session.commit()
+                        newLog = UsersLog()
+                        newLog.entity_id = person.id
+                        newLog.authorizer_id = authorizer_id
+                        newLog.type = UserLogTypes.UPDATE
+                        newLog.data = json.dumps([newPersonalMailLog], default=str)
+                        session.add(newLog)
+                        session.commit()
 
-                    """
-                        disparo el evento de modificación.
-                    """
-                    users = usersModel.get_users(session, uids=[uid])
-                    _send_updated_user(users[0])
+                        """
+                            disparo el evento de modificación.
+                        """
+                        users = usersModel.get_users(session, uids=[uid])
+                        _send_updated_user(users[0])
 
-                    return 'Correo agregado con éxito'
+                        return 'Correo agregado con éxito'
+                    else:
+                        return 'Error'
                 else:
                     return 'Error'
 
