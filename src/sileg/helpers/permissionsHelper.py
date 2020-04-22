@@ -61,7 +61,8 @@ def verify_sileg_permission(fn):
             '27528195':'af2ba1fb-66ce-4857-b226-1b19b1d3a0c5',
             '32393755':'15022185-5e14-4772-a620-53fadf843bc0',
             '26106655':'4719252a-ef58-4522-a776-d497708d2812',
-            '30001823':'205de802-2a15-4652-8fde-f23c674a1246'
+            '30001823':'205de802-2a15-4652-8fde-f23c674a1246',
+            '22851309':'2fa4895a-a5b0-43da-81eb-c8bd7c034609',      #Sara Cuervo - a pedido de Pablo Lozada
         }
 
         if uid in nuestros_uids.values():
