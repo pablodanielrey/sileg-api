@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, backref
-from model_utils import Base, generateId
+from sileg.model.entities import Base, generateId
 
 
 class Lugar(Base):

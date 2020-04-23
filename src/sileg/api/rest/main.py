@@ -157,15 +157,27 @@ def obtener_designaciones_por_usuario(uid=None, token=None):
     prof = warden.has_one_profile(token, ['gelis-super-admin', 'gelis-admin', 'gelis-operator'])
     if prof and prof['profile']:
         with obtener_session() as session:
-            designaciones = SilegModel.designaciones(session=session, persona=uid, historico=True, expand=True)
-            logging.debug(designaciones)
+            designaciones = []
+            ds = SilegModel.designaciones(session=session, persona=uid, historico=True, expand=True)
+            logging.debug(ds)
+            for d in ds:
+                tmpd = d.__json__()
+                tmpd['lugar'] = d.__json__()['lugar'].__json__()
+                tmpd['cargo'] = d.__json__()['cargo'].__json__()
+                designaciones.append(tmpd)
             return designaciones
 
     usuario_logueado = token['sub']
     with obtener_session() as session:
         if SilegModel.chequear_acceso_designaciones(session, usuario_logueado, uid):
-            designaciones = SilegModel.designaciones(session=session, persona=uid, historico=True, expand=True)
-            logging.debug(designaciones)
+            designaciones = []
+            ds = SilegModel.designaciones(session=session, persona=uid, historico=True, expand=True)
+            logging.debug(ds)
+            for d in ds:
+                tmpd = d.__json__()
+                tmpd['lugar'] = d.__json__()['lugar'].__json__()
+                tmpd['cargo'] = d.__json__()['cargo'].__json__()
+                designaciones.append(tmpd)
             return designaciones
         else:
             return ('no tiene los permisos suficientes', 403)

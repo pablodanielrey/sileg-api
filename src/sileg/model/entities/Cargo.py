@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Numeric, ForeignKey
 from sqlalchemy.orm import relationship
-from model_utils import Base
+from sileg.model.entities import Base
 
 class Cargo(Base):
 

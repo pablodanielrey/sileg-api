@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Date, Table, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
-from model_utils import Base
+from sileg.model.entities import Base
 
 from .Cargo import Cargo
 from .Lugar import Lugar
