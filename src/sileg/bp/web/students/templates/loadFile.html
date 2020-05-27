@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col m1"></div>
+    <div class="col m10">
+        <div class="card-panel grey lighten-5">
+            <div class="center">
+                <h4> Carga de Alumnos desde CSV </h4>
+            </div>
+            <form action="" enctype="multipart/form-data" method="post">
+                {{ form.hidden_tag() }}
+                <div class="row">
+                    <div class="col m5">
+                        <h5>Cargar Archivo</h5>
+                    </div>
+                </div>
+                <div class="row center">
+                    <div class="col m1"></div>
+                    <div class="col m5">
+                        <div class="file-field input-field">
+                            <div class="btn light-blue darken-3">
+                                <span>CSV</span>
+                                {{ form.newFile(class="validate") }}
+                            </div>
+                            <div class="file-path-wrapper">
+                                <input class="file-path validate" type="text" placeholder="Adjuntar CSV">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="divider"></div>
+                <br>
+                <div class="row">
+                    <div class="col m3"></div>
+                    <div class="col m1">
+                        <button class="btn red lighten-2" type="reset">Limpiar</button>
+                    </div>
+                    <div class="col m3"></div>
+                    <div class="col m2">
+                        <button class="btn light-blue darken-3">Cargar Archivo</button>
+                    </div>
+                    <div class="col m3"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col m1"></div>
+</div>
+{% endblock %}

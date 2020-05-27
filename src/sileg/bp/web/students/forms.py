@@ -3,6 +3,8 @@ import uuid
 import base64
 import datetime
 import re
+import csv
+import io
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, DateTimeField, SelectField, SubmitField
@@ -111,3 +113,80 @@ class StudentCreateForm(FlaskForm):
             session.add(newLog)
             session.commit()
             return self.person_number.data
+
+
+class StudentCSVCreateForm(FlaskForm):
+    newFile = FileField('Adjuntar Archivo CSV',validators=[DataRequired()])
+
+    def save(self, authorizer_id):
+        try:
+            csv_file = io.TextIOWrapper(self.newFile.data, encoding='utf-8')
+            csv_reader = csv.DictReader(csv_file, delimiter=',')
+            toLog = []
+            with open_users_session() as session:
+                for row in csv_reader:
+                    identityNumber = row['username'].replace(' ','')
+                    firstname = row['firsname'].strip()
+                    lastname = row['lastname'].strip()
+                    email = row['email'].replace(' ','')
+                    password = row['password'].replace(' ','')
+
+                    aux = usersModel.get_uid_person_number(session, identityNumber)
+                    if aux:
+                        return f'Error al cargar, la persona {lastname}, {firstname}, Documento {identityNumber} ya existe.'
+                    
+                    uid = str(uuid.uuid4())
+                    newUser = User()
+                    newUser.id = uid
+                    newUser.created = datetime.datetime.utcnow()
+                    newUser.lastname = lastname
+                    newUser.firstname = firstname
+                    session.add(newUser)
+                    toLog.append({
+                            'id': newUser.id,
+                            'created': newUser.created,
+                            'updated': newUser.updated,
+                            'deleted': newUser.deleted,
+                            'lastname': newUser.lastname,
+                            'firstname': newUser.firstname
+                    })
+
+                    """ Se genera documento """
+                    idNumber = IdentityNumber()
+                    idNumber.id = str(uuid.uuid4())
+                    idNumber.created = datetime.datetime.utcnow()
+                    idNumber.type = IdentityNumberTypes.DNI
+                    idNumber.number = identityNumber
+                    idNumber.user_id = uid
+                    session.add(idNumber)
+                    toLog.append({
+                            'id': idNumber.id,
+                            'created': idNumber.created,
+                            'updated': idNumber.updated,
+                            'deleted': idNumber.deleted,
+                            'type': idNumber.type,
+                            'number': idNumber.number,
+                            'user_id': idNumber.user_id,
+                    })
+                    """
+                    Agrego contraseña de persona
+                    #TODO implementar la generacion de contraseña
+                    """
+                    #with open_login_session() as loginSession:
+                    #    credentials = loginModel.change_credentials(loginSession, uid, identityNumber)
+                    #    session.commit()
+                    #    if len(institutional_mails) > 0:
+                    #        eventsModel.send(identityNumber, credentials)
+                    #loginModel.generate_temporal_credentials(session, uid, username)
+
+                for log in toLog:
+                    newLog = UsersLog()
+                    newLog.entity_id = newUser.id
+                    newLog.authorizer_id = authorizer_id
+                    newLog.type = UserLogTypes.CREATE
+                    newLog.data = json.dumps([log], default=str)
+                    session.add(newLog)
+                #session.commit()
+                return 'Todos las personas se cargaron en el sistema'
+        except:
+            return 'Revise el archivo'
