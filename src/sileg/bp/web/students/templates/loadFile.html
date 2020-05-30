@@ -4,14 +4,27 @@
     <div class="col m1"></div>
     <div class="col m10">
         <div class="card-panel grey lighten-5">
-            <div class="center">
-                <h4> Carga de Alumnos desde CSV </h4>
+            <div class="row">
+                <div class="col m12 center">
+                    <h4> Carga de Alumnos desde CSV </h4>
+                </div>
             </div>
             <form action="" enctype="multipart/form-data" method="post">
                 {{ form.hidden_tag() }}
                 <div class="row">
                     <div class="col m5">
                         <h5>Cargar Archivo</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m12 center">
+                        <h6>Antes de cargar el archivo, por favor asegúrese de que dicho archivo tenga las siguientes columnas tal como figuran a continuación:</h6>
+                        <code>dni,nombres,apellidos,clave,legajo</code>
+                        <h6><u>Solo se admite tipo de documento DNI, el legajo es opcional.</u></h6>
+                        <h6>
+                            Luego de finalizada la carga se le mostrará un resumen de la operación, 
+                            donde podrá ver el estado de creación de cada persona.
+                        </h6>
                     </div>
                 </div>
                 <div class="row center">

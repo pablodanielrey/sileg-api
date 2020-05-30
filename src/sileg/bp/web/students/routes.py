@@ -56,6 +56,13 @@ def processFile(user):
     Pagina de procesamiento de CSV
     """
     form = StudentCSVCreateForm()
+    response = None
+    count = {}
     if form.validate_on_submit():       
-        flash(Markup(form.save(user['sub'])))
-    return redirect(url_for('students.loadFile'))
+        response = form.save(user['sub'])
+        count = {
+            'total': len(response),
+            'correct': len([r for r in response if r['status'] == 'Creado Correctamente']),
+            'errors': len([r for r in response if r['status'] != 'Creado Correctamente'])
+        }
+    return render_template('creationResponse.html',user=user,response=response, count=count)
