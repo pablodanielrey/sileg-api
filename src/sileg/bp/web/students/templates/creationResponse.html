@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col m1"></div>
+    <div class="col m10">
+        <div class="card-panel grey lighten-5">
+            <div class="row">
+                <div class="com m12 center">
+                    <h4> Resultado de importación de cuentas </h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col m12">
+                    {%if response%}
+                    <div class="row">
+                        <div class="col m4 center"><h6><b>Personas detectadas en archivo:</b> {{count['total']}}</h6></div>
+                        <div class="col m4 center"><h6><b>Personas creadas:</b> {{count['correct']}}</h6></div>
+                        <div class="col m4 center"><h6><b>Personas con errores:</b> {{count['errors']}}</h6></div>
+                    </div>
+                    <table class="highlight responsive-table centered">
+                        <thead>
+                          <tr>
+                              <th>DNI</th>
+                              <th>Nombre</th>
+                              <th>Apellido</th>
+                              <th>Estado</th>
+                          </tr>
+                        </thead>        
+                        <tbody>
+                          {%for r in response%}
+                          <tr>
+                            <td>{{r['identityNumber']}}</td>
+                            <td>{{r['firstname']}}</td>
+                            <td>{{r['lastname']}}</td>
+                            <td>{{r['status']}}</td>
+                          </tr>
+                          {%endfor%}
+                        </tbody>
+                    </table>
+                    {%else%}
+                        Error al cargar el archivo.
+                    {%endif%}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col m12 center">
+                    <a href="{{url_for('students.loadFile')}}" class="btn light-blue darken-3">Volver</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col m1"></div>
+</div>
+{% endblock %}
