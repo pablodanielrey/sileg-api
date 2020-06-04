@@ -123,7 +123,7 @@ class StudentCSVCreateForm(FlaskForm):
             checkStudentNumber = re.compile('\d+\/\d+')
             checkIdentityNumber = re.compile('^[0-9]+$')
             response = []
-            csv_file = io.TextIOWrapper(self.newFile.data, encoding='utf-8')
+            csv_file = io.TextIOWrapper(self.newFile.data, encoding='utf-8-sig')
             csv_reader = csv.DictReader(csv_file, delimiter=',')
             for row in csv_reader:
                 with open_users_session() as session:
