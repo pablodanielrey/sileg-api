@@ -1,10 +1,10 @@
-FROM python:3.8-buster
+FROM python:3.8
 
-RUN apt-get update && apt-get install -y \
-  postgresql-server-dev-all \
-  supervisor \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
+#RUN apt-get update && apt-get install -y \
+#  postgresql-server-dev-all \
+#  supervisor \
+#  && apt-get clean \
+#  && rm -rf /var/lib/apt/lists/*
 
 ENV TZ=America/Argentina/Buenos_Aires
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -12,13 +12,16 @@ ENV PIP_DEFAULT_TIMEOUT=3600
 RUN pip install --upgrade pip
 
 COPY docker/pip.conf /etc/
-COPY docker/entrypoint.sh /
-COPY docker/supervisor/flask.conf /etc/supervisor/conf.d
+#COPY docker/entrypoint.sh /
+#COPY docker/supervisor/flask.conf /etc/supervisor/conf.d
 COPY src /src
 RUN cd /src && pip3 install --upgrade-strategy=eager --trusted-host pypi.econo.unlp.edu.ar --upgrade -e .
 
 COPY scripts /scripts
 
+RUN echo "user:x:1000:1000:user:/src;/bin/bash" >> /etc/passwd
+USER 1000:1000
 WORKDIR /src
 
-ENTRYPOINT ["/entrypoint.sh"]
+CMD cd /src && gunicorn --workers 1 --timeout 300 --bind 0.0.0.0:10202 --timeout 3600 sileg.api.rest.wsgi:app
+#ENTRYPOINT ["/entrypoint.sh"]
