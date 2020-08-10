@@ -12,7 +12,8 @@ def verify_admin_permissions(fn):
             '34770038':'13b2471b-507e-44d7-a440-efdb66d5aaa8',      #Leo
             '29694757':'35f7a8a6-d844-4d6f-b60b-aab810610809',      #Jano
             '31073351':'d44e92c1-d277-4a45-81dc-a72a76f6ef8d',      #Ivan
-            '30001823':'205de802-2a15-4652-8fde-f23c674a1246'       #Walter
+            '30001823':'205de802-2a15-4652-8fde-f23c674a1246',      #Walter
+            '26106655':'4719252a-ef58-4522-a776-d497708d2812'       #Emilio
         }
 
         if uid in nuestros_uids.values():
@@ -40,7 +41,7 @@ def verify_sileg_permission(fn):
             '32393755':'15022185-5e14-4772-a620-53fadf843bc0',      # Pablo Lozada
             '22851309':'2fa4895a-a5b0-43da-81eb-c8bd7c034609',      # Sara Cuervo - a pedido de Pablo Lozada
 
-            '26106655':'4719252a-ef58-4522-a776-d497708d2812',      # Emilio
+            '26106655':'4719252a-ef58-4522-a776-d497708d2812'      # Emilio
         }
 
         if uid in nuestros_uids.values():
