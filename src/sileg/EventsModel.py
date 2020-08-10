@@ -34,38 +34,12 @@ class EventsModel:
     """
 
     def send(self, username, credentials):
-        self.logging.debug(f'enviando el evento de {username} a pulsar')
-        try:
-            msg = LoginEvent(type_=LoginEventTypes.CHANGE_CREDENTIALS.value, 
-                            username=username, 
-                            credentials=credentials)
-            #self.producer.send(msg)
-            self.logging.log(msg)
-        except Exception as e:
-            self.logging.exception(e)
-            raise e
+        return
 
     def send_created_user(self, user):
-        try:
-            data = json.dumps(user.to_dict())
-            event = UserEvent(type_=UserEventTypes.CREATED.value,
-                            user=data)
-            #self.user_producer.send(event)
-            self.logging.log(event)
-        except Exception as e:
-            self.logging.exception(e)
-            raise e
+        return
 
     def send_updated_user(self, user):
-        try:
-            data = json.dumps(user.to_dict())
-            event = UserEvent(type_=UserEventTypes.UPDATED.value,
-                            user=data)
-            #self.user_producer.send(event)
-            self.logging.log(event)
-        except Exception as e:
-            self.logging.exception(e)
-            raise e
-    
+        return
 
 
