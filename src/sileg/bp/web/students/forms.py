@@ -90,7 +90,7 @@ class StudentCreateForm(FlaskForm):
             if self.student_number.data:
                 s_number = IdentityNumber()
                 s_number.id = str(uuid.uuid4())
-                s_number.created = str(uid.uuid4())
+                s_number.created = datetime.datetime.utcnow()
                 s_number.type = IdentityNumberTypes.STUDENT
                 s_number.number = self.student_number.data
                 s_number.user_id = uid
