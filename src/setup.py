@@ -38,7 +38,7 @@ setup(
         "itsdangerous==1.1.0",
         "markupsafe==1.1.0",
         "WTForms==2.3.3",
-        "Werkzeug==1.0.1",
+        "Werkzeug==2.2.3",
         "SQLAlchemy==1.3.18",
         "SQLAlchemy-serializer==1.3.4.2",
         "psycopg2-binary==2.8.5",
