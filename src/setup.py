@@ -30,7 +30,7 @@ setup(
     install_requires=[
         "gunicorn",
         "requests",
-        "Flask==1.1.2",
+        "Flask==2.3.2",
         "flask-wtf==0.14.3",
         "flask_jsontools==0.1.7",
         "flask-cors",
